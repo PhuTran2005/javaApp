@@ -1,0 +1,103 @@
+.login_container{
+    -fx-background-color: #FFFFFF;
+}
+/*
+logo login
+*/
+.login_logo_container{
+    -fx-background-color: #18CFC4;
+    -fx-alignment: center;
+}
+.login_logo_extra_container{
+    -fx-background-color: #FFFFFF;
+    -fx-alignment: center;
+}
+.login_input_container{
+    -fx-alignment: center;
+}
+.flex-center{
+    -fx-alignment: center; /* Căn giữa theo cả chiều ngang và dọc */
+    -fx-spacing: 10px; /* Khoảng cách giữa các phần tử */
+}
+
+.login_logo_container Text{
+    -fx-font-size: 2em;
+    -fx-fill: #FFFFFF;
+    -font-weight: bold;
+}
+.login_logo_container  FontAwesomeIconView{
+    -fx-fill: #ECF39E;
+}
+/* Kiểu cho AnchorPane */
+#anchorPane {
+    -fx-background-color: #e6e6e6; /* Màu nền tổng thể */
+    -fx-alignment: center; /* Căn giữa tất cả các thành phần */
+    -fx-padding: 20px;
+    -fx-pref-width: 100%;
+    -fx-pref-height: 100%;
+    -fx-max-width: Infinity;
+    -fx-max-height: Infinity;
+}
+
+/* Kiểu cho VBox (căn giữa các phần tử) */
+#vbox {
+    -fx-alignment: center; /* Căn giữa tất cả thành phần trong VBox */
+    -fx-padding: 20px;
+    -fx-hgap: 10;
+}
+
+/* Kiểu cho Label (Tiêu đề) */
+.welcome-label {
+    -fx-font-size: 30px;
+    -fx-font-weight: 700;
+    -fx-text-fill: #4CAF50; /* Màu chữ xanh */
+    -fx-background-color: transparent;
+    -fx-padding: 10;
+    -fx-text-alignment: center;
+}
+
+/* Kiểu cho các Button */
+.button-style {
+    -fx-font-size: 14px;
+    -fx-background-color: #18CFC4; /* Màu nền nút */
+    -fx-text-fill: white;
+    -fx-padding: 8 16;
+    -fx-border-radius: 5;
+    -fx-font-weight: bold;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 6, 0.5, 0, 4);
+    -fx-cursor: hand;
+    -fx-transition: all 0.4s ease;
+}
+
+/* Màu khi hover trên Button */
+.button-style:hover {
+    -fx-background-color: #45a049;
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.4), 6, 0.7, 0, 6);
+}
+
+/* Màu khi Button được nhấn */
+.button-style:pressed {
+    -fx-background-color: #28F19D;
+    -fx-scale-x: 0.95;
+    -fx-scale-y: 0.95;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 6, 0.5, 0, 4);
+}
+
+/* Hiệu ứng focus cho Button */
+.button-style:focused {
+    -fx-border-color: #4CAF50;
+    -fx-border-width: 2px;
+    -fx-background-color: #388e3c; /* Màu nền khi focus */
+}
+
+/* Thêm hiệu ứng cho Button khi không focus nhưng vẫn hover */
+.button-style:focused:hover {
+    -fx-background-color: #45a049;
+}
+
+/* Cải thiện hiệu ứng shadow khi Button bị pressed */
+.button-style:pressed {
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.5), 6, 0.7, 0, 5);
+}

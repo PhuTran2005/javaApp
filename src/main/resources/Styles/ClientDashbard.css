@@ -1,0 +1,49 @@
+/* Sidebar styles */
+.sidebar {
+    -fx-background-color: #2C3E50;
+    -fx-padding: 20px;
+    -fx-spacing: 15px;
+}
+
+.sidebar-title {
+    -fx-font-size: 18px;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+.sidebar-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-padding: 10px;
+    -fx-border-radius: 5px;
+    -fx-border-color: white;
+}
+
+.sidebar-button:hover {
+    -fx-background-color: #34495E;
+}
+
+/* Main Content styles */
+.main-content {
+    -fx-padding: 20px;
+    -fx-spacing: 20px;
+}
+
+.stat-box {
+    -fx-background-color: #3498DB;
+    -fx-padding: 15px;
+    -fx-background-radius: 10px;
+    -fx-text-fill: white;
+    -fx-alignment: center;
+}
+
+.stat-number {
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+}
+
+/* Chart styles */
+.chart {
+    -fx-padding: 20px;
+}

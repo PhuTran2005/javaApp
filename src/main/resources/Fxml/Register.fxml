@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Hyperlink?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane prefHeight="400.0" prefWidth="600.0" styleClass="login_container" stylesheets="@../Styles/Login.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.coursemanagement.Controllers.RegisterController">
+
+    <children>
+        <!-- Logo bên trái -->
+        <VBox prefHeight="400.0" prefWidth="250.0" styleClass="login_logo_container" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <children>
+                <ImageView fitHeight="93.0" fitWidth="117.0" pickOnBounds="true" preserveRatio="true">
+                    <image>
+                        <Image url="@../Images/goldPen.png" />
+                    </image>
+                </ImageView>
+                <ImageView fitHeight="200.0" fitWidth="250.0">
+                    <Image url="@../Images/logo.png" />
+                </ImageView>
+            </children>
+        </VBox>
+
+        <!-- Form đăng nhập -->
+        <VBox layoutX="386.0" layoutY="28.0" prefHeight="383.0" prefWidth="306.0" styleClass="flex-center" AnchorPane.bottomAnchor="17.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="0.0">
+            <children>
+                <!-- Logo đăng nhập -->
+                <VBox prefHeight="95.0" prefWidth="306.0" styleClass="login_logo_extra_container">
+                    <children>
+                        <ImageView fitHeight="75.0" fitWidth="99.0" pickOnBounds="true" preserveRatio="true">
+                            <image>
+                                <Image url="@../Images/register.png" />
+                            </image>
+                        </ImageView>
+                    </children>
+                </VBox>
+
+                <!-- Nhập username và password -->
+                <VBox prefHeight="340.0" prefWidth="306.0" styleClass="flex-center">
+                    <children>
+                  <HBox prefHeight="50.0" prefWidth="280.0" spacing="10" styleClass="flex-center">
+                     <children>
+                        <ImageView fitHeight="25.0" fitWidth="25.0">
+                           <image>
+                              <Image url="@../Images/user.png" />
+                           </image>
+                        </ImageView>
+                        <TextField fx:id="RGEmail" onKeyPressed="#handleKeyPress" prefWidth="200.0" promptText="Email" style="-fx-background-color: transparent; -fx-border-color: #18CFC4; -fx-border-width: 0px 0px 2px 0px;" />
+                     </children>
+                  </HBox>
+                        <!-- Username -->
+                        <HBox prefHeight="50.0" prefWidth="280.0" spacing="10" styleClass="flex-center">
+                            <children>
+                                <ImageView fitHeight="25.0" fitWidth="25.0">
+                                    <image>
+                                        <Image url="@../Images/padlock.png" />
+                                    </image>
+                                </ImageView>
+                                <PasswordField fx:id="RGPassword" onKeyPressed="#handleKeyPress" prefWidth="200.0" promptText="Password" style="-fx-background-color: transparent; -fx-border-color: #18CFC4; -fx-border-width: 0px 0px 2px 0px;" />
+                            </children>
+                        </HBox>
+
+                        <!-- Password -->
+                        <HBox prefHeight="50.0" prefWidth="280.0" spacing="10" styleClass="flex-center">
+                            <children>
+                                <ImageView fitHeight="25.0" fitWidth="25.0">
+                                    <image>
+                                        <Image url="@../Images/pin-code.png" />
+                                    </image>
+                                </ImageView>
+                                <PasswordField fx:id="RGConfirmPassword" onKeyPressed="#handleKeyPress" prefWidth="200.0" promptText="Cornfirm password" style="-fx-background-color: transparent; -fx-border-color: #18CFC4; -fx-border-width: 0px 0px 2px 0px;" />
+                            </children>
+                     <VBox.margin>
+                        <Insets bottom="10.0" />
+                     </VBox.margin>
+                        </HBox>
+
+                        <!-- Nút Login -->
+                        <Button fx:id="btnRegister" onAction="#handleRegister" onKeyPressed="#handleKeyPress" styleClass="button-style" text="Đăng ký" textFill="WHITE">
+                            <font>
+                                <Font name="Arial" size="14.0" />
+                            </font>
+                        </Button>
+
+                        <!-- Link đăng ký -->
+                        <Hyperlink fx:id="linkLogin" onAction="#switchToLogin" prefHeight="32.0" prefWidth="199.0" text="Đã có tài khoản? Đăng nhập ngay" />
+                    </children>
+                </VBox>
+
+                <!-- Label hiển thị lỗi -->
+                <Label fx:id="messageLabel" prefHeight="18.0" prefWidth="0.0" style="-fx-alignment: center" textFill="RED" visible="false" />
+            </children>
+        </VBox>
+    </children>
+</AnchorPane>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Text?>
+
+
+<AnchorPane prefHeight="750.0" prefWidth="850.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.coursemanagement.Controllers.Admin.DashboardController">
+   <children>
+      <Text layoutX="402.0" layoutY="41.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Dashboard" />
+   </children>
+</AnchorPane>

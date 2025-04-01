@@ -1,9 +1,8 @@
 module com.example.coursemanagement {
     requires javafx.controls;
     requires javafx.fxml;
-    requires javafx.web;
     requires java.sql;
-
+    requires javafx.base;
     requires javafx.graphics; // css
 
     requires org.controlsfx.controls;

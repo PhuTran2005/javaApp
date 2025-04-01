@@ -1,7 +1,7 @@
 /* Tổng thể Sidebar */
 .main_menu_container {
-    -fx-background-color: #6C7B75;
-    -fx-padding: 10px 0px 10px 10px;
+    -fx-background-color: #C5E5F3;
+    -fx-padding: 10px;
     -fx-spacing: 10px;
 }
 
@@ -10,12 +10,12 @@
     -fx-border-radius: 10px;
     -fx-background-radius: 10px;
     -fx-padding: 10px;
+
 }
 
 /* Logo */
 .title_container {
     -fx-alignment: center;
-    -fx-padding: 10px;
 }
 
 
@@ -31,11 +31,12 @@
     -fx-alignment: center-left;
     -fx-spacing: 10px;
     -fx-cursor: hand;
+    -fx-margin-bottom: 10px;
 }
 
 .menu_container Button:hover {
-    -fx-background-color: #3A3A56;
-    -fx-text-fill: #FFD700;
+    -fx-background-color: #C6E7FF;
+    -fx-text-fill: #FF0000;
 }
 
 .menu_container Button:pressed {
@@ -50,13 +51,13 @@
 /* Các Button thay thế */
 .alt_menu_btn {
     -fx-background-color: transparent;
-    -fx-text-fill: #D8D2C2;
+    -fx-text-fill: white;
     -fx-font-size: 14px;
 }
 
 .alt_menu_btn:hover {
-    -fx-background-color: #3A3A56;
-    -fx-text-fill: #FFD700;
+    -fx-background-color: #C6E7FF;
+    -fx-text-fill: #7A73D1;
 }
 
 /* Container của phần Report */

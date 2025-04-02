@@ -1,4 +1,4 @@
-package com.example.coursemanagement.Helper;
+package com.example.coursemanagement.Utils;
 
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;

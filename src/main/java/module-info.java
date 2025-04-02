@@ -15,11 +15,17 @@ module com.example.coursemanagement {
 
     opens com.example.coursemanagement to javafx.fxml;
     opens com.example.coursemanagement.Controllers to javafx.fxml;  // 👈
+    opens com.example.coursemanagement.Controllers.Client to javafx.fxml;  // 👈
+
     exports com.example.coursemanagement;
     exports com.example.coursemanagement.Controllers;
     exports com.example.coursemanagement.Controllers.Admin;
     exports com.example.coursemanagement.Controllers.Client;
     exports com.example.coursemanagement.Models;
     exports com.example.coursemanagement.Views;
+    exports com.example.coursemanagement.Utils;
+    exports com.example.coursemanagement.Service;
+    exports com.example.coursemanagement.Respository;
+    opens com.example.coursemanagement.Utils to javafx.fxml;
 
 }

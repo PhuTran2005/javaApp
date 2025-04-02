@@ -8,7 +8,7 @@
         <fx:include source="ClientMenu.fxml"/>
     </left>
     <center>
-        <fx:include source="Courses.fxml"/>
+        <fx:include source="../Client/Courses.fxml"/>
     </center>
 
 </BorderPane>

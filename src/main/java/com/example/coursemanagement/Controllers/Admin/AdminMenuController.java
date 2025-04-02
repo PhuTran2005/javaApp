@@ -1,6 +1,6 @@
 package com.example.coursemanagement.Controllers.Admin;
 
-import com.example.coursemanagement.Helper.Alerts;
+import com.example.coursemanagement.Utils.Alerts;
 import com.example.coursemanagement.Models.Model;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;

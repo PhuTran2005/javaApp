@@ -1,0 +1,62 @@
+/* Tổng thể */
+.profile-container {
+    -fx-background-color: #f5f5f5; /* Màu nền nhẹ */
+    -fx-padding: 20px;
+    -fx-border-radius: 10px;
+    -fx-background-radius: 10px;
+    -fx-alignment: center;
+}
+
+/* Tiêu đề */
+.title-label {
+    -fx-font-size: 22px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2c3e50;
+    -fx-padding: 10px 0;
+}
+
+/* Nhóm nhập liệu */
+.input-group {
+    -fx-alignment: center-left;
+}
+
+/* Label của từng trường */
+.input-label {
+    -fx-font-size: 14px;
+    -fx-text-fill: #34495e;
+    -fx-min-width: 150px; /* Giữ label đồng đều */
+}
+
+/* Ô nhập liệu */
+.input-field {
+    -fx-background-color:  transparent;
+    -fx-border-width:  0px 0px 1px 0px;
+    -fx-border-color:  #18CFC4;
+    -fx-pref-width: 250px;
+    -fx-padding: 5px;
+    -fx-background-radius: 5px;
+}
+
+/* Ô nhập liệu không chỉnh sửa */
+.input-field:readonly {
+    -fx-background-color: #ecf0f1;
+    -fx-text-fill: black;
+    -fx-cursor: none; /* Vô hiệu hóa con trỏ chuột */
+}
+
+/* Nút lưu */
+.save-button {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+    -fx-background-color: #3498db;
+    -fx-padding: 10px 15px;
+    -fx-border-radius: 5px;
+    -fx-background-radius: 5px;
+    -fx-cursor: hand;
+}
+
+/* Hiệu ứng hover cho nút */
+.save-button:hover {
+    -fx-background-color: #2980b9;
+}

@@ -1,7 +1,8 @@
 package com.example.coursemanagement.Controllers.Client;
 
-import com.example.coursemanagement.Helper.Alerts;
+import com.example.coursemanagement.Utils.Alerts;
 import com.example.coursemanagement.Models.Model;
+import com.example.coursemanagement.Utils.SessionManager;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -31,24 +32,42 @@ public class ClientMenuController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        System.out.println(courses_btn);
         addListeners();
     }
 
     @FXML
     private void addListeners() {
-        courses_btn.setOnAction(event -> onSelectedMenu("Courses"));
-        myCourse_btn.setOnAction(event -> onSelectedMenu("MyCourse"));
-        assignment_btn.setOnAction(event -> onSelectedMenu("Assignment"));
-        profile_btn.setOnAction(event -> onSelectedMenu("Profile"));
-        report_btn.setOnAction(event -> onSelectedMenu("Report"));
+        courses_btn.setOnAction(event -> onCoursesMenu("Courses"));
+        myCourse_btn.setOnAction(event -> onMyCourseMenu("MyCourse"));
+        assignment_btn.setOnAction(event -> onAssignment("Assignment"));
+        profile_btn.setOnAction(event -> onProfileMenu("Profile"));
+        report_btn.setOnAction(event -> onReportMenu("Report"));
         logout_btn.setOnAction(event -> onLogout());
     }
 
+    @FXML
+    private void onCoursesMenu(String path) {
+        Model.getInstance().getViewFactory().getClientSelectedMenuItemProperty().set(path);
+    }
 
     @FXML
-    private void onSelectedMenu(String path) {
-        System.out.println(path);
+    private void onMyCourseMenu(String path) {
+        Model.getInstance().getViewFactory().getClientSelectedMenuItemProperty().set(path);
+    }
+
+    @FXML
+    private void onAssignment(String path) {
+        Model.getInstance().getViewFactory().getClientSelectedMenuItemProperty().set(path);
+    }
+
+    @FXML
+    private void onProfileMenu(String path) {
+        Model.getInstance().getViewFactory().getClientSelectedMenuItemProperty().set(path);
+
+    }
+
+    @FXML
+    private void onReportMenu(String path) {
         Model.getInstance().getViewFactory().getClientSelectedMenuItemProperty().set(path);
     }
 

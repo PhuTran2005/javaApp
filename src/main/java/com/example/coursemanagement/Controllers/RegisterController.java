@@ -1,8 +1,9 @@
 package com.example.coursemanagement.Controllers;
 
-import com.example.coursemanagement.Dao.UserDAO;
-import com.example.coursemanagement.Helper.Alerts;
+import com.example.coursemanagement.Respository.UserRespository;
+import com.example.coursemanagement.Utils.Alerts;
 import com.example.coursemanagement.Models.Model;
+import com.example.coursemanagement.Utils.ValidatorUtil;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -15,7 +16,6 @@ import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-import java.util.regex.Pattern;
 
 public class RegisterController {
     private Alerts alerts = new Alerts();
@@ -31,9 +31,8 @@ public class RegisterController {
 
     @FXML
     private Label messageLabel;
+    private int MIN_PASSWORD_LENGTH = 6;
 
-    private static final String EMAIL_REGEX = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$";
-    private static final int MIN_PASSWORD_LENGTH = 6;
 
     @FXML
     private void handleRegister() {
@@ -46,12 +45,12 @@ public class RegisterController {
             return;
         }
 
-        if (!Pattern.matches(EMAIL_REGEX, email)) {
+        if (!ValidatorUtil.isValidEmail(email)) {
             showMessage("Email không hợp lệ!", "RED", 400);
             return;
         }
 
-        if (password.length() < MIN_PASSWORD_LENGTH) {
+        if (ValidatorUtil.isValidPassword(password,MIN_PASSWORD_LENGTH)) {
             showMessage("Mật khẩu phải có ít nhất " + MIN_PASSWORD_LENGTH + " ký tự!", "RED", 400);
             return;
         }
@@ -60,11 +59,11 @@ public class RegisterController {
             showMessage("Mật khẩu xác nhận không khớp!", "RED", 400);
             return;
         }
-        if (UserDAO.isExistEmail(email)) {
+        if (UserRespository.isExistEmail(email)) {
             showMessage("Email đã tồn tại!", "RED", 400);
             return;
         }
-        if (UserDAO.registerUser(email, password)) {
+        if (UserRespository.registerUser(email, password)) {
             showMessage("Đăng ký thành công!", "GREEN", 400);
             alerts.showSuccessAlert("Đăng ký thành công!");
             if(alerts.showConfirmationSelectedAlert("Bạn có muốn đăng nhập ngay không")){

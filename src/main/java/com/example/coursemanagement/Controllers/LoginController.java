@@ -1,9 +1,11 @@
 package com.example.coursemanagement.Controllers;
 
-import com.example.coursemanagement.Dao.UserDAO;
-import com.example.coursemanagement.Helper.Alerts;
+import com.example.coursemanagement.Controllers.Client.ProfileController;
+import com.example.coursemanagement.Respository.UserRespository;
+import com.example.coursemanagement.Utils.Alerts;
 import com.example.coursemanagement.Models.Model;
 import com.example.coursemanagement.Models.User;
+import com.example.coursemanagement.Utils.SessionManager;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -49,9 +51,14 @@ public class LoginController {
             showMessage("Vui lòng nhập đầy đủ thông tin!", "RED", 400);
             return;
         }
-        User response = UserDAO.loginUser(username, password);
+        User response = UserRespository.loginUser(username, password);
+        loginProcess(response);
+    }
+
+    public void loginProcess(User response) {
         if (response != null) {
             showMessage("Đăng nhập thành công!", "GREEN", 400);
+            SessionManager.getInstance().setUser(response); // Cập nhật user mới
             alerts.showSuccessAlert("Đăng nhập thành công!");
             Stage stage = (Stage) messageLabel.getScene().getWindow();
             Model.getInstance().getViewFactory().closeStage(stage);
@@ -59,8 +66,8 @@ public class LoginController {
         } else {
             showMessage("Sai tên đăng nhập hoặc mật khẩu!", "RED", 400);
         }
-    }
 
+    }
 
     // Xử lý phím Enter (⏎), Lên (↑), Xuống (↓)
     @FXML
@@ -87,8 +94,7 @@ public class LoginController {
         try {
             if (role.equals("USER")) {
                 Model.getInstance().getViewFactory().showClientWindow();
-            }
-            else {
+            } else {
                 Model.getInstance().getViewFactory().showAdminWindow();
             }
         } catch (Exception e) {

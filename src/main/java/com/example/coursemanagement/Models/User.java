@@ -32,10 +32,9 @@ public class User {
         this.role = role;
     }
 
-    public User(int userId, String username, String userPassword, String role, String userEmail, String userPhoneNumber, String createDate) {
+    public User(int userId, String username,  String userEmail,String role, String userPhoneNumber, String createDate) {
         this.userId = userId;
         this.username = username;
-        this.userPassword = userPassword;
         this.role = role;
         this.userEmail = userEmail;
         this.userPhoneNumber = userPhoneNumber;

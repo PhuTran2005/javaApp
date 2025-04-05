@@ -197,5 +197,26 @@ public class StatisticsService {
         });
     }
 
+    // Thêm phương thức để lấy tổng doanh thu toàn khóa
+    public static double getTotalRevenue() {
+        double totalRevenue = 0.0;
+
+        String query = "SELECT SUM(p.amount) AS revenue FROM Payments p WHERE p.status = 'Success'";
+
+        try (Connection conn = DatabaseConfig.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query);
+             ResultSet rs = stmt.executeQuery()) {
+
+            if (rs.next()) {
+                totalRevenue = rs.getDouble("revenue");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return totalRevenue;
+    }
+
+
 
 }

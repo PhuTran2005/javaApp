@@ -7,7 +7,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane prefHeight="750.0" prefWidth="850.0" styleClass="profile-container" stylesheets="@../../Styles/Profile.css"
+<AnchorPane prefHeight="750.0" prefWidth="900.0" styleClass="profile-container" stylesheets="@../../Styles/Profile.css"
             xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="com.example.coursemanagement.Controllers.Client.ProfileController">
 

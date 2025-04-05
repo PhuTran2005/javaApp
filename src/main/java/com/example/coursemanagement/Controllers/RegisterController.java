@@ -50,7 +50,7 @@ public class RegisterController {
             return;
         }
 
-        if (ValidatorUtil.isValidPassword(password,MIN_PASSWORD_LENGTH)) {
+        if (!ValidatorUtil.isValidPassword(password,MIN_PASSWORD_LENGTH)) {
             showMessage("Mật khẩu phải có ít nhất " + MIN_PASSWORD_LENGTH + " ký tự!", "RED", 400);
             return;
         }

@@ -1,0 +1,64 @@
+/* Styling for the course box */
+.course-box {
+    -fx-background-color: #ffffff; /* White background */
+    -fx-background-radius: 15px; /* Rounded corners */
+    -fx-border-color: #e0e0e0; /* Soft border color */
+    -fx-border-width: 1px; /* Thin border */
+    -fx-border-radius: 15px; /* Rounded border corners */
+    -fx-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+
+    -fx-spacing: 15px; /* Adequate spacing between elements */
+    -fx-min-width: 280px; /* Minimum width */
+    -fx-max-width: 320px; /* Maximum width */
+    -fx-pref-height: 300px; /* Preferred height */
+    -fx-transition: all 0.3s ease-in-out; /* Smooth transition for hover effects */
+}
+
+/* Hover effect for the course box */
+.course-box:hover {
+    -fx-background-color: #f9f9f9; /* Slightly darker background on hover */
+    -fx-shadow: 0px 8px 24px rgba(0, 0, 0, 0.2); /* Enhanced shadow on hover */
+    -fx-cursor: hand; /* Change cursor to indicate it's clickable */
+}
+
+/* Styling for course name label */
+.course-name {
+    -fx-font-size: 18px; /* Larger font size */
+    -fx-font-weight: bold;
+    -fx-text-fill: #333333; /* Darker text for emphasis */
+    -fx-font-family: "Arial", sans-serif;
+    -fx-text-alignment: center; /* Center the text */
+    -fx-padding: 10px; /* Padding around the text */
+    -fx-letter-spacing: 1px; /* Slight letter spacing for a clean look */
+}
+
+/* Styling for course instructor name label */
+.course-instructor-name {
+    -fx-font-size: 14px;
+    -fx-text-fill: #777777; /* Lighter gray text */
+    -fx-font-family: "Arial", sans-serif;
+    -fx-text-alignment: center;
+    -fx-padding: 10px;
+}
+
+/* Styling for course price label */
+.course-price {
+    -fx-padding: 10px;
+
+    -fx-font-size: 16px;
+    -fx-text-fill: #28a745; /* Green color for price */
+    -fx-font-weight: bold;
+    -fx-font-family: "Arial", sans-serif;
+    -fx-text-alignment: center;
+}
+
+/* Styling for course thumbnail (image) */
+.course-thumbnail {
+    -fx-fit-width: 120px; /* Make the image width 120px */
+    -fx-fit-height: 120px; /* Make the image height 120px */
+    -fx-preserve-ratio: true; /* Maintain aspect ratio */
+    -fx-background-radius: 60px; /* Circular image */
+    -fx-border-color: #e0e0e0; /* Light gray border around the image */
+    -fx-border-width: 2px; /* Border width */
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 8, 0, 2, 2); /* Soft shadow on the image */
+}

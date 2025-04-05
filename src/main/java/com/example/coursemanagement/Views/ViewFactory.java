@@ -148,6 +148,7 @@ public class ViewFactory {
         Stage stage = new Stage();
         stage.setScene(scene);
         stage.setTitle(wdName);
+        stage.setResizable(false);
         stage.show();
     }
 

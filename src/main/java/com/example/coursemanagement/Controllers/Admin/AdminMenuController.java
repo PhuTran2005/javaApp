@@ -37,10 +37,10 @@ public class AdminMenuController implements Initializable {
 
     @FXML
     private void addListeners() {
-        dashboard_btn.setOnAction(event -> onSelectedMenu("Dashboard"));
-        transaction_btn.setOnAction(event -> onSelectedMenu("Transaction"));
-        accounts_btn.setOnAction(event -> onSelectedMenu("Accounts"));
-        courseManagement_btn.setOnAction(event -> onSelectedMenu("CourseManagement"));
+        dashboard_btn.setOnAction(event -> onDashboardMenu("Dashboard"));
+        transaction_btn.setOnAction(event -> onTransactionMenu("Transaction"));
+        accounts_btn.setOnAction(event -> onAccountsMenu("Accounts"));
+        courseManagement_btn.setOnAction(event -> onCourseManagementMenu("CourseManagement"));
         report_btn.setOnAction(event -> onSelectedMenu("Report"));
         logout_btn.setOnAction(event -> onLogout());
     }
@@ -51,7 +51,26 @@ public class AdminMenuController implements Initializable {
         System.out.println(path);
         Model.getInstance().getViewFactory().getAdminSelectedMenuItemProperty().set(path);
     }
-
+    @FXML
+    private void onDashboardMenu(String path) {
+        System.out.println(path);
+        Model.getInstance().getViewFactory().getAdminSelectedMenuItemProperty().set(path);
+    }
+    @FXML
+    private void onTransactionMenu(String path) {
+        System.out.println(path);
+        Model.getInstance().getViewFactory().getAdminSelectedMenuItemProperty().set(path);
+    }
+    @FXML
+    private void onAccountsMenu(String path) {
+        System.out.println(path);
+        Model.getInstance().getViewFactory().getAdminSelectedMenuItemProperty().set(path);
+    }
+    @FXML
+    private void onCourseManagementMenu(String path) {
+        System.out.println(path);
+        Model.getInstance().getViewFactory().getAdminSelectedMenuItemProperty().set(path);
+    }
     @FXML
     private void onLogout() {
         if (alerts.showConfirmationWarmingAlert("Bạn có chắc chắn muốn đăng xuất không?")) {

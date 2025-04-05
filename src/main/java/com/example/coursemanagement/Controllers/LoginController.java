@@ -33,6 +33,7 @@ public class LoginController {
     private Button btnLogin;
     @FXML
     private Label messageLabel;
+    private final UserRespository userRepository = new UserRespository(); // Tạo repository
 
     private void showMessage(String message, String color, double width) {
         messageLabel.setText(message);
@@ -51,7 +52,7 @@ public class LoginController {
             showMessage("Vui lòng nhập đầy đủ thông tin!", "RED", 400);
             return;
         }
-        User response = UserRespository.loginUser(username, password);
+        User response = userRepository.loginUser(username, password);
         loginProcess(response);
     }
 

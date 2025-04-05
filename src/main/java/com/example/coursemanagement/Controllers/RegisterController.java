@@ -51,10 +51,11 @@ public class RegisterController {
             return;
         }
 
+
         if (!ValidatorUtil.isValidPassword(password, GlobalVariable.MIN_PASSWORD_LENGTH)) {
-            showMessage("Mật khẩu phải có ít nhất " +  GlobalVariable.MIN_PASSWORD_LENGTH + " ký tự!", "RED", 400);
-            return;
+            showMessage("Mật khẩu phải có ít nhất " + GlobalVariable.MIN_PASSWORD_LENGTH + " ký tự!", "RED", 400);
         }
+
 
         if (!password.equals(confirmPassword)) {
             showMessage("Mật khẩu xác nhận không khớp!", "RED", 400);

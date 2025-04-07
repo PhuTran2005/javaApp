@@ -105,6 +105,7 @@ public class EditStudentController {
     }
 
     private void closePopup() {
-        // Đóng cửa sổ popup
+        javafx.stage.Stage stage = (javafx.stage.Stage) idField.getScene().getWindow();
+        stage.close();
     }
 }

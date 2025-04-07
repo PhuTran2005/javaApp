@@ -201,7 +201,7 @@ public class AccountsController {
             filterController.setAvailableCourses(studentService.getAllCourses());
 
             Stage stage = new Stage();
-            stage.setTitle("Chọn khóa học để lọc");
+            stage.setTitle("Filter list by course");
             stage.setScene(new Scene(root));
             stage.initModality(Modality.APPLICATION_MODAL);
             stage.showAndWait();
@@ -233,7 +233,7 @@ public class AccountsController {
                 editController.setStudent(selectedStudent);
 
                 Stage stage = new Stage();
-                stage.setTitle("Chỉnh sửa thông tin sinh viên");
+                stage.setTitle("Course Updates");
                 stage.setScene(new Scene(root));
                 stage.initModality(Modality.APPLICATION_MODAL);
                 stage.showAndWait();

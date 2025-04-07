@@ -1,38 +1,89 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import java.lang.String?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
 
-<AnchorPane xmlns:fx="http://javafx.com/fxml" fx:controller="com.example.coursemanagement.Controllers.Admin.EditStudentController" prefWidth="500" prefHeight="450">
-    <VBox spacing="10" style="-fx-padding: 15;">
+<AnchorPane prefHeight="491.0" prefWidth="466.0" style="-fx-background-color: #18CEC3;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.coursemanagement.Controllers.Admin.EditStudentController">
+    <VBox layoutX="40.0" layoutY="10.0" prefHeight="471.0" prefWidth="386.0" spacing="10" style="-fx-padding: 15;" stylesheets="@../../Styles/Accounts.css">
         <!-- Tiêu đề -->
-        <Label text="Chỉnh sửa khóa học của sinh viên" style="-fx-font-size: 16px; -fx-font-weight: bold;" />
-
+        <Label style="-fx-font-size: 16px; -fx-font-weight: bold;" styleClass="shadow" text="Cập nhật khóa học của học viên" textFill="#de0b0b">
+         <opaqueInsets>
+            <Insets />
+         </opaqueInsets>
+         <VBox.margin>
+            <Insets left="45.0" />
+         </VBox.margin>
+         <font>
+            <Font name="System Bold" size="12.0" />
+         </font></Label>
+   
         <!-- Thông tin sinh viên (readonly) -->
-        <GridPane hgap="10" vgap="10">
-            <Label text="Mã sinh viên:" />
-            <TextField fx:id="idField" editable="false" />
-
-            <Label text="Tên:" GridPane.rowIndex="1" />
-            <TextField fx:id="nameField" editable="false" GridPane.rowIndex="1" />
-
-            <Label text="Email:" GridPane.rowIndex="2" />
-            <TextField fx:id="emailField" editable="false" GridPane.rowIndex="2" />
-
-            <Label text="SĐT:" GridPane.rowIndex="3" />
-            <TextField fx:id="phoneField" editable="false" GridPane.rowIndex="3" />
+        <GridPane hgap="10" prefHeight="119.0" prefWidth="122.0" vgap="10">
+            <Label prefHeight="32.0" prefWidth="83.0" style="-fx-border-color: #0598ff; -fx-border-width: 0.5px;" text="  Mã học viên:" />
+            <TextField fx:id="idField" editable="false" prefHeight="18.0" prefWidth="242.0" styleClass="gridPane-white">
+            <GridPane.margin>
+               <Insets left="77.0" />
+            </GridPane.margin></TextField>
+   
+            <Label prefHeight="33.0" prefWidth="37.0" style="-fx-border-color: #0598ff; -fx-border-width: 0.5px;" text="  Tên:" GridPane.rowIndex="1" />
+            <TextField fx:id="nameField" editable="false" prefHeight="37.0" prefWidth="286.0" styleClass="gridPane-white" GridPane.rowIndex="1">
+            <GridPane.margin>
+               <Insets left="30.0" />
+            </GridPane.margin></TextField>
+   
+            <Label prefHeight="40.0" prefWidth="45.0" style="-fx-border-color: #0598ff; -fx-border-width: 0.5px;" text="  Email:" GridPane.rowIndex="2" />
+            <TextField fx:id="emailField" editable="false" prefHeight="42.0" prefWidth="277.0" styleClass="gridPane-white" GridPane.rowIndex="2">
+            <GridPane.margin>
+               <Insets left="40.0" />
+            </GridPane.margin></TextField>
+   
+            <Label prefHeight="48.0" prefWidth="44.0" style="-fx-border-color: #0598ff; -fx-border-width: 0.5px;" text="  SĐT:" GridPane.rowIndex="3" />
+            <TextField fx:id="phoneField" editable="false" prefHeight="28.0" prefWidth="326.0" styleClass="gridPane-white" GridPane.rowIndex="3">
+            <GridPane.margin>
+               <Insets left="33.0" />
+            </GridPane.margin></TextField>
+         <columnConstraints>
+            <ColumnConstraints />
+         </columnConstraints>
+         <rowConstraints>
+            <RowConstraints />
+            <RowConstraints />
+            <RowConstraints />
+            <RowConstraints />
+         </rowConstraints>
         </GridPane>
 
         <!-- Danh sách khóa học -->
-        <Label text="Chọn khóa học:" style="-fx-font-weight: bold;" />
-        <ScrollPane fitToWidth="true" prefHeight="200">
+        <Label style="-fx-font-weight: bold;" styleClass="shadow" text="Chỉnh sửa khóa học:" />
+        <ScrollPane fitToWidth="true" prefHeight="202.0" prefWidth="316.0">
             <VBox fx:id="coursesContainer" spacing="5" style="-fx-padding: 5;" />
         </ScrollPane>
 
         <!-- Nút thao tác -->
-        <HBox spacing="10" alignment="CENTER_RIGHT">
-            <Button text="Hủy" onAction="#onCancelClicked" />
-            <Button text="Cập nhật" onAction="#onUpdateClicked" style="-fx-background-color: #007bff; -fx-text-fill: white;" />
+        <HBox alignment="CENTER_RIGHT" prefHeight="40.0" prefWidth="316.0" spacing="10">
+            <Button onAction="#onCancelClicked" prefHeight="26.0" prefWidth="54.0" style="-fx-background-color: #D73034;" styleClass="shadow" text="Cancel" textFill="WHITE">
+            <font>
+               <Font name="System Bold" size="12.0" />
+            </font></Button>
+            <Button onAction="#onUpdateClicked" style="-fx-background-color: #007bff; -fx-text-fill: white;" styleClass="shadow" text="Update">
+            <font>
+               <Font name="System Bold" size="12.0" />
+            </font></Button>
         </HBox>
+      <styleClass>
+         <String fx:value="white-bg" />
+         <String fx:value="shadow" />
+      </styleClass>
     </VBox>
 </AnchorPane>

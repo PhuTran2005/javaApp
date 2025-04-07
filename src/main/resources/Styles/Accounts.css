@@ -48,3 +48,8 @@
     -fx-text-fill: #fff;
     -fx-font-family: "Arial";
 }
+.gridPane-white {
+    -fx-background-color: white;
+    -fx-border-color: #0598ff #0598ff #0598ff transparent;
+    -fx-border-width: 0.5px 0.5px 0.5px 0.5px;
+}

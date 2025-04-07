@@ -1,6 +1,8 @@
 package com.example.coursemanagement.Models;
 
-import java.util.Collections;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Student {
@@ -8,11 +10,14 @@ public class Student {
     private String studentName;
     private String studentEmail;
     private String studentPhone;
-    private String enrolledCourses;
+    private List<String> enrolledCourses; // Thay đổi từ String thành List<String>
+    private BooleanProperty selected;
 
     // Constructor, getters, setters
 
     public Student() {
+        this.enrolledCourses = new ArrayList<>();  // Khởi tạo danh sách khóa học
+        this.selected = new SimpleBooleanProperty(false);  // Mặc định checkbox chưa được chọn
     }
 
     public Student(int studentId, String studentName, String studentEmail, String studentPhone, List<String> enrolledCourses) {
@@ -20,7 +25,8 @@ public class Student {
         this.studentName = studentName;
         this.studentEmail = studentEmail;
         this.studentPhone = studentPhone;
-        this.enrolledCourses = String.valueOf(enrolledCourses);
+        this.enrolledCourses = enrolledCourses; // Khởi tạo danh sách khóa học
+        this.selected = new SimpleBooleanProperty(false);  // Mặc định checkbox chưa được chọn
     }
 
     public int getStudentId() {
@@ -56,10 +62,27 @@ public class Student {
     }
 
     public List<String> getEnrolledCourses() {
-        return Collections.singletonList(enrolledCourses);
+        return enrolledCourses;
     }
 
-    public void setEnrolledCourses(String enrolledCourses) {
+    public void setEnrolledCourses(List<String> enrolledCourses) {
         this.enrolledCourses = enrolledCourses;
+    }
+
+    // Thêm một khóa học vào danh sách
+    public void addCourse(String course) {
+        this.enrolledCourses.add(course); // Thêm vào danh sách khóa học
+    }
+
+    public BooleanProperty selectedProperty() {
+        return selected;
+    }
+
+    public boolean isSelected() {
+        return selected.get();
+    }
+
+    public void setSelected(boolean selected) {
+        this.selected.set(selected);
     }
 }

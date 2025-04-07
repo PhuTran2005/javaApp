@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.coursemanagement.Controllers.Admin.FilterCoursesController">
+
+    <!-- Tiêu đề cửa sổ -->
+    <Label layoutX="20" layoutY="20" style="-fx-font-size: 16; -fx-font-weight: bold;" styleClass="shadow" stylesheets="@../../Styles/Accounts.css" text="Chọn khóa học để lọc" />
+
+    <!-- Danh sách khóa học -->
+    <ListView fx:id="courseListView" layoutX="20" layoutY="60" prefHeight="260.0" prefWidth="560.0" styleClass="shadow" stylesheets="@../../Styles/Accounts.css" />
+
+    <!-- Nút Update -->
+    <Button fx:id="updateButton" layoutX="502.0" layoutY="333.0" onAction="#onUpdateClicked" text="Cập nhật" />
+    <Button layoutX="421.0" layoutY="333.0" onAction="#onCancelClicked" prefHeight="26.0" prefWidth="48.0" text="Hủy" />
+
+</AnchorPane>

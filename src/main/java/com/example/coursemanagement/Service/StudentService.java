@@ -11,4 +11,7 @@ public class StudentService {
     public List<Student> getAllStudents() {
         return studentRepo.getAllStudentsWithCourses();
     }
+    public List<String> getAllCourses() {
+        return studentRepo.getAllCourses(); // Sử dụng phương thức từ StudentRepository
+    }
 }

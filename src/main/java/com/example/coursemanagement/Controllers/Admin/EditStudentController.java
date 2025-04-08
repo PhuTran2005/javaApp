@@ -91,8 +91,8 @@ public class EditStudentController {
             totalFee += fee;
         }
 
-        // Cập nhật học phí vào database nếu cần
-        studentRepository.updateStudentFee(selectedStudent.getStudentId(), totalFee);
+//        // Cập nhật học phí vào database nếu cần
+//        studentRepository.updateStudentFee(selectedStudent.getStudentId(), totalFee);
 
         // Đóng popup sau khi cập nhật
         closePopup();

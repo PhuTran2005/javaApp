@@ -1,4 +1,4 @@
-package com.example.coursemanagement.Respository;
+package com.example.coursemanagement.Repository;
 
 import com.example.coursemanagement.Models.User;
 import com.example.coursemanagement.Utils.DatabaseConfig;
@@ -9,7 +9,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class UserRespository {
+public class UserRepository {
 
     // Đăng ký tài khoản
     public  boolean registerUser(String email, String password) {

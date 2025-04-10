@@ -23,8 +23,8 @@
                         <Image url="@../Images/penExt.png" />
                     </image>
                 </ImageView>
-                <ImageView fitHeight="200.0" fitWidth="250.0">
-                    <Image url="@../Images/logo.png" />
+                <ImageView fitHeight="250.0" fitWidth="250.0">
+                    <Image url="@../Images/logoNhom.png" />
                 </ImageView>
             </children>
         </VBox>
@@ -54,7 +54,7 @@
                                         <Image url="@../Images/user.png" />
                                     </image>
                                 </ImageView>
-                                <TextField fx:id="LGUsername" onKeyPressed="#handleKeyPress" promptText="Email" style="-fx-background-color: transparent; -fx-border-color: #18CFC4; -fx-border-width: 0px 0px 2px 0px;" />
+                                <TextField fx:id="LGEmailname" onKeyPressed="#handleKeyPress" promptText="Email" style="-fx-background-color: transparent; -fx-border-color: #18CFC4; -fx-border-width: 0px 0px 2px 0px;" />
                             </children>
                         </HBox>
 
@@ -71,7 +71,7 @@
                         </HBox>
 
                         <!-- Nút Login -->
-                        <Button fx:id="btnLogin" onAction="#handleLogin" onKeyPressed="#handleKeyPress" styleClass="button-style" text="Đăng nhập" textFill="WHITE">
+                        <Button fx:id="btnLogin" onAction="#handleLogin" onKeyPressed="#handleKeyPress" styleClass="action-button" text="Đăng nhập" textFill="WHITE">
                             <font>
                                 <Font name="Arial" size="14.0" />
                             </font>
@@ -83,7 +83,7 @@
                 </VBox>
 
                 <!-- Label hiển thị lỗi -->
-                <Label fx:id="messageLabel" prefHeight="18.0" prefWidth="0.0" textFill="RED" visible="false" style="-fx-alignment: center"/>
+                <Label fx:id="messageLabel" prefHeight="18.0" prefWidth="0.0" style="-fx-alignment: center" textFill="RED" visible="false" />
             </children>
         </VBox>
     </children>

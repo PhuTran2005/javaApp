@@ -1,15 +1,12 @@
 package com.example.coursemanagement.Controllers.Client;
 
-import com.example.coursemanagement.Controllers.Admin.CourseManagementController;
-import com.example.coursemanagement.Models.Course;
 import com.example.coursemanagement.Models.User;
-import com.example.coursemanagement.Respository.UserRespository;
+import com.example.coursemanagement.Repository.UserRepository;
 import com.example.coursemanagement.Service.UserService;
 import com.example.coursemanagement.Utils.Alerts;
 import com.example.coursemanagement.Utils.GlobalVariable;
 import com.example.coursemanagement.Utils.SessionManager;
 import com.example.coursemanagement.Utils.ValidatorUtil;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -40,7 +37,7 @@ public class ProfileController {
     private final UserService userService = new UserService();
     private User myProfile;
     private Consumer<User> sessionListener; // Biến lưu Listener để có thể xóa
-    private final UserRespository userRepository = new UserRespository(); // Tạo repository
+    private final UserRepository userRepository = new UserRepository(); // Tạo repository
 
     @FXML
     public void initialize() {

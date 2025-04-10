@@ -1,7 +1,6 @@
-package com.example.coursemanagement.Respository;
+package com.example.coursemanagement.Repository;
 
 import com.example.coursemanagement.Models.Category;
-import com.example.coursemanagement.Models.User;
 import com.example.coursemanagement.Utils.DatabaseConfig;
 
 import java.sql.Connection;
@@ -10,7 +9,7 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CategoriesRespository {
+public class CategoriesRepository {
     public List<Category> getAllCategory() {
         List<Category> categories = new ArrayList<>();
         try (Connection conn = DatabaseConfig.getConnection()) {

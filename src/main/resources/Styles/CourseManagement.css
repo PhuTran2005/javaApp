@@ -56,7 +56,6 @@
     -fx-background-radius: 15px; /* Rounded background for a smoother look */
     -fx-border-color: #e0e0e0; /* Light gray border */
     -fx-border-width: 1px; /* Thin border */
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 8, 0, 2, 2); /* Soft shadow around the ScrollPane */
 }
 
 /* Customizing the ScrollBar */
@@ -68,7 +67,7 @@
 
 /* Customizing the scrollbar thumb */
 .scroll-pane .scroll-bar .thumb {
-    -fx-background-color: #28a745; /* Green color for the thumb */
+    -fx-background-color: #18CFC4; /* Green color for the thumb */
     -fx-background-radius: 10px; /* Rounded thumb */
     -fx-opacity: 0.8; /* Slight opacity for a subtle effect */
 }

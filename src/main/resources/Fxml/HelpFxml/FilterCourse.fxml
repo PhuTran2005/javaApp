@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<AnchorPane prefHeight="400.0" prefWidth="500.0" styleClass="add_course-container" stylesheets="@../../Styles/Profile.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.coursemanagement.Controllers.Client.CourseClientController.FilterCourseController">
+
+    <!-- Bố cục tổng thể -->
+    <VBox layoutX="60.0" layoutY="60.0" prefHeight="400.0" prefWidth="500.0" spacing="15" styleClass="profile-container" stylesheets="@../../Styles/Profile.css" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="30.0" AnchorPane.rightAnchor="30.0" AnchorPane.topAnchor="0.0">
+
+        <Label style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-alignment: center;" styleClass="title-label" text="Lọc khóa học" />
+        <HBox prefHeight="9.0" prefWidth="499.0" spacing="10" styleClass="input-group">
+            <Label styleClass="input-label" text="Chủ đề:" />
+            <ChoiceBox fx:id="categoryField" prefHeight="0.0" prefWidth="200.0" styleClass="selected-field" />
+            <VBox.margin>
+                <Insets bottom="10.0" />
+            </VBox.margin>
+        </HBox>
+        <HBox spacing="10" styleClass="input-group">
+            <Label styleClass="input-label" text="Giá tiền min:" />
+            <TextField fx:id="minPriceField" prefWidth="250.0" promptText="Nhập giá min của khóa học" styleClass="input-field" />
+            <VBox.margin>
+                <Insets bottom="10.0" />
+            </VBox.margin>
+        </HBox>
+
+        <HBox spacing="10" styleClass="input-group">
+            <Label styleClass="input-label" text="Giá tiền max:" />
+            <TextField fx:id="maxPriceField" prefWidth="250.0" promptText="Nhập giá max của khóa học" styleClass="input-field" />
+            <VBox.margin>
+                <Insets bottom="10.0" />
+            </VBox.margin>
+        </HBox>
+        <HBox prefHeight="80.0" prefWidth="460.0" styleClass="btn-box">
+            <children>
+                <Button fx:id="cancelButton" mnemonicParsing="false" onAction="#handleCancel" prefHeight="16.0" prefWidth="76.0" styleClass="action-button" text="Hủy" />
+
+                <!-- Nút Lưu -->
+                <Button  onAction="#handleFilter" prefHeight="27.0" prefWidth="72.0" styleClass="action-button" text="Lọc" />
+            </children>
+        </HBox>
+
+    </VBox>
+
+</AnchorPane>

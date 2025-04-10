@@ -1,0 +1,63 @@
+/* Style cho TextField tìm kiếm */
+.text-field {
+    -fx-background-radius: 10;
+    -fx-border-radius: 10;
+    -fx-border-color: #ccc;
+    -fx-padding: 5 10;
+    -fx-font-size: 14px;
+}
+
+/* Tiêu đề danh sách */
+.text {
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-fill: #333;
+    -fx-text-alignment: center;
+}
+
+/* ScrollPane */
+.scroll-pane {
+    -fx-background-color: transparent;
+    -fx-padding: 10;
+}
+
+/* FlowPane chứa các course box */
+#courseContainer {
+    -fx-padding: 20;
+}
+
+/* Box hiển thị mỗi khóa học – bạn sẽ gán class cho các box này từ controller Java */
+.course-box {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 15;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 4);
+    -fx-padding: 15;
+    -fx-pref-width: 220;
+    -fx-pref-height: 150;
+    -fx-cursor: hand;
+    -fx-border-color: #ddd;
+    -fx-border-radius: 15;
+}
+
+.course-box:hover {
+    -fx-scale-x: 1.02;
+    -fx-scale-y: 1.02;
+    -fx-background-color: #f8f9fa;
+}
+
+/* Text trong course-box */
+.course-box .text {
+    -fx-font-size: 16px;
+    -fx-fill: #000;
+    -fx-text-alignment: center;
+}
+
+.save-button {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+    -fx-background-color: #18CFC4;
+    -fx-padding: 10px 15px;
+    -fx-border-radius: 5px;
+    -fx-background-radius: 5px;
+}

@@ -16,7 +16,6 @@ public class ViewFactory {
     private AnchorPane courseManagementView;
     private AnchorPane coursesView;
     private AnchorPane myCourseView;
-    private AnchorPane assignmentView;
     private AnchorPane transactionView;
     private AnchorPane accountView;
     private AnchorPane profileView;
@@ -35,7 +34,6 @@ public class ViewFactory {
         this.adminSelectedMenuItem = new SimpleStringProperty("");
     }
 
-    ;
 
     public AnchorPane getDashboardView() {
         if (dashboardView == null) {
@@ -85,17 +83,13 @@ public class ViewFactory {
         return myCourseView;
 
     }
-    public AnchorPane getAssignmentView() {
-        if (assignmentView == null) {
-            try {
-                assignmentView = new FXMLLoader(getClass().getResource("/Fxml/Client/Assignment.fxml")).load();
-            } catch (Exception e) {
-
-                e.printStackTrace();
-            }
+    public AnchorPane getCartView() {
+        try {
+            return new FXMLLoader(getClass().getResource("/Fxml/Client/Cart.fxml")).load();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
         }
-        return assignmentView;
-
     }
 
     public AnchorPane getTransactionView() {

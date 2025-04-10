@@ -1,6 +1,7 @@
 package com.example.coursemanagement.Utils;
 
 import com.example.coursemanagement.Models.User;
+import com.example.coursemanagement.Service.CartService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,9 +10,25 @@ import java.util.function.Consumer;
 public class SessionManager {
     private static SessionManager instance;
     private User currentUser; // Lưu thông tin người dùng hiện tại
+    private final CartService cartService = new CartService();
+    private int cartSize = 0;
+
+    public int getCartSize() {
+        return cartSize;
+    }
+
+    public void setCartSize() {
+        if (currentUser != null) {
+            this.cartSize = cartService.getCartSize(currentUser.getUserId());
+
+
+        }
+    }
+
     private final List<Consumer<User>> listeners = new ArrayList<>(); // Danh sách listener
 
-    private SessionManager() {} // 🔥 Đảm bảo Singleton bằng cách để constructor private
+    private SessionManager() {
+    } // 🔥 Đảm bảo Singleton bằng cách để constructor private
 
     // Thêm phương thức để đăng ký listener
     public void addListener(Consumer<User> listener) {

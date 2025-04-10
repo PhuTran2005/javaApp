@@ -1,14 +1,16 @@
 package com.example.coursemanagement.Utils;
 
 
-import com.example.coursemanagement.Models.Category;
+import com.example.coursemanagement.Models.Course;
+import com.example.coursemanagement.Models.Instructor;
 import com.example.coursemanagement.Models.User;
-import com.example.coursemanagement.Respository.CategoriesRespository;
+import com.example.coursemanagement.Repository.CoursesRepository;
+import com.example.coursemanagement.Service.CourseService;
+import com.example.coursemanagement.Service.InstructorService;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.*;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
@@ -28,11 +30,14 @@ public class DatabaseConfig {
 
 
     private static final String URL = prop.getProperty("url");
+    private static final String USER = prop.getProperty("username");
+    private static final String PASSWORD = prop.getProperty("password");
+
 
     public static Connection getConnection() {
         Connection conn = null;
         try {
-            conn = DriverManager.getConnection(URL);
+            conn = DriverManager.getConnection(URL, USER, PASSWORD);
             System.out.println("✅ Kết nối SQL Server thành công!");
         } catch (SQLException e) {
             System.out.println("❌ Lỗi kết nối: " + e.getMessage());
@@ -41,13 +46,14 @@ public class DatabaseConfig {
     }
 
     public static void test() {
-//        List<Category> categories = new ArrayList<>();
-//        categories = categories.getAllCategory();
-//        for (Category item : categories
-//        ) {
-//            System.out.println(item);
-//        }
+        InstructorService instructorService = new InstructorService();
+        List<Instructor> instructors = instructorService.getAllInstructor();
+        for (Instructor item : instructors
+        ) {
+            System.out.println(item);
+        }
     }
+
     public static void main(String[] args) {
         test();
     }

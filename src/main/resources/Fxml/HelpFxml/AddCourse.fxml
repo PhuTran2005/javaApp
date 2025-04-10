@@ -10,7 +10,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane prefHeight="500.0" prefWidth="600.0" styleClass="add_course-container" stylesheets="@../../Styles/Profile.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.coursemanagement.Controllers.Admin.CourseManagementController">
+<AnchorPane prefHeight="500.0" prefWidth="600.0" styleClass="add_course-container" stylesheets="@../../Styles/Profile.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.coursemanagement.Controllers.Admin.CourseController.AddCourseController">
 
     <!-- Bố cục tổng thể -->
     <VBox layoutX="60.0" layoutY="60.0" prefHeight="400.0" prefWidth="500.0" spacing="15" styleClass="profile-container" stylesheets="@../../Styles/Profile.css" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="30.0" AnchorPane.rightAnchor="30.0" AnchorPane.topAnchor="0.0">
@@ -26,15 +26,22 @@
         </HBox>
 
 
-        <HBox spacing="10" styleClass="input-group">
-            <Label styleClass="input-label" text="Tên người hướng dẫn:" />
-            <TextField fx:id="instructorField" promptText="Nhập tên của người hướng dẫn" prefWidth="250.0" styleClass="input-field" />
-         <VBox.margin>
-            <Insets bottom="10.0" />
-         </VBox.margin>
+<!--        <HBox spacing="10" styleClass="input-group">-->
+<!--            <Label styleClass="input-label" text="Tên người hướng dẫn:" />-->
+<!--            <TextField fx:id="instructorField" promptText="Nhập tên của người hướng dẫn" prefWidth="250.0" styleClass="input-field" />-->
+<!--         <VBox.margin>-->
+<!--            <Insets bottom="10.0" />-->
+<!--         </VBox.margin>-->
+<!--        </HBox>-->
+        <HBox prefHeight="9.0" prefWidth="499.0" spacing="10" styleClass="input-group">
+            <Label styleClass="input-label" text="Chọn giảng viên:" />
+            <ChoiceBox fx:id="instructorField" prefHeight="0.0" prefWidth="200.0" styleClass="selected-field" />
+            <VBox.margin>
+                <Insets bottom="10.0" />
+            </VBox.margin>
         </HBox>
         <HBox prefHeight="9.0" prefWidth="499.0" spacing="10" styleClass="input-group">
-            <Label styleClass="input-label" text="Chủ đề:" />
+            <Label styleClass="input-label" text="Chọn chủ đề:" />
             <ChoiceBox fx:id="categoryField" prefHeight="0.0" prefWidth="200.0" styleClass="selected-field" />
          <VBox.margin>
             <Insets bottom="10.0" />

@@ -42,8 +42,9 @@
     -fx-padding: 5px;
     -fx-background-radius: 5px;
 }
+
 .textarea-field {
-    -fx-background-color:  transparent;
+    -fx-background-color: transparent;
     -fx-border-width:  1px;
     -fx-border-color:  #18CFC4;
     -fx-pref-width: 400px;
@@ -98,6 +99,20 @@
     -fx-scale-x: 0.95;
     -fx-scale-y: 0.95;
     -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 6, 0.5, 0, 4);
+}
+.textarea-show{
+
+        -fx-border-width:  0px 0px 1px 0px;
+        -fx-border-color:  #18CFC4;
+        -fx-padding: 0 5px 0 0;
+}
+.detail-label {
+    -fx-background-color: #f4f4f4;
+    -fx-padding: 10;
+    -fx-border-color: #ccc;
+    -fx-border-radius: 5;
+    -fx-font-size: 13px;
+    -fx-text-fill: #333;
 }
 
 

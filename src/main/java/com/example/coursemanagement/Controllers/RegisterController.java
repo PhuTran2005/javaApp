@@ -1,9 +1,11 @@
 package com.example.coursemanagement.Controllers;
 
-import com.example.coursemanagement.Respository.UserRespository;
+import com.example.coursemanagement.Models.User;
+import com.example.coursemanagement.Repository.UserRepository;
 import com.example.coursemanagement.Utils.Alerts;
 import com.example.coursemanagement.Models.Model;
 import com.example.coursemanagement.Utils.GlobalVariable;
+import com.example.coursemanagement.Utils.SessionManager;
 import com.example.coursemanagement.Utils.ValidatorUtil;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -33,7 +35,8 @@ public class RegisterController {
     @FXML
     private Label messageLabel;
 
-    private final UserRespository userRepository = new UserRespository(); // Tạo repository
+    private final UserRepository userRepository = new UserRepository(); // Tạo repository
+    private final LoginController loginController = new LoginController(); // Tạo repository
 
     @FXML
     private void handleRegister() {
@@ -69,9 +72,14 @@ public class RegisterController {
             showMessage("Đăng ký thành công!", "GREEN", 400);
             alerts.showSuccessAlert("Đăng ký thành công!");
             if(alerts.showConfirmationSelectedAlert("Bạn có muốn đăng nhập ngay không")){
+                User response = userRepository.loginUser(email, password);
+                SessionManager.getInstance().setUser(response); // Cập nhật user mới
+                SessionManager.getInstance().setCartSize();
                 Stage stage = (Stage) messageLabel.getScene().getWindow();
                 Model.getInstance().getViewFactory().closeStage(stage);
                 Model.getInstance().getViewFactory().showClientWindow();
+                alerts.showSuccessAlert("Đăng nhập thành công!");
+
             }
 
 

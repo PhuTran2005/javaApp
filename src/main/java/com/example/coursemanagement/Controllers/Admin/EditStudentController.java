@@ -1,7 +1,7 @@
 package com.example.coursemanagement.Controllers.Admin;
 
 import com.example.coursemanagement.Models.Student;
-import com.example.coursemanagement.Respository.StudentRepository;
+import com.example.coursemanagement.Repository.StudentRepository;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;

@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<AnchorPane prefHeight="500.0" prefWidth="600.0" styleClass="add_course-container" stylesheets="@../../Styles/Profile.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.coursemanagement.Controllers.Admin.CourseController.AddCourseController">
+
+    <!-- Bố cục tổng thể -->
+    <VBox layoutX="60.0" layoutY="60.0" prefHeight="400.0" prefWidth="500.0" spacing="15" styleClass="profile-container" stylesheets="@../../Styles/Profile.css" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="30.0" AnchorPane.rightAnchor="30.0" AnchorPane.topAnchor="0.0">
+
+        <Label style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-alignment: center;" styleClass="title-label" text="Thêm khóa học " />
+
+        <HBox spacing="10" styleClass="input-group">
+            <Label styleClass="input-label" text="Tên khóa học" />
+            <TextField fx:id="courseNameField" promptText="Nhập tên của khóa học" prefHeight="29.0" prefWidth="280.0" styleClass="input-field" />
+         <VBox.margin>
+            <Insets bottom="10.0" />
+         </VBox.margin>
+        </HBox>
+
+
+<!--        <HBox spacing="10" styleClass="input-group">-->
+<!--            <Label styleClass="input-label" text="Tên người hướng dẫn:" />-->
+<!--            <TextField fx:id="instructorField" promptText="Nhập tên của người hướng dẫn" prefWidth="250.0" styleClass="input-field" />-->
+<!--         <VBox.margin>-->
+<!--            <Insets bottom="10.0" />-->
+<!--         </VBox.margin>-->
+<!--        </HBox>-->
+        <HBox prefHeight="9.0" prefWidth="499.0" spacing="10" styleClass="input-group">
+            <Label styleClass="input-label" text="Chọn giảng viên:" />
+            <ChoiceBox fx:id="instructorField" prefHeight="0.0" prefWidth="200.0" styleClass="selected-field" />
+            <VBox.margin>
+                <Insets bottom="10.0" />
+            </VBox.margin>
+        </HBox>
+        <HBox prefHeight="9.0" prefWidth="499.0" spacing="10" styleClass="input-group">
+            <Label styleClass="input-label" text="Chọn chủ đề:" />
+            <ChoiceBox fx:id="categoryField" prefHeight="0.0" prefWidth="200.0" styleClass="selected-field" />
+         <VBox.margin>
+            <Insets bottom="10.0" />
+         </VBox.margin>
+        </HBox>
+        <HBox spacing="10" styleClass="input-group">
+            <Label styleClass="input-label" text="Giá:" />
+            <TextField fx:id="priceField" promptText="Nhập giá của khóa học" prefWidth="250.0" styleClass="input-field" />
+         <VBox.margin>
+            <Insets bottom="10.0" />
+         </VBox.margin>
+        </HBox>
+
+        <HBox spacing="10" styleClass="input-group">
+            <Label styleClass="input-label" text="Link ảnh mô tả:" />
+            <TextField fx:id="thumbnailField" promptText="Nhập đường dẫn cho ảnh mô tả" prefWidth="250.0" styleClass="input-field" />
+            <VBox.margin>
+                <Insets bottom="10.0" />
+            </VBox.margin>
+        </HBox>
+        <HBox prefHeight="102.0" prefWidth="499.0" spacing="10" styleClass="input-group">
+            <Label styleClass="input-label" text="Mô tả:" />
+            <TextArea fx:id="descriptionField" prefHeight="38.0" promptText="Nhập mô tả" prefWidth="339.0" style="-fx-background-color: white;" styleClass="textarea-field" wrapText="true" />
+        </HBox>
+        <HBox prefHeight="80.0" prefWidth="460.0" styleClass="btn-box">
+            <children>
+                <Button fx:id="cancelButton"  mnemonicParsing="false" prefHeight="16.0" onAction="#handleCancel" prefWidth="76.0" styleClass="action-button" text="Hủy" />
+
+                <!-- Nút Lưu -->
+                <Button fx:id="saveButton" onAction="#handleSave" prefHeight="27.0" prefWidth="72.0" styleClass="action-button" text="Thêm" />
+            </children>
+        </HBox>
+
+    </VBox>
+
+</AnchorPane>

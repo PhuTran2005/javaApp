@@ -64,11 +64,11 @@
                   <Insets bottom="10.0" />
                </VBox.margin>
             </Button>
-            <Button fx:id="assignment_btn" mnemonicParsing="false" prefHeight="50.0" prefWidth="150.0" text="Assigment">
+            <Button fx:id="cart_btn" mnemonicParsing="false" prefHeight="50.0" prefWidth="150.0" text="Cart">
                <graphic>
                   <ImageView fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
                      <image>
-                        <Image url="@../../Images/assignment.png" />
+                        <Image url="@../../Images/shopping-cart.png" />
                      </image>
                   </ImageView>
                </graphic>

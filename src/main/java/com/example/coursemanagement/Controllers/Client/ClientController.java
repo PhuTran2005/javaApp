@@ -16,7 +16,7 @@ public class ClientController implements Initializable {
             switch (newVal){
                 case "Profile" -> client_parent.setCenter(Model.getInstance().getViewFactory().getProfileView());
                 case "MyCourse" -> client_parent.setCenter(Model.getInstance().getViewFactory().getMyCoursesView());
-                case "Assignment" -> client_parent.setCenter(Model.getInstance().getViewFactory().getAssignmentView());
+                case "Cart" -> client_parent.setCenter(Model.getInstance().getViewFactory().getCartView());
                 default -> client_parent.setCenter(Model.getInstance().getViewFactory().getCoursesView());
             }
 

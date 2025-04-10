@@ -1,4 +1,4 @@
-package com.example.coursemanagement.Respository;
+package com.example.coursemanagement.Repository;
 
 import com.example.coursemanagement.Models.User;
 import com.example.coursemanagement.Utils.DatabaseConfig;
@@ -9,10 +9,10 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class UserRespository {
+public class UserRepository {
 
     // Đăng ký tài khoản
-    public static boolean registerUser(String email, String password) {
+    public  boolean registerUser(String email, String password) {
         String query = "INSERT INTO Users (userEmail, userPassword, role) VALUES (?, ?, ?)";
 
         try (Connection conn = DatabaseConfig.getConnection();
@@ -30,8 +30,9 @@ public class UserRespository {
         }
     }
 
+
     // Kiểm tra đăng nhập
-    public static User loginUser(String email, String password) {
+    public  User loginUser(String email, String password) {
         String query = "SELECT * FROM Users WHERE userEmail = ? ";
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
         try (Connection conn = DatabaseConfig.getConnection();
@@ -50,7 +51,7 @@ public class UserRespository {
         return null;
     }
 
-    public static boolean isExistEmail(String email) {
+    public  boolean isExistEmail(String email) {
         String query = "SELECT * FROM Users WHERE userEmail = ? ";
         try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -65,7 +66,7 @@ public class UserRespository {
         return false;
     }
 
-    public static User getUserByEmail(String email) {
+    public  User getUserByEmail(String email) {
         try (Connection conn = DatabaseConfig.getConnection()) {
             String sql = "SELECT * FROM users WHERE userEmail = ?";
             PreparedStatement stmt = conn.prepareStatement(sql);
@@ -80,7 +81,7 @@ public class UserRespository {
         }
         return null;
     }
-    public static List<User> getAllUserByRole(String role){
+    public  List<User> getAllUserByRole(String role){
         List<User> users = new ArrayList<>();
         try (Connection conn = DatabaseConfig.getConnection()) {
             String sql = "SELECT * FROM users WHERE role = ?";
@@ -90,6 +91,7 @@ public class UserRespository {
             while (rs.next()){
                 users.add(new User(rs.getInt("userId"), rs.getString("username"), rs.getString("userEmail"), rs.getString("role"), rs.getString("userPhoneNumber"), rs.getString("createDate")));
             }
+            return users;
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -97,13 +99,28 @@ public class UserRespository {
         return null;
 
     }
-    public static boolean updateUser(User user) {
+    public  boolean updateInforUser(User user) {
         try (Connection conn = DatabaseConfig.getConnection()) {
             String sql = "UPDATE Users SET username = ?, userPhoneNumber = ? WHERE userEmail = ?";
             PreparedStatement stmt = conn.prepareStatement(sql);
             stmt.setString(1, user.getUsername());
             stmt.setString(2, user.getUserPhoneNumber());
             stmt.setString(3, user.getUserEmail());
+            return stmt.executeUpdate() > 0; // Nếu có ít nhất 1 dòng được cập nhật
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+    public  boolean updatePasswordUser(String email,String newPassword) {
+        try (Connection conn = DatabaseConfig.getConnection()) {
+            String sql = "UPDATE Users SET userPassword = ? WHERE userEmail = ?";
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
+
+            stmt.setString(1, passwordEncoder.encode((newPassword)));
+            stmt.setString(2, email);
+
             return stmt.executeUpdate() > 0; // Nếu có ít nhất 1 dòng được cập nhật
         } catch (SQLException e) {
             e.printStackTrace();

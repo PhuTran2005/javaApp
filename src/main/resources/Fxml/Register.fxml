@@ -85,7 +85,7 @@
                         </HBox>
 
                         <!-- Nút Login -->
-                        <Button fx:id="btnRegister" onAction="#handleRegister" onKeyPressed="#handleKeyPress" styleClass="button-style" text="Đăng ký" textFill="WHITE">
+                        <Button fx:id="btnRegister" onAction="#handleRegister" onKeyPressed="#handleKeyPress" styleClass="action-button" text="Đăng ký" textFill="WHITE">
                             <font>
                                 <Font name="Arial" size="14.0" />
                             </font>

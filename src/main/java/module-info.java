@@ -18,7 +18,9 @@ module com.example.coursemanagement {
     opens com.example.coursemanagement to javafx.fxml;
     opens com.example.coursemanagement.Controllers to javafx.fxml;  // 👈
     opens com.example.coursemanagement.Controllers.Client to javafx.fxml;  // 👈
-    opens com.example.coursemanagement.Controllers.Admin to javafx.fxml;//mở package cho FXML
+
+    opens com.example.coursemanagement.Controllers.Admin to javafx.fxml;  // 👈
+
 
     exports com.example.coursemanagement;
     exports com.example.coursemanagement.Controllers;
@@ -28,7 +30,13 @@ module com.example.coursemanagement {
     exports com.example.coursemanagement.Views;
     exports com.example.coursemanagement.Utils;
     exports com.example.coursemanagement.Service;
-    exports com.example.coursemanagement.Respository;
+    exports com.example.coursemanagement.Repository;
     opens com.example.coursemanagement.Utils to javafx.fxml;
+    exports com.example.coursemanagement.Controllers.Admin.CourseController;
+    opens com.example.coursemanagement.Controllers.Admin.CourseController to javafx.fxml;
+    exports com.example.coursemanagement.Controllers.Client.CourseClientController;
+    opens com.example.coursemanagement.Controllers.Client.CourseClientController to javafx.fxml;
+    exports com.example.coursemanagement.Controllers.Client.CartController;
+    opens com.example.coursemanagement.Controllers.Client.CartController to javafx.fxml;
 
 }

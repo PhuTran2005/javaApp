@@ -1,4 +1,4 @@
-package com.example.coursemanagement.Respository;
+package com.example.coursemanagement.Repository;
 
 import com.example.coursemanagement.Models.Student;
 import com.example.coursemanagement.Utils.DatabaseConfig;
@@ -16,10 +16,10 @@ public class StudentRepository {
             u.username AS student_name,
             u.userEmail AS student_email,
             u.userPhoneNumber AS student_phone,
-            c.name AS course_name
+            c.courseName AS course_name
         FROM Users u
-        LEFT JOIN Enrollments e ON u.userId = e.user_id
-        LEFT JOIN Courses c ON e.course_id = c.id
+        LEFT JOIN Enrollments e ON u.userId = e.userId
+        LEFT JOIN Courses c ON e.courseId = c.courseId
         WHERE u.role = 'USER'
     """;
 
@@ -65,14 +65,14 @@ public class StudentRepository {
     // Thêm phương thức để lấy danh sách khóa học từ bảng Courses
     public List<String> getAllCourses() {
         List<String> courses = new ArrayList<>();
-        String query = "SELECT name FROM Courses"; // Query lấy tất cả các khóa học
+        String query = "SELECT courseName FROM Courses"; // Query lấy tất cả các khóa học
 
         try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query);
              ResultSet rs = stmt.executeQuery()) {
 
             while (rs.next()) {
-                courses.add(rs.getString("name"));
+                courses.add(rs.getString("courseName"));
             }
 
         } catch (SQLException e) {
@@ -84,9 +84,9 @@ public class StudentRepository {
 
     // Cập nhật các khóa học đã chọn cho sinh viên
     public void updateStudentCourses(Student student) {
-        String selectQuery = "SELECT course_id, payment_status FROM Enrollments WHERE user_id = ?";
-        String deleteQuery = "DELETE FROM Enrollments WHERE user_id = ? AND course_id = ?";
-        String insertQuery = "INSERT INTO Enrollments (user_id, course_id, payment_status) VALUES (?, ?, ?)";
+        String selectQuery = "SELECT courseId, payment_status FROM Enrollments WHERE userId = ?";
+        String deleteQuery = "DELETE FROM Enrollments WHERE userId = ? AND courseId = ?";
+        String insertQuery = "INSERT INTO Enrollments (userId, courseId, payment_status) VALUES (?, ?, ?)";
 
         try (Connection conn = DatabaseConfig.getConnection()) {
             // 1. Lấy danh sách enrollments hiện tại từ DB
@@ -95,7 +95,7 @@ public class StudentRepository {
                 selectStmt.setInt(1, student.getStudentId());
                 ResultSet rs = selectStmt.executeQuery();
                 while (rs.next()) {
-                    int courseId = rs.getInt("course_id");
+                    int courseId = rs.getInt("courseId");
                     String status = rs.getString("payment_status");
                     currentEnrollments.put(courseId, status);
                 }
@@ -168,13 +168,13 @@ public class StudentRepository {
 
     // Lấy học phí của khóa học
     public double getCourseFee(String courseName) {
-        String query = "SELECT fee FROM Courses WHERE name = ?";
+        String query = "SELECT coursePrice FROM Courses WHERE courseName = ?";
         try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setString(1, courseName);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
-                return rs.getDouble("fee");
+                return rs.getDouble("coursePrice");
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -183,13 +183,13 @@ public class StudentRepository {
     }
 
     private double getCourseFeeById(int courseId) {
-        String query = "SELECT fee FROM Courses WHERE id = ?";
+        String query = "SELECT coursePrice FROM Courses WHERE courseId = ?";
         try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setInt(1, courseId);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
-                return rs.getDouble("fee");
+                return rs.getDouble("coursePrice");
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -213,13 +213,13 @@ public class StudentRepository {
 
     // Lấy ID của khóa học từ tên khóa học
     public int getCourseIdByName(String courseName) {
-        String query = "SELECT id FROM Courses WHERE name = ?";
+        String query = "SELECT courseId FROM Courses WHERE courseName = ?";
         try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setString(1, courseName);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
-                return rs.getInt("id");
+                return rs.getInt("courseId");
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -230,10 +230,10 @@ public class StudentRepository {
     //hiển thị học phí sinh viên trên UI:
     public double calculateTotalFee(int userId) {
         String query = """
-        SELECT SUM(c.fee)
+        SELECT SUM(c.coursePrice)
         FROM Enrollments e
-        JOIN Courses c ON e.course_id = c.id
-        WHERE e.user_id = ? AND e.payment_status = 'PAID'
+        JOIN Courses c ON e.courseId = c.courseId
+        WHERE e.userId = ? AND e.payment_status = 'PAID'
     """;
         try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {

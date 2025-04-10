@@ -1,7 +1,7 @@
 package com.example.coursemanagement.Service;
 
 import com.example.coursemanagement.Models.Student;
-import com.example.coursemanagement.Respository.StudentRepository;
+import com.example.coursemanagement.Repository.StudentRepository;
 
 import java.util.List;
 

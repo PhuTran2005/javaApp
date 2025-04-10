@@ -1,7 +1,7 @@
 package com.example.coursemanagement.Controllers;
 
-import com.example.coursemanagement.Controllers.Client.ProfileController;
-import com.example.coursemanagement.Respository.UserRespository;
+import com.example.coursemanagement.Repository.UserRepository;
+import com.example.coursemanagement.Service.CartService;
 import com.example.coursemanagement.Utils.Alerts;
 import com.example.coursemanagement.Models.Model;
 import com.example.coursemanagement.Models.User;
@@ -21,10 +21,10 @@ import java.io.IOException;
 
 
 public class LoginController {
-    private Alerts alerts = new Alerts();
     @FXML
+    public TextField LGEmailname;
+    private Alerts alerts = new Alerts();
 
-    public TextField LGUsername;
     @FXML
 
     public PasswordField LGPassword;
@@ -33,6 +33,8 @@ public class LoginController {
     private Button btnLogin;
     @FXML
     private Label messageLabel;
+    private final UserRepository userRepository = new UserRepository(); // Tạo repository
+    private final CartService cartService = new CartService(); // Tạo repository
 
     private void showMessage(String message, String color, double width) {
         messageLabel.setText(message);
@@ -44,14 +46,14 @@ public class LoginController {
 
     @FXML
     private void handleLogin() {
-        String username = LGUsername.getText().trim();
+        String email = LGEmailname.getText().trim();
         String password = LGPassword.getText().trim();
 
-        if (username.isEmpty() || password.isEmpty()) {
+        if (email.isEmpty() || password.isEmpty()) {
             showMessage("Vui lòng nhập đầy đủ thông tin!", "RED", 400);
             return;
         }
-        User response = UserRespository.loginUser(username, password);
+        User response = userRepository.loginUser(email, password);
         loginProcess(response);
     }
 
@@ -59,6 +61,7 @@ public class LoginController {
         if (response != null) {
             showMessage("Đăng nhập thành công!", "GREEN", 400);
             SessionManager.getInstance().setUser(response); // Cập nhật user mới
+            SessionManager.getInstance().setCartSize();
             alerts.showSuccessAlert("Đăng nhập thành công!");
             Stage stage = (Stage) messageLabel.getScene().getWindow();
             Model.getInstance().getViewFactory().closeStage(stage);
@@ -75,14 +78,14 @@ public class LoginController {
         if (event.getCode() == KeyCode.ENTER) {
             handleLogin();
         } else if (event.getCode() == KeyCode.DOWN) {
-            if (LGUsername.isFocused()) {
+            if (LGEmailname.isFocused()) {
                 LGPassword.requestFocus();
             } else if (LGPassword.isFocused()) {
                 btnLogin.requestFocus();
             }
         } else if (event.getCode() == KeyCode.UP) {
             if (LGPassword.isFocused()) {
-                LGUsername.requestFocus();
+                LGEmailname.requestFocus();
             } else if (btnLogin.isFocused()) {
                 LGPassword.requestFocus();
             }

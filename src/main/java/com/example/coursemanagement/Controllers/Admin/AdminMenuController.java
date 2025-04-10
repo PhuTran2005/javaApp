@@ -40,31 +40,22 @@ public class AdminMenuController implements Initializable {
 
     @FXML
     private void addListeners() {
-        dashboard_btn.setOnAction(event -> onDashboardButtonClicked());
-        transaction_btn.setOnAction(event -> onSelectedMenu("Transaction"));
-        accounts_btn.setOnAction(event -> onAccountsButtonClicked());
-        courseManagement_btn.setOnAction(event -> onSelectedMenu("CourseManagement"));
+//<<<<<<< HEAD
+        dashboard_btn.setOnAction(event -> onDashboardMenu("Dashboard"));
+        transaction_btn.setOnAction(event -> onTransactionMenu("Transaction"));
+        accounts_btn.setOnAction(event -> onAccountsMenu("Accounts"));
+        courseManagement_btn.setOnAction(event -> onCourseManagementMenu("CourseManagement"));
+//=======
+//        dashboard_btn.setOnAction(event -> onDashboardButtonClicked());
+//        transaction_btn.setOnAction(event -> onSelectedMenu("Transaction"));
+//        accounts_btn.setOnAction(event -> onAccountsButtonClicked());
+//        courseManagement_btn.setOnAction(event -> onSelectedMenu("CourseManagement"));
+//>>>>>>> b5cc3d00a08209e1f5655296b14a2de710cb1b40
         report_btn.setOnAction(event -> onSelectedMenu("Report"));
         logout_btn.setOnAction(event -> onLogout());
     }
 
-    @FXML
-    private void onDashboardButtonClicked() {
-        System.out.println("Dashboard button clicked");  // Debug để kiểm tra
 
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/Fxml/Admin/Dashboard.fxml"));
-            BorderPane borderPane = (BorderPane) dashboard_btn.getScene().getRoot();  // Lấy BorderPane chứa cả menu và nội dung
-
-            borderPane.setCenter(loader.load());
-
-            DashboardController dashboardController = loader.getController();
-            dashboardController.loadDashboardData();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 
     @FXML
     private void onAccountsButtonClicked() {
@@ -88,7 +79,26 @@ public class AdminMenuController implements Initializable {
         System.out.println(path);
         Model.getInstance().getViewFactory().getAdminSelectedMenuItemProperty().set(path);
     }
-
+    @FXML
+    private void onDashboardMenu(String path) {
+        System.out.println(path);
+        Model.getInstance().getViewFactory().getAdminSelectedMenuItemProperty().set(path);
+    }
+    @FXML
+    private void onTransactionMenu(String path) {
+        System.out.println(path);
+        Model.getInstance().getViewFactory().getAdminSelectedMenuItemProperty().set(path);
+    }
+    @FXML
+    private void onAccountsMenu(String path) {
+        System.out.println(path);
+        Model.getInstance().getViewFactory().getAdminSelectedMenuItemProperty().set(path);
+    }
+    @FXML
+    private void onCourseManagementMenu(String path) {
+        System.out.println(path);
+        Model.getInstance().getViewFactory().getAdminSelectedMenuItemProperty().set(path);
+    }
     @FXML
     private void onLogout() {
         if (alerts.showConfirmationWarmingAlert("Bạn có chắc chắn muốn đăng xuất không?")) {

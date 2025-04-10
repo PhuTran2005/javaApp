@@ -63,4 +63,16 @@ public class DashboardController {
         // Cập nhật tổng doanh thu khi màn hình được khởi tạo
         updateTotalRevenue();
     }
+
+    // Phương thức được gọi khi chuyển đến màn hình Dashboard
+    public void loadDashboardData() {
+        // Gọi lại updateTotalRevenue để tải lại tổng doanh thu
+        updateTotalRevenue();
+
+        // Lấy lại dữ liệu mới nhất từ cơ sở dữ liệu cho các biểu đồ
+        pieChart.setData(StatisticsService.getStudentsPerCourse());
+        barChart.getData().setAll(StatisticsService.getRevenuePerCourse());
+        lineChart.getData().setAll(StatisticsService.getTotalRevenueOverTime());
+    }
+
 }

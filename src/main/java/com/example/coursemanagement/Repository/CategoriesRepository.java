@@ -17,7 +17,7 @@ public class CategoriesRepository {
             PreparedStatement stmt = conn.prepareStatement(sql);
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
-                categories.add(new Category(rs.getInt("categoryId"), rs.getString("categoryName"), rs.getString("categoryDescription")));
+                categories.add(new Category(rs.getInt("category_id"), rs.getString("category_name"), rs.getString("description")));
             }
             return categories;
         } catch (Exception e) {
@@ -29,12 +29,12 @@ public class CategoriesRepository {
 
     public Category getCategoryById(int id) {
         try (Connection conn = DatabaseConfig.getConnection()) {
-            String sql = "SELECT * FROM Categories where categoryId = ?";
+            String sql = "SELECT * FROM Categories where category_id = ?";
             PreparedStatement stmt = conn.prepareStatement(sql);
             stmt.setInt(1, id);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
-                return new Category(rs.getInt("categoryId"), rs.getString("categoryName"), rs.getString("categoryDescription"));
+                return new Category(rs.getInt("category_id"), rs.getString("category_name"), rs.getString("description"));
             }
 
         } catch (Exception e) {

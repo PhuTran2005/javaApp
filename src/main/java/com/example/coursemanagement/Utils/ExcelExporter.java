@@ -29,10 +29,10 @@ public class ExcelExporter {
             int rowIndex = 1;
             for (Student student : students) {
                 Row row = sheet.createRow(rowIndex++);
-                row.createCell(0).setCellValue(student.getStudentId());
-                row.createCell(1).setCellValue(student.getStudentName());
-                row.createCell(2).setCellValue(student.getStudentEmail());
-                row.createCell(3).setCellValue(student.getStudentPhone());
+                row.createCell(0).setCellValue(student.getUserId());
+                row.createCell(1).setCellValue(student.getFullname());
+                row.createCell(2).setCellValue(student.getUserEmail());
+                row.createCell(3).setCellValue(student.getUserPhoneNumber());
 
                 // Tạo ô và gán giá trị danh sách khóa học, sau đó áp dụng cellStyle cho ô đó
                 Cell coursesCell = row.createCell(4);

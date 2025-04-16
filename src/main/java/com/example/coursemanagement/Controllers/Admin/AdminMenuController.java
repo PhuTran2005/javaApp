@@ -34,77 +34,72 @@ public class AdminMenuController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        System.out.println(dashboard_btn);
         addListeners();
     }
 
     @FXML
     private void addListeners() {
-//<<<<<<< HEAD
         dashboard_btn.setOnAction(event -> onDashboardMenu("Dashboard"));
         transaction_btn.setOnAction(event -> onTransactionMenu("Transaction"));
         accounts_btn.setOnAction(event -> onAccountsMenu("Accounts"));
         courseManagement_btn.setOnAction(event -> onCourseManagementMenu("CourseManagement"));
-//=======
-//        dashboard_btn.setOnAction(event -> onDashboardButtonClicked());
-//        transaction_btn.setOnAction(event -> onSelectedMenu("Transaction"));
-//        accounts_btn.setOnAction(event -> onAccountsButtonClicked());
-//        courseManagement_btn.setOnAction(event -> onSelectedMenu("CourseManagement"));
-//>>>>>>> b5cc3d00a08209e1f5655296b14a2de710cb1b40
         report_btn.setOnAction(event -> onSelectedMenu("Report"));
         logout_btn.setOnAction(event -> onLogout());
-    }
-
-
-
-    @FXML
-    private void onAccountsButtonClicked() {
-        System.out.println("Accounts button clicked");  // Debug để kiểm tra
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/Fxml/Admin/Accounts.fxml"));
-            BorderPane borderPane = (BorderPane) accounts_btn.getScene().getRoot();  // Lấy BorderPane chứa cả menu và nội dung
-
-            borderPane.setCenter(loader.load());
-
-            AccountsController accountsController = loader.getController();
-            accountsController.loadStudentData();
-
-        } catch (IOException e) {
-            e.printStackTrace();
+        if (dashboard_btn != null) {
+            if (!dashboard_btn.getStyleClass().contains("active")) {
+                dashboard_btn.getStyleClass().add("active");
+            }
         }
     }
 
     @FXML
     private void onSelectedMenu(String path) {
-        System.out.println(path);
         Model.getInstance().getViewFactory().getAdminSelectedMenuItemProperty().set(path);
     }
+
     @FXML
     private void onDashboardMenu(String path) {
-        System.out.println(path);
+        setActiveButton(dashboard_btn);
+
         Model.getInstance().getViewFactory().getAdminSelectedMenuItemProperty().set(path);
     }
+
     @FXML
     private void onTransactionMenu(String path) {
-        System.out.println(path);
+        setActiveButton(transaction_btn);
+
         Model.getInstance().getViewFactory().getAdminSelectedMenuItemProperty().set(path);
     }
+
     @FXML
     private void onAccountsMenu(String path) {
-        System.out.println(path);
+        setActiveButton(accounts_btn);
+
         Model.getInstance().getViewFactory().getAdminSelectedMenuItemProperty().set(path);
     }
+
     @FXML
     private void onCourseManagementMenu(String path) {
-        System.out.println(path);
         Model.getInstance().getViewFactory().getAdminSelectedMenuItemProperty().set(path);
+        setActiveButton(courseManagement_btn);
     }
+
     @FXML
     private void onLogout() {
         if (alerts.showConfirmationWarmingAlert("Bạn có chắc chắn muốn đăng xuất không?")) {
             Stage stage = (Stage) logout_btn.getScene().getWindow();
             Model.getInstance().getViewFactory().closeStage(stage);
             Model.getInstance().getViewFactory().showLoginWindow();
+        }
+    }
+
+    private void setActiveButton(Button activeButton) {
+        Button[] buttons = {dashboard_btn, courseManagement_btn, transaction_btn, accounts_btn, report_btn};
+        for (Button btn : buttons) {
+            btn.getStyleClass().remove("active");
+        }
+        if (!activeButton.getStyleClass().contains("active")) {
+            activeButton.getStyleClass().add("active");
         }
     }
 }

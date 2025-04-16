@@ -53,10 +53,22 @@
                 <Insets bottom="10.0" />
             </VBox.margin>
         </HBox>
-        <HBox layoutX="1.6" layoutY="1.6" maxHeight="280.0" prefHeight="83.0" prefWidth="499.0" styleClass="input-group" AnchorPane.bottomAnchor="125.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="101.0" AnchorPane.topAnchor="5.0">
+      <HBox spacing="10" styleClass="input-group">
+         <children>
+            <Label styleClass="input-label" text="Ngày bắt đầu" />
+            <TextField fx:id="startDate" editable="false" prefWidth="250.0" promptText="Nhập giá của khóa học" styleClass="input-field" />
+         </children>
+      </HBox>
+      <HBox spacing="10" styleClass="input-group">
+         <children>
+            <Label styleClass="input-label" text="Ngày kết thúc" />
+            <TextField fx:id="endDate" editable="false" prefWidth="250.0" promptText="Nhập giá của khóa học" styleClass="input-field" />
+         </children>
+      </HBox>
+        <HBox layoutX="1.6" layoutY="1.6" maxHeight="280.0" prefHeight="106.0" prefWidth="499.0" styleClass="input-group" AnchorPane.bottomAnchor="125.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="101.0" AnchorPane.topAnchor="5.0">
 
             <Label prefHeight="20.0" prefWidth="161.0" styleClass="input-label" text="Ảnh mô tả:" />
-            <ImageView fx:id="courseThumbnail" fitHeight="158.0" fitWidth="291.0" preserveRatio="true" smooth="true" styleClass="course-thumbnail-img">
+            <ImageView fx:id="courseThumbnail" fitHeight="127.0" fitWidth="197.0" preserveRatio="true" smooth="true" styleClass="course-thumbnail-img">
 
             </ImageView>
         </HBox>

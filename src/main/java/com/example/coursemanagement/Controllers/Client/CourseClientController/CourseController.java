@@ -2,6 +2,7 @@ package com.example.coursemanagement.Controllers.Client.CourseClientController;
 
 import com.example.coursemanagement.Controllers.Admin.CourseController.AddCourseController;
 import com.example.coursemanagement.Controllers.Admin.CourseController.CourseBoxController;
+import com.example.coursemanagement.Dto.CourseDetailDTO;
 import com.example.coursemanagement.Models.Course;
 import com.example.coursemanagement.Service.CourseService;
 import com.example.coursemanagement.Utils.Alerts;
@@ -44,9 +45,9 @@ public class CourseController {
 
     public void loadCoursesList() {
         if (courseContainer != null) {
-            List<Course> courses = courseService.getCourseList();
+            List<CourseDetailDTO> courses = courseService.getCourseList(0);
             Collections.reverse(courses);
-            for (Course course : courses) {
+            for (CourseDetailDTO course : courses) {
                 try {
                     FXMLLoader loader = new FXMLLoader(getClass().getResource("/Fxml/HelpFxml/CourseBoxExtra.fxml"));
                     AnchorPane courseBox = loader.load();
@@ -63,9 +64,9 @@ public class CourseController {
 
     public void loadCoursesListBySearch(String query) {
         if (courseContainer != null) {
-            List<Course> courses = courseService.getCourseListByName(query);
+            List<CourseDetailDTO> courses = courseService.getCourseListByName(query);
             Collections.reverse(courses);
-            for (Course course : courses) {
+            for (CourseDetailDTO course : courses) {
                 try {
                     FXMLLoader loader = new FXMLLoader(getClass().getResource("/Fxml/HelpFxml/CourseBoxExtra.fxml"));
                     AnchorPane courseBox = loader.load();
@@ -79,10 +80,10 @@ public class CourseController {
             }
         }
     }
-    public void loadCoursesListByFilter(List<Course> courses) {
+    public void loadCoursesListByFilter(List<CourseDetailDTO> courses) {
         if (courseContainer != null) {
             Collections.reverse(courses);
-            for (Course course : courses) {
+            for (CourseDetailDTO course : courses) {
                 try {
                     FXMLLoader loader = new FXMLLoader(getClass().getResource("/Fxml/HelpFxml/CourseBoxExtra.fxml"));
                     AnchorPane courseBox = loader.load();
@@ -105,7 +106,6 @@ public class CourseController {
     @FXML
 
     public void handleFillter() {
-
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/Fxml/HelpFxml/FilterCourse.fxml"));
             Parent root = loader.load();

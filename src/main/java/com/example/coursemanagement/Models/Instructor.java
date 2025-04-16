@@ -1,43 +1,21 @@
 package com.example.coursemanagement.Models;
 
-public class Instructor {
-    private int instructorId;
-    private String instructorName,expertise,instructorEmail,instructorPhone;
+public class Instructor extends User {
+    private String expertise, degree;
+    private int years_of_experience;
 
-    public Instructor(int instructorId, String instructorName, String expertise, String instructorEmail, String instructorPhone) {
-        this.instructorId = instructorId;
-        this.instructorName = instructorName;
+    public Instructor(int userId, String fullname) {
+        this.userId = userId;
+        this.fullname = fullname;
+    }
+
+    public Instructor(int userId, String userEmail, String fullname, int roleId, String userPhoneNumber, String createDate, String expertise, String degree, int years_of_experience) {
+        super(userId, userEmail, fullname, roleId, userPhoneNumber, createDate);
+        this.degree = degree;
         this.expertise = expertise;
-        this.instructorEmail = instructorEmail;
-        this.instructorPhone = instructorPhone;
+        this.years_of_experience = years_of_experience;
     }
 
-    @Override
-    public String toString() {
-        return "Instructor{" +
-                "instructorId=" + instructorId +
-                ", instructorName='" + instructorName + '\'' +
-                ", expertise='" + expertise + '\'' +
-                ", instructorEmail='" + instructorEmail + '\'' +
-                ", instructorPhone='" + instructorPhone + '\'' +
-                '}';
-    }
-
-    public int getInstructorId() {
-        return instructorId;
-    }
-
-    public void setInstructorId(int instructorId) {
-        this.instructorId = instructorId;
-    }
-
-    public String getInstructorName() {
-        return instructorName;
-    }
-
-    public void setInstructorName(String instructorName) {
-        this.instructorName = instructorName;
-    }
 
     public String getExpertise() {
         return expertise;
@@ -47,19 +25,19 @@ public class Instructor {
         this.expertise = expertise;
     }
 
-    public String getInstructorEmail() {
-        return instructorEmail;
+    public String getDegree() {
+        return degree;
     }
 
-    public void setInstructorEmail(String instructorEmail) {
-        this.instructorEmail = instructorEmail;
+    public void setDegree(String degree) {
+        this.degree = degree;
     }
 
-    public String getInstructorPhone() {
-        return instructorPhone;
+    public int getYears_of_experience() {
+        return years_of_experience;
     }
 
-    public void setInstructorPhone(String instructorPhone) {
-        this.instructorPhone = instructorPhone;
+    public void setYears_of_experience(int years_of_experience) {
+        this.years_of_experience = years_of_experience;
     }
 }

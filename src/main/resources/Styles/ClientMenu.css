@@ -42,12 +42,20 @@
 .menu_container Button:pressed {
     -fx-background-color: #52527A;
 }
-
+.menu_container Button.active {
+    -fx-background-color: linear-gradient(to right, #6A82FB, #FC5C7D);
+    -fx-text-fill: white;
+    -fx-border-width: 0 0 0 4px;
+    -fx-border-color: white;
+}
 /* Đường kẻ phân tách */
 .menu_container .line {
     -fx-stroke: #505068;
 }
-
+.menu_button {
+   -fx-background-color: transparent;
+   -fx-font-size: 14px;
+}
 /* Các Button thay thế */
 .alt_menu_btn {
     -fx-background-color: transparent;
@@ -59,7 +67,12 @@
     -fx-background-color: #C6E7FF;
     -fx-text-fill: #7A73D1;
 }
-
+.alt_menu_btn.active {
+    -fx-background-color: linear-gradient(to right, #6A82FB, #FC5C7D);
+    -fx-text-fill: white;
+    -fx-border-width: 0 0 0 4px;
+    -fx-border-color: white;
+}
 /* Container của phần Report */
 .report_container {
     -fx-background-color: #252545;

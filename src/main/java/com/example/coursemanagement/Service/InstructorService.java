@@ -18,7 +18,6 @@ public class InstructorService {
 
     public boolean updateRelCourseAndInstructor(int courseId, int instructorId) {
         return instructorRepository.updateCourseInstructor(courseId, instructorId);
-
     }
 
 

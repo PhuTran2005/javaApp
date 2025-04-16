@@ -15,7 +15,9 @@ public class UserService {
         return  userRepository.getUserByEmail(email);
     }
     public boolean modifierUser(User user){
-       return userRepository.updateInforUser(user);
+//       return userRepository.updateInforUser(user);
+       return false;
+
     }
 
 }

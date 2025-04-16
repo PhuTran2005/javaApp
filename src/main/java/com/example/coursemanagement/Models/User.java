@@ -2,44 +2,41 @@ package com.example.coursemanagement.Models;
 
 public class User {
 
-    public User(String userEmail, String role) {
-        this.role = role;
-        this.userEmail = userEmail;
-    }
-
     @Override
     public String toString() {
         return "User{" +
                 "userId=" + userId +
-                ", username='" + username + '\'' +
+                ", fullname='" + fullname + '\'' +
                 ", userPassword='" + userPassword + '\'' +
-                ", role='" + role + '\'' +
+                ", roleName='" + roleName + '\'' +
+                ", roleId=" + roleId +
                 ", userEmail='" + userEmail + '\'' +
                 ", userPhoneNumber='" + userPhoneNumber + '\'' +
                 ", createDate='" + createDate + '\'' +
                 '}';
     }
 
-    public User(int userId, String userPassword, String userEmail) {
+    public User(int userId, String userEmail, String fullname, int roleId, String userPhoneNumber) {
         this.userId = userId;
-        this.userPassword = userPassword;
-        this.userEmail = userEmail;
-    }
-
-    public User(String userPassword, String userEmail,String role) {
-        this.userPassword = userPassword;
-        this.userEmail = userEmail;
-        this.role = role;
-    }
-
-    public User(int userId, String username,  String userEmail,String role, String userPhoneNumber, String createDate) {
-        this.userId = userId;
-        this.username = username;
-        this.role = role;
-        this.userEmail = userEmail;
+        this.fullname = fullname;
+        this.roleId = roleId;
         this.userPhoneNumber = userPhoneNumber;
+        this.userEmail = userEmail;
+    }
+
+    public User(int userId, String userEmail, String fullname, int roleId, String userPhoneNumber, String createDate) {
+        this.userId = userId;
+        this.fullname = fullname;
+        this.roleId = roleId;
+        this.userPhoneNumber = userPhoneNumber;
+        this.userEmail = userEmail;
         this.createDate = createDate;
     }
+
+    public User() {
+    }
+
+    ;
 
     public int getUserId() {
         return userId;
@@ -49,13 +46,6 @@ public class User {
         this.userId = userId;
     }
 
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
 
     public String getUserPassword() {
         return userPassword;
@@ -65,13 +55,6 @@ public class User {
         this.userPassword = userPassword;
     }
 
-    public String getRole() {
-        return role;
-    }
-
-    public void setRole(String role) {
-        this.role = role;
-    }
 
     public String getUserEmail() {
         return userEmail;
@@ -93,16 +76,41 @@ public class User {
         return createDate;
     }
 
+    public String getFullname() {
+        return fullname;
+    }
+
+    public void setFullname(String fullname) {
+        this.fullname = fullname;
+    }
+
+    public String getRoleName() {
+        return roleName;
+    }
+
+    public void setRoleName(String roleName) {
+        this.roleName = roleName;
+    }
+
+    public int getRoleId() {
+        return roleId;
+    }
+
+    public void setRoleId(int roleId) {
+        this.roleId = roleId;
+    }
+
     public void setCreateDate(String createDate) {
         this.createDate = createDate;
     }
 
-    private int userId;
-    private String username;
-    private String userPassword;
-    private String role;
-    private String userEmail;
-    private String userPhoneNumber;
-    private String createDate;
+    protected int userId;
+    protected String fullname;
+    protected String userPassword;
+    protected String roleName;
+    protected int roleId;
+    protected String userEmail;
+    protected String userPhoneNumber;
+    protected String createDate;
 
 }

@@ -12,18 +12,11 @@
             stylesheets="@../../Styles/CourseBox.css" xmlns="http://javafx.com/javafx/23.0.1"
             xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="com.example.coursemanagement.Controllers.Admin.CourseController.CourseBoxController">
-    <VBox layoutX="1.6" layoutY="1.6"
-          maxHeight="280.0" prefHeight="273.0" prefWidth="278.0"
-          styleClass="course-thumbnail"
-          AnchorPane.bottomAnchor="125.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="101.0"
-          AnchorPane.topAnchor="5.0"
-          alignment="CENTER">
+    <VBox alignment="CENTER" layoutX="1.6" layoutY="1.6" maxHeight="280.0" prefHeight="273.0" prefWidth="278.0"
+          styleClass="course-thumbnail" AnchorPane.bottomAnchor="125.0" AnchorPane.leftAnchor="5.0"
+          AnchorPane.rightAnchor="101.0" AnchorPane.topAnchor="5.0">
 
-        <ImageView fx:id="courseThumbnail"
-                   fitWidth="260.0"
-                   fitHeight="200.0"
-                   preserveRatio="true"
-                   smooth="true"
+        <ImageView fx:id="courseThumbnail" fitHeight="200.0" fitWidth="260.0" preserveRatio="true" smooth="true"
                    styleClass="course-thumbnail-img">
             <image>
                 <Image url="@../../Images/book.png"/>
@@ -42,17 +35,20 @@
     <VBox layoutX="292.0" layoutY="3.2" maxHeight="398.0" prefHeight="271.0" prefWidth="88.0"
           style="-fx-alignment: center;" styleClass="course-thumbnail-exp" AnchorPane.bottomAnchor="125.0"
           AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0">
-        <Button mnemonicParsing="false" onAction="#handleView" prefHeight="40.0" prefWidth="60.0" styleClass="action-button" text="View">
+        <Button mnemonicParsing="false" onAction="#handleView" prefHeight="40.0" prefWidth="60.0"
+                styleClass="action-button" text="Xem">
             <VBox.margin>
                 <Insets bottom="15.0" top="15.0"/>
             </VBox.margin>
         </Button>
-        <Button mnemonicParsing="false" onAction="#handleEdit" prefHeight="40.0" prefWidth="60.0" styleClass="action-button" text="Edit">
+        <Button mnemonicParsing="false" onAction="#handleEdit" prefHeight="40.0" prefWidth="60.0"
+                styleClass="action-button" text="Sửa">
             <VBox.margin>
                 <Insets bottom="15.0" top="15.0"/>
             </VBox.margin>
         </Button>
-        <Button mnemonicParsing="false" onAction="#handleDelete" prefHeight="40.0" styleClass="action-button" text="Delete">
+        <Button mnemonicParsing="false" onAction="#handleDelete" prefHeight="40.0" prefWidth="60.0"
+                styleClass="action-button" text="Xóa">
             <VBox.margin>
                 <Insets bottom="15.0" top="15.0"/>
             </VBox.margin>

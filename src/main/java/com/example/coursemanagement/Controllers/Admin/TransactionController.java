@@ -1,16 +1,5 @@
 package com.example.coursemanagement.Controllers.Admin;
 
-import javafx.fxml.Initializable;
+public class TransactionController{
 
-import javax.swing.text.html.ListView;
-import java.net.URL;
-import java.util.ResourceBundle;
-
-public class TransactionController implements Initializable {
-    public ListView transactions_listview;
-
-    @Override
-    public void initialize(URL url, ResourceBundle resourceBundle) {
-
-    }
 }

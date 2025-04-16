@@ -1,7 +1,10 @@
 package com.example.coursemanagement.Controllers.Admin.CourseController;
 
+import com.example.coursemanagement.Dto.CourseDetailDTO;
 import com.example.coursemanagement.Models.Course;
+import com.example.coursemanagement.Models.Model;
 import com.example.coursemanagement.Service.CourseService;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -32,16 +35,18 @@ public class CourseManagementController {
         refreshCourseList();
     }
 
+    //Load data
     public void loadCoursesList() {
         if (courseContainer != null) {
-            List<Course> courses = courseService.getCourseList();
+            List<CourseDetailDTO> courses = courseService.getCourseList(0);
             Collections.reverse(courses);
-            for (Course course : courses) {
+            for (CourseDetailDTO course : courses) {
                 try {
                     FXMLLoader loader = new FXMLLoader(getClass().getResource("/Fxml/HelpFxml/CourseBox.fxml"));
                     AnchorPane courseBox = loader.load();
                     CourseBoxController controller = loader.getController();
                     controller.setCourseManagementController(this);
+                    controller.setIsDelete(false);
                     controller.setData(course);
                     courseContainer.getChildren().add(courseBox);
                 } catch (IOException e) {
@@ -82,4 +87,9 @@ public class CourseManagementController {
     }
 
 
+    public void handleRecycleCourse() throws IOException {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/Fxml/HelpFxml/CourseDeletedManagement.fxml"));
+        Parent view = loader.load();
+        Model.getInstance().getViewFactory().setAdminCenterContent(view);
+    }
 }

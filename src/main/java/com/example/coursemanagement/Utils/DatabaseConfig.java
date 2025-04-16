@@ -1,12 +1,19 @@
 package com.example.coursemanagement.Utils;
 
 
+import com.example.coursemanagement.Dto.CourseDetailDTO;
 import com.example.coursemanagement.Models.Course;
 import com.example.coursemanagement.Models.Instructor;
+import com.example.coursemanagement.Models.Student;
 import com.example.coursemanagement.Models.User;
 import com.example.coursemanagement.Repository.CoursesRepository;
+import com.example.coursemanagement.Repository.InstructorRepository;
+import com.example.coursemanagement.Repository.StudentRepository;
+import com.example.coursemanagement.Repository.UserRepository;
 import com.example.coursemanagement.Service.CourseService;
 import com.example.coursemanagement.Service.InstructorService;
+import com.example.coursemanagement.Service.StudentService;
+import org.apache.poi.ss.formula.functions.Index;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -46,12 +53,7 @@ public class DatabaseConfig {
     }
 
     public static void test() {
-        InstructorService instructorService = new InstructorService();
-        List<Instructor> instructors = instructorService.getAllInstructor();
-        for (Instructor item : instructors
-        ) {
-            System.out.println(item);
-        }
+
     }
 
     public static void main(String[] args) {

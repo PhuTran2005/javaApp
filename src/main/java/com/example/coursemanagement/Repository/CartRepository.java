@@ -12,7 +12,7 @@ public class CartRepository {
 
     // ✅ Thêm một mục vào giỏ hàng
     public boolean addToCart(int userId, int courseId) {
-        String sql = "INSERT INTO Cart (userId, courseId, quantity, status) VALUES (?, ?, 1, 'PENDING')";
+        String sql = "INSERT INTO Cart (user_id, course_id, quantity, status) VALUES (?, ?, 1, 'PENDING')";
         try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, userId);
@@ -27,7 +27,7 @@ public class CartRepository {
 
     // ✅ Cập nhật số lượng khóa học trong giỏ
     public void updateQuantity(int cartId, int quantity) {
-        String sql = "UPDATE Cart SET quantity = ? WHERE cartId = ?";
+        String sql = "UPDATE Cart SET quantity = ? WHERE cart_id = ?";
         try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, quantity);
@@ -40,7 +40,7 @@ public class CartRepository {
 
     // ✅ Xóa 1 mục khỏi giỏ hàng
     public boolean removeFromCart(int cartId) {
-        String sql = "DELETE FROM Cart WHERE cartId = ?";
+        String sql = "DELETE FROM Cart WHERE cart_id = ?";
         try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, cartId);
@@ -55,16 +55,16 @@ public class CartRepository {
     // ✅ Lấy tất cả mục giỏ hàng của 1 user (PENDING)
     public List<Cart> getCartByUser(int userId) {
         List<Cart> cartList = new ArrayList<>();
-        String sql = "SELECT * FROM Cart WHERE userId = ? AND status = 'PENDING'";
+        String sql = "SELECT * FROM Cart WHERE user_id = ? AND status = 'PENDING'";
         try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, userId);
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
                 Cart cart = new Cart(
-                        rs.getInt("cartId"),
-                        rs.getInt("userId"),
-                        rs.getInt("courseId"),
+                        rs.getInt("cart_id"),
+                        rs.getInt("user_id"),
+                        rs.getInt("course_id"),
                         rs.getInt("quantity"),
                         rs.getTimestamp("added_at").toLocalDateTime(),
                         rs.getString("status")
@@ -78,7 +78,7 @@ public class CartRepository {
     }
 
     public boolean isExistInCart(int userId, int courseId) {
-        String sql = "SELECT * FROM Cart WHERE userId = ? and courseId = ?";
+        String sql = "SELECT * FROM Cart WHERE user_id = ? and course_id = ?";
         try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, userId);
@@ -96,7 +96,7 @@ public class CartRepository {
 
     // ✅ Đánh dấu toàn bộ giỏ hàng đã thanh toán
     public void checkoutCart(int userId) {
-        String sql = "UPDATE Cart SET status = 'CHECKOUT' WHERE userId = ? AND status = 'PENDING'";
+        String sql = "UPDATE Cart SET status = 'CHECKOUT' WHERE user_id = ? AND status = 'PENDING'";
         try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, userId);
@@ -107,7 +107,7 @@ public class CartRepository {
     }
 
     public int getCartSize(int userId) {
-        String sql = "SELECT * FROM Cart WHERE userId = ? AND status = 'PENDING'";
+        String sql = "SELECT * FROM Cart WHERE user_id = ? AND status = 'PENDING'";
         int count = 0;
 
         try (Connection conn = DatabaseConfig.getConnection();

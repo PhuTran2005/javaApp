@@ -2,31 +2,42 @@ package com.example.coursemanagement.Models;
 
 import javafx.beans.property.*;
 
+import java.time.LocalDate;
+
 public class Course {
     private int courseId, categoryId, instructorId;
     private String courseName, courseDescription, courseThumbnail;
+    private boolean isDelete;
+
+    public boolean isDelete() {
+        return isDelete;
+    }
+
+    public void setDelete(boolean delete) {
+        isDelete = delete;
+    }
+
     private double coursePrice;
     private String created_at;
-    private Instructor instructor;
-    private Category category;
+    private LocalDate startDate, endDate;
 
-    public Instructor getInstructor() {
-        return instructor;
+    public LocalDate getStartDate() {
+        return startDate;
     }
 
-    public void setInstructor(Instructor instructor) {
-        this.instructor = instructor;
+    public void setStartDate(LocalDate startDate) {
+        this.startDate = startDate;
     }
 
-    public Category getCategory() {
-        return category;
+    public LocalDate getEndDate() {
+        return endDate;
     }
 
-    public void setCategory(Category category) {
-        this.category = category;
+    public void setEndDate(LocalDate endDate) {
+        this.endDate = endDate;
     }
 
-    public Course(int courseId, int categoryId, String courseName, String courseDescription, String courseThumbnail, double coursePrice, String created_at) {
+    public Course(int courseId, int categoryId, String courseName, String courseDescription, String courseThumbnail, double coursePrice, String created_at, boolean isDelete) {
         this.courseId = courseId;
         this.categoryId = categoryId;
         this.courseName = courseName;
@@ -34,6 +45,7 @@ public class Course {
         this.courseThumbnail = courseThumbnail;
         this.coursePrice = coursePrice;
         this.created_at = created_at;
+        this.isDelete = isDelete;
 
     }
 
@@ -53,31 +65,36 @@ public class Course {
         this.instructorId = instructorId;
     }
 
-
-
-    public Course(int courseId, int categoryId, int instructorId, String courseName, String courseDescription, String courseThumbnail, double coursePrice,Category category,Instructor instructor) {
+    //detail con
+    public Course(int courseId, int categoryId, int instructorId, String courseName, String courseDescription, String courseThumbnail, double coursePrice, String created_at, LocalDate startDate, LocalDate endDate, boolean isDelete) {
         this.courseId = courseId;
         this.categoryId = categoryId;
         this.instructorId = instructorId;
         this.courseName = courseName;
         this.courseDescription = courseDescription;
         this.courseThumbnail = courseThumbnail;
-        this.instructor = instructor;
-        this.category = category;
+        this.created_at = created_at;
         this.coursePrice = coursePrice;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.isDelete = isDelete;
     }
 
-    public Course(String courseName, int instructorId, int categoryId, double coursePrice, String courseThumbnail, String courseDescription) {
+    //add course
+    public Course(String courseName, int instructorId, int categoryId, double coursePrice, String courseThumbnail, String courseDescription, LocalDate startDate, LocalDate endDate) {
         this.categoryId = categoryId;
         this.courseName = courseName;
         this.courseDescription = courseDescription;
         this.courseThumbnail = courseThumbnail;
         this.instructorId = instructorId;
         this.coursePrice = coursePrice;
+        this.startDate = startDate;
+        this.endDate = endDate;
 
     }
 
-    public Course(int courseId, String courseName, int instructorId, int categoryId, double coursePrice, String courseThumbnail, String courseDescription) {
+    //edit course
+    public Course(int courseId, String courseName, int instructorId, int categoryId, double coursePrice, String courseThumbnail, String courseDescription, LocalDate startDate, LocalDate endDate) {
         this.categoryId = categoryId;
         this.courseId = courseId;
         this.courseName = courseName;
@@ -85,6 +102,8 @@ public class Course {
         this.courseThumbnail = courseThumbnail;
         this.instructorId = instructorId;
         this.coursePrice = coursePrice;
+        this.startDate = startDate;
+        this.endDate = endDate;
 
     }
 

@@ -14,6 +14,11 @@ module com.example.coursemanagement {
     requires spring.security.crypto;
     requires org.apache.poi.poi;
     requires org.apache.poi.ooxml;
+    requires java.net.http;
+    requires org.json;      // Yêu cầu module org.json cho JSONObject, JSONArray
+    requires com.google.zxing; // Thêm để hỗ trợ ZXing core
+    requires com.google.zxing.javase; // Thêm để hỗ trợ ZXing javase
+
 
     opens com.example.coursemanagement to javafx.fxml;
     opens com.example.coursemanagement.Controllers to javafx.fxml;  // 👈

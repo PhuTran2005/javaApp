@@ -26,7 +26,15 @@ public class AdminController implements Initializable {
                     admin_parent.setCenter(Model.getInstance().getViewFactory().getAccountView());
                     break;
                 case "CourseManagement":
-                    admin_parent.setCenter(Model.getInstance().getViewFactory().getCourseManagementView());
+                    FXMLLoader loader1 = new FXMLLoader(getClass().getResource("/Fxml/Admin/CourseManagement.fxml"));
+                    Parent view = null;
+                    try {
+                        view = loader1.load();
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                    Model.getInstance().getViewFactory().setAdminCenterContent(view);
+
                     break;
                 case "Transaction":
                     admin_parent.setCenter(Model.getInstance().getViewFactory().getTransactionView());

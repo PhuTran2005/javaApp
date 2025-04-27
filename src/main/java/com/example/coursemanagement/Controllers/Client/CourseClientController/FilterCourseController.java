@@ -144,7 +144,8 @@ public class FilterCourseController {
                 + "AND fee >= ? "
                 + "AND fee <= ? " +
                 (instructorId != -1 ? "AND i.instructor_id = ? " : "") +
-                "and c.is_deleted = 0";
+                "and c.is_deleted = 0 " +
+                "ORDER BY course_create_date DESC";
         int index = 1;
         try (Connection conn = DatabaseConfig.getConnection()) {
             PreparedStatement stmt = conn.prepareStatement(sql);

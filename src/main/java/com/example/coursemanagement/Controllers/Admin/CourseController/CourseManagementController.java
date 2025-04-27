@@ -1,10 +1,10 @@
 package com.example.coursemanagement.Controllers.Admin.CourseController;
 
 import com.example.coursemanagement.Dto.CourseDetailDTO;
-import com.example.coursemanagement.Models.Course;
+
 import com.example.coursemanagement.Models.Model;
 import com.example.coursemanagement.Service.CourseService;
-import javafx.event.ActionEvent;
+
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -39,7 +39,6 @@ public class CourseManagementController {
     public void loadCoursesList() {
         if (courseContainer != null) {
             List<CourseDetailDTO> courses = courseService.getCourseList(0);
-            Collections.reverse(courses);
             for (CourseDetailDTO course : courses) {
                 try {
                     FXMLLoader loader = new FXMLLoader(getClass().getResource("/Fxml/HelpFxml/CourseBox.fxml"));
@@ -55,14 +54,14 @@ public class CourseManagementController {
             }
         }
     }
-
+//    reset data
     public void refreshCourseList() {
         if (courseContainer != null) {
             courseContainer.getChildren().clear(); // Xóa hết các course đang hiển thị
             loadCoursesList();
         }        // Tải lại từ CSDL
     }
-
+    //Xử lý thêm khóa học
     public void handleAddCourse() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/Fxml/HelpFxml/AddCourse.fxml"));
@@ -86,7 +85,7 @@ public class CourseManagementController {
         }
     }
 
-
+    //Xử lý khôi phục khóa học
     public void handleRecycleCourse() throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/Fxml/HelpFxml/CourseDeletedManagement.fxml"));
         Parent view = loader.load();

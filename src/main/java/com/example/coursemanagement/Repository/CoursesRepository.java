@@ -102,7 +102,8 @@ public class CoursesRepository {
                 "LEFT JOIN Instructors i ON c.instructor_id = i.instructor_id " +
                 "LEFT JOIN Users u ON i.instructor_id = u.user_id " +
                 "LEFT JOIN Categories cat ON c.category_id = cat.category_id " +
-                "where c.is_deleted = ? ";
+                "where c.is_deleted = ? " +
+                "ORDER BY course_create_date DESC";
 
 
         try (Connection conn = DatabaseConfig.getConnection()) {
@@ -162,7 +163,8 @@ public class CoursesRepository {
                 "LEFT JOIN Instructors i ON c.instructor_id = i.instructor_id " +
                 "LEFT JOIN Users u ON i.instructor_id = u.user_id " +
                 "LEFT JOIN Categories cat ON c.category_id = cat.category_id " +
-                "WHERE c.course_name LIKE ? and c.is_deleted = 0;";
+                "WHERE c.course_name LIKE ? and c.is_deleted = 0 " +
+                "ORDER BY course_create_date DESC";
 
 
         try (Connection conn = DatabaseConfig.getConnection()) {
@@ -219,8 +221,8 @@ public class CoursesRepository {
                 "LEFT JOIN Instructors i ON c.instructor_id = i.instructor_id " +
                 "LEFT JOIN Users u ON i.instructor_id = u.user_id " +
                 "LEFT JOIN Categories cat ON c.category_id = cat.category_id "
-
-                + "where c.course_id = ? and c.is_deleted = 0";
+                + "where c.course_id = ? and c.is_deleted = 0 " +
+                "ORDER BY course_create_date DESC";
         try (Connection conn = DatabaseConfig.getConnection()) {
             PreparedStatement stmt = conn.prepareStatement(sql);
             stmt.setInt(1, courseId);

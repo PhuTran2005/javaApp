@@ -1,12 +1,9 @@
 package com.example.coursemanagement.Controllers.Client.CourseClientController;
 
-import com.example.coursemanagement.Controllers.Admin.CourseController.AddCourseController;
-import com.example.coursemanagement.Controllers.Admin.CourseController.CourseBoxController;
+
 import com.example.coursemanagement.Dto.CourseDetailDTO;
-import com.example.coursemanagement.Models.Course;
 import com.example.coursemanagement.Service.CourseService;
 import com.example.coursemanagement.Utils.Alerts;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 
@@ -20,14 +17,18 @@ import javafx.stage.Stage;
 
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.List;
+
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
+import javafx.util.Duration;
 
 public class CourseController {
 
     private final CourseService courseService = new CourseService(); // Tạo repository
     private Alerts alerts = new Alerts();
-
+    // Thêm thuộc tính này trong CourseController:
+    private Timeline searchDelay;
     @FXML
 
     public ScrollPane listCourse;
@@ -35,18 +36,29 @@ public class CourseController {
 
     public FlowPane courseContainer;
     @FXML
-
     public TextField searchField;
 
     // Box Khóa học
     public void initialize() {
         loadCoursesList();
+        setupSearchFieldListener(); // Gọi hàm setup search khi khởi tạo
+    }
+
+    private void setupSearchFieldListener() {
+        searchDelay = new Timeline(new KeyFrame(Duration.millis(300), e -> handleSearch()));
+        searchDelay.setCycleCount(1); // Chạy 1 lần duy nhất mỗi lần gõ
+
+        searchField.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (searchDelay != null) {
+                searchDelay.stop();
+            }
+            searchDelay.playFromStart();
+        });
     }
 
     public void loadCoursesList() {
         if (courseContainer != null) {
             List<CourseDetailDTO> courses = courseService.getCourseList(0);
-            Collections.reverse(courses);
             for (CourseDetailDTO course : courses) {
                 try {
                     FXMLLoader loader = new FXMLLoader(getClass().getResource("/Fxml/HelpFxml/CourseBoxExtra.fxml"));
@@ -65,7 +77,6 @@ public class CourseController {
     public void loadCoursesListBySearch(String query) {
         if (courseContainer != null) {
             List<CourseDetailDTO> courses = courseService.getCourseListByName(query);
-            Collections.reverse(courses);
             for (CourseDetailDTO course : courses) {
                 try {
                     FXMLLoader loader = new FXMLLoader(getClass().getResource("/Fxml/HelpFxml/CourseBoxExtra.fxml"));
@@ -80,9 +91,9 @@ public class CourseController {
             }
         }
     }
+
     public void loadCoursesListByFilter(List<CourseDetailDTO> courses) {
         if (courseContainer != null) {
-            Collections.reverse(courses);
             for (CourseDetailDTO course : courses) {
                 try {
                     FXMLLoader loader = new FXMLLoader(getClass().getResource("/Fxml/HelpFxml/CourseBoxExtra.fxml"));
@@ -97,6 +108,7 @@ public class CourseController {
             }
         }
     }
+
     public void refreshCourseList() {
         if (courseContainer != null) {
             courseContainer.getChildren().clear(); // Xóa hết các course đang hiển thị
@@ -104,7 +116,6 @@ public class CourseController {
     }
 
     @FXML
-
     public void handleFillter() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/Fxml/HelpFxml/FilterCourse.fxml"));
@@ -132,21 +143,18 @@ public class CourseController {
     }
 
     @FXML
-
     public void handleSearch() {
         String query = searchField.getText().trim();
         if (!query.isEmpty()) {
             refreshCourseList();
             loadCoursesListBySearch(query);
-            searchField.setText("");
-            alerts.showSuccessAlert("Kết quả tìm kiếm cho: " + query);
+        } else {
+            refreshCourseList();
+            loadCoursesList();
         }
-
-        System.out.println("find");
     }
 
     @FXML
-
     public void handleClear() {
         refreshCourseList();
         searchField.setText("");

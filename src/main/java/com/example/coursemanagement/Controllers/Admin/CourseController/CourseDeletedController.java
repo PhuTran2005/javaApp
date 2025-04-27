@@ -37,7 +37,6 @@ public class CourseDeletedController {
     public void loadCoursesList() {
         if (courseContainer != null) {
             List<CourseDetailDTO> courses = courseService.getCourseList(1);
-            Collections.reverse(courses);
             for (CourseDetailDTO course : courses) {
                 try {
                     FXMLLoader loader = new FXMLLoader(getClass().getResource("/Fxml/HelpFxml/CourseDeletedBox.fxml"));

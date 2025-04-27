@@ -4,9 +4,14 @@ import com.example.coursemanagement.Service.CartService;
 import com.example.coursemanagement.Utils.Alerts;
 import com.example.coursemanagement.Models.Model;
 import com.example.coursemanagement.Utils.SessionManager;
+import com.example.coursemanagement.Utils.UIHelper;
+import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
@@ -27,6 +32,8 @@ public class ClientMenuController implements Initializable {
     public Text welcomeText;
     @FXML
     public Button assignment_btn;
+    @FXML
+    public ImageView avartarView;
     private Alerts alerts = new Alerts();
     @FXML
     public Button logout_btn;
@@ -48,14 +55,34 @@ public class ClientMenuController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         addListeners();
+
+        Image avatarImage = UIHelper.generateAvatar(UIHelper.getLastWord(SessionManager.getInstance().getUser().getFullname()), 99);
+        if (avartarView != null) {
+            System.out.println("Load anh");
+            avartarView.setImage(avatarImage);
+            avartarView.setFitWidth(100);
+            avartarView.setFitHeight(100);
+            avartarView.setPreserveRatio(false); // giữ đúng tỉ lệ 120x120
+
+            Circle clip = new Circle();
+            clip.centerXProperty().bind(avartarView.fitWidthProperty().divide(2));
+            clip.centerYProperty().bind(avartarView.fitHeightProperty().divide(2));
+            clip.radiusProperty().bind(Bindings.min(
+                    avartarView.fitWidthProperty(),
+                    avartarView.fitHeightProperty()
+            ).divide(2));
+
+            avartarView.setClip(clip);
+
+        }
         if (SessionManager.getInstance().getUser().getRoleId() == 2) {
             if (welcomeText != null) {
-                welcomeText.setText("Giáo viên: " + SessionManager.getInstance().getUser().getFullname());
+                welcomeText.setText("Giáo viên");
             }
             loadInstructorUi();
         } else {
             if (welcomeText != null) {
-                welcomeText.setText("Học viên: " + SessionManager.getInstance().getUser().getFullname());
+                welcomeText.setText("Học viên");
             }
             loadStudentUi();
         }

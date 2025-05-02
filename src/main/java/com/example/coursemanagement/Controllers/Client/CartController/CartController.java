@@ -2,6 +2,7 @@ package com.example.coursemanagement.Controllers.Client.CartController;
 
 import com.example.coursemanagement.Controllers.Admin.CourseController.CourseBoxController;
 import com.example.coursemanagement.Controllers.Client.ClientMenuController;
+import com.example.coursemanagement.Controllers.PaymentDetailController;
 import com.example.coursemanagement.Dto.CourseDetailDTO;
 import com.example.coursemanagement.Models.Cart;
 import com.example.coursemanagement.Service.CartService;
@@ -12,12 +13,17 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.text.Text;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -84,5 +90,33 @@ public class CartController implements Initializable {
 
     public void handlePay() {
         System.out.println("payment");
+        List<Cart> carts = cartService.getAllCartOfUser(SessionManager.getInstance().getUser().getUserId());
+        List<CourseDetailDTO> courses = new ArrayList<>();
+        for (Cart i : carts
+        ) {
+            courses.add(courseService.getCourseById(i.getCourseId()));
+        }
+        if(courses.isEmpty()){
+            alerts.showErrorAlert("Cart hiện không có sản phẩm");
+            return;
+        }
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/Fxml/HelpFxml/PaymentDetail.fxml"));
+            Parent root = loader.load();
+
+            PaymentDetailController paymentDetailController = loader.getController();
+            paymentDetailController.setTotalPrice(cartService.getTotalCart(SessionManager.getInstance().getUser().getUserId()));
+            paymentDetailController.setList(courses);
+            Stage stage = new Stage();
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.setTitle("Thanh toán");
+            stage.setResizable(false);
+            stage.setScene(new Scene(root));
+            stage.showAndWait();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 }

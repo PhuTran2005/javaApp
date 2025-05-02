@@ -242,6 +242,20 @@ public class CoursesRepository {
         return null;
     }
 
+    public boolean checkBuyCourse(int userId, int courseId) {
+        String sql = "select * from Enrollments where user_id = ? and course_id = ?";
+        try (Connection conn = DatabaseConfig.getConnection()) {
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            stmt.setInt(1, userId);
+            stmt.setInt(2, courseId);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
     public boolean softDeleteCourse(int courseId) {
         String query = "update Courses set is_deleted = 1 WHERE course_id = ?";
 

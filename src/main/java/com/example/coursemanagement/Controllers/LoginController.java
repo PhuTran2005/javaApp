@@ -112,6 +112,7 @@ public class LoginController implements Initializable {
             Model.getInstance().getViewFactory().closeStage(stage);
             openDashboard(response.getRoleId());
         } else {
+            shake(loginForm);
             showMessage("Sai tên đăng nhập hoặc mật khẩu!", "RED", 400);
         }
 

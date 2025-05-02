@@ -20,16 +20,16 @@
                 <children>
                     <TextField fx:id="searchField" prefHeight="50.0" prefWidth="465.0" promptText="Nhập khóa học bạn muốn tìm kiếm" styleClass="input-field-v1" />
                     <Button mnemonicParsing="false" onAction="#handleSearch" prefHeight="32.0" prefWidth="24.0" styleClass="image-button" textFill="WHITE">
-                  <HBox.margin>
-                     <Insets left="5.0" />
-                  </HBox.margin>
-                  <graphic>
-                     <ImageView fitHeight="27.0" fitWidth="22.0" pickOnBounds="true" preserveRatio="true">
-                        <image>
-                           <Image url="@../../Images/searching-magnifying-glass.png" />
-                        </image>
-                     </ImageView>
-                  </graphic></Button>
+                        <HBox.margin>
+                            <Insets left="5.0" />
+                        </HBox.margin>
+                        <graphic>
+                            <ImageView fitHeight="27.0" fitWidth="22.0" pickOnBounds="true" preserveRatio="true">
+                                <image>
+                                    <Image url="@../../Images/searching-magnifying-glass.png" />
+                                </image>
+                            </ImageView>
+                        </graphic></Button>
                 </children>
             </HBox>
         </children>
@@ -37,42 +37,49 @@
     <HBox layoutX="19.0" layoutY="68.0" prefHeight="46.0" prefWidth="860.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0">
         <children>
             <Button mnemonicParsing="false" onAction="#handleFillter" prefHeight="46.0" prefWidth="32.0" styleClass="image-button">
-            <HBox.margin>
-               <Insets right="10.0" />
-            </HBox.margin>
-            <graphic>
-               <ImageView fitHeight="33.0" fitWidth="121.0" pickOnBounds="true" preserveRatio="true">
-                  <image>
-                     <Image url="@../../Images/fillter.png" />
-                  </image>
-               </ImageView>
-            </graphic></Button>
+                <HBox.margin>
+                    <Insets right="10.0" />
+                </HBox.margin>
+                <graphic>
+                    <ImageView fitHeight="33.0" fitWidth="121.0" pickOnBounds="true" preserveRatio="true">
+                        <image>
+                            <Image url="@../../Images/fillter.png" />
+                        </image>
+                    </ImageView>
+                </graphic></Button>
             <HBox prefHeight="46.0" prefWidth="539.0" style="-fx-alignment: center;" styleClass="title-box">
                 <children>
                     <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-text-alignment: center;" text="Danh sách khoa học" wrappingWidth="712.5366244316101">
-                  <font>
-                     <Font size="18.0" />
-                  </font></Text>
+                        <font>
+                            <Font size="18.0" />
+                        </font></Text>
                 </children>
             </HBox>
-         <Button mnemonicParsing="false" onAction="#handleClear" prefHeight="46.0" prefWidth="97.0" styleClass="image-button">
-            <graphic>
-               <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
-                  <image>
-                     <Image url="@../../Images/clear-filter.png" />
-                  </image>
-               </ImageView>
-            </graphic>
-            <HBox.margin>
-               <Insets left="10.0" />
-            </HBox.margin>
-         </Button>
+            <Button mnemonicParsing="false" onAction="#handleClear" prefHeight="46.0" prefWidth="97.0" styleClass="image-button">
+                <graphic>
+                    <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                        <image>
+                            <Image url="@../../Images/clear-filter.png" />
+                        </image>
+                    </ImageView>
+                </graphic>
+                <HBox.margin>
+                    <Insets left="10.0" />
+                </HBox.margin>
+            </Button>
         </children>
     </HBox>
-    <ScrollPane fx:id="listCourse" layoutX="24.0" layoutY="138.0" prefHeight="574.0" prefWidth="850.0" AnchorPane.bottomAnchor="25.0" AnchorPane.leftAnchor="25.0" AnchorPane.rightAnchor="25.0" AnchorPane.topAnchor="140.0">
-        <content>
-            <FlowPane fx:id="courseContainer" hgap="30" prefWrapLength="800" vgap="30" />
-
-        </content>
-    </ScrollPane>
+    <VBox layoutX="25.0" layoutY="140.0" prefHeight="585.0" prefWidth="800.0" AnchorPane.bottomAnchor="25.0" AnchorPane.leftAnchor="25.0" AnchorPane.rightAnchor="25.0" AnchorPane.topAnchor="140.0">
+        <ScrollPane fx:id="listCourse" prefHeight="535.0" prefWidth="800.0" VBox.vgrow="ALWAYS">
+            <content>
+                <FlowPane fx:id="courseContainer" hgap="30" prefWrapLength="800" vgap="30" />
+            </content>
+        </ScrollPane>
+        <!-- Container phân trang -->
+        <HBox fx:id="paginationContainer" alignment="CENTER" prefHeight="50.0" prefWidth="800.0" spacing="5.0">
+            <padding>
+                <Insets top="10.0" bottom="10.0" />
+            </padding>
+        </HBox>
+    </VBox>
 </AnchorPane>

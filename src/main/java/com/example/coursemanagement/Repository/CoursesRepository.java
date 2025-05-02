@@ -362,6 +362,25 @@ public class CoursesRepository {
             return false;
         }
     }
+//đếm số học viên của từng khsoa
+    public int getStudentCountByCourseId(int courseId) {
+        String query = "SELECT COUNT(*) FROM Enrollments WHERE course_id = ? AND payment_status = 'PAID'";
+        int count = 0;
+
+        try (Connection conn = DatabaseConfig.getConnection();
+             PreparedStatement ps = conn.prepareStatement(query)) {
+            ps.setInt(1, courseId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                count = rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return count;
+    }
+
 
     //lấy khóa học của giảng viên
     public List<CourseDetailDTO> getCoursesByInstructor(int instructorId) {

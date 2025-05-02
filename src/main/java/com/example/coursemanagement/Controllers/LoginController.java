@@ -2,6 +2,7 @@ package com.example.coursemanagement.Controllers;
 
 import com.example.coursemanagement.Repository.UserRepository;
 import com.example.coursemanagement.Service.CartService;
+import com.example.coursemanagement.Service.UserService;
 import com.example.coursemanagement.Utils.Alerts;
 import com.example.coursemanagement.Models.Model;
 import com.example.coursemanagement.Models.User;
@@ -96,8 +97,32 @@ public class LoginController implements Initializable {
             showMessage("Vui lòng nhập đầy đủ thông tin!", "RED", 400);
             return;
         }
+
+        // Gọi phương thức đăng nhập từ repository
         User response = userRepository.loginUser(email, password);
-        loginProcess(response);
+
+        if (response != null) {
+            // Đăng nhập thành công, lưu thông tin người dùng hiện tại vào UserService
+            UserService.setCurrentUser(response);
+
+            // Kiểm tra phân quyền và xử lý login theo phân quyền
+            switch (response.getRoleId()) {
+                case 1: // Admin
+                    loginProcess(response);
+                    break;
+                case 2: // Giảng viên
+                    loginProcess(response);
+                    break;
+                case 3: // Học viên
+                    loginProcess(response);
+                    break;
+                default:
+                    showMessage("Vai trò không hợp lệ!", "RED", 400);
+                    break;
+            }
+        } else {
+            showMessage("Đăng nhập không thành công, vui lòng thử lại.", "RED", 400);
+        }
     }
 
     public void loginProcess(User response) {

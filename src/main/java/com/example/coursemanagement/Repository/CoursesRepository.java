@@ -289,5 +289,69 @@ public class CoursesRepository {
         }
     }
 
+    //lấy khóa học của giảng viên
+    public List<CourseDetailDTO> getCoursesByInstructor(int instructorId) {
+        List<CourseDetailDTO> list = new ArrayList<>();
+
+        String sql = "SELECT " +
+                "    c.course_id, " +
+                "    c.course_name, " +
+                "    c.description AS course_description, " +
+                "    c.fee, " +
+                "    c.start_date, " +
+                "    c.end_date, " +
+                "    c.create_date AS course_create_date, " +
+                "    c.course_thumbnail, " +
+                "    c.is_deleted, " +
+                // Instructor Info
+                "    i.specialty, " +
+                "    i.degree, " +
+                "    i.years_of_experience, " +
+                // User Info (giảng viên)
+                "    u.user_id, " +
+                "    u.full_name AS instructor_name, " +
+                "    u.email AS instructor_email, " +
+                "    u.role_id, " +
+                "    u.phonenumber, " +
+                "    u.create_date, " +
+                // Category Info
+                "    cat.category_id, " +
+                "    cat.category_name, " +
+                "    cat.description AS category_description " +
+                "FROM Courses c " +
+                "LEFT JOIN Instructors i ON c.instructor_id = i.instructor_id " +
+                "LEFT JOIN Users u ON i.instructor_id = u.user_id " +
+                "LEFT JOIN Categories cat ON c.category_id = cat.category_id " +
+                "WHERE c.instructor_id = ? AND c.is_deleted = 0";
+
+        try (Connection conn = DatabaseConfig.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, instructorId); // Sử dụng instructorId để lọc khóa học
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    Course course = new Course(rs.getInt("course_id"), rs.getInt("category_id"), rs.getInt("user_id"),
+                            rs.getString("course_name"), rs.getString("course_description"), rs.getString("course_thumbnail"),
+                            rs.getDouble("fee"), rs.getString("course_create_date"), rs.getDate("start_date").toLocalDate(),
+                            rs.getDate("end_date").toLocalDate(), rs.getBoolean("is_deleted"));
+
+                    Category category = new Category(rs.getInt("category_id"), rs.getString("category_name"), rs.getString("category_description"));
+                    Instructor instructor = new Instructor(rs.getInt("user_id"), rs.getString("instructor_email"), rs.getString("instructor_name"),
+                            rs.getInt("role_id"), rs.getString("phonenumber"), rs.getString("create_date"),
+                            rs.getString("specialty"), rs.getString("degree"), rs.getInt("years_of_experience"));
+
+                    CourseDetailDTO dto = new CourseDetailDTO(course, category, instructor);
+                    list.add(dto);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            // Có thể ném lại ngoại lệ hoặc xử lý thông báo lỗi ở đây
+            System.out.println("Lỗi khi truy vấn cơ sở dữ liệu: " + e.getMessage());
+        }
+
+        return list;
+    }
+
 
 }

@@ -1,5 +1,6 @@
 package com.example.coursemanagement.Controllers.Admin;
 
+import com.example.coursemanagement.Controllers.Admin.CourseController.CourseManagementController;
 import com.example.coursemanagement.Utils.Alerts;
 import com.example.coursemanagement.Models.Model;
 import javafx.fxml.FXML;
@@ -39,10 +40,10 @@ public class AdminMenuController implements Initializable {
 
     @FXML
     private void addListeners() {
-        dashboard_btn.setOnAction(event -> onDashboardMenu("Dashboard"));
+        dashboard_btn.setOnAction(event -> onDashboardButtonClicked());
         transaction_btn.setOnAction(event -> onTransactionMenu("Transaction"));
-        accounts_btn.setOnAction(event -> onAccountsMenu("Accounts"));
-        courseManagement_btn.setOnAction(event -> onCourseManagementMenu("CourseManagement"));
+        accounts_btn.setOnAction(event -> onAccountsButtonClicked());
+        courseManagement_btn.setOnAction(event -> onCourseButtonClicker());
         report_btn.setOnAction(event -> onSelectedMenu("Report"));
         logout_btn.setOnAction(event -> onLogout());
         if (dashboard_btn != null) {
@@ -51,6 +52,53 @@ public class AdminMenuController implements Initializable {
             }
         }
     }
+
+    @FXML
+    private void onDashboardButtonClicked (){
+        try{
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/Fxml/Admin/Dashboard.fxml"));
+            BorderPane borderPane = (BorderPane) dashboard_btn.getScene().getRoot();
+            borderPane.setCenter(loader.load());
+
+            DashboardController dashboardController =loader.getController();
+            dashboardController.loadDashboardData();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    private void onCourseButtonClicker(){
+        try{
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/Fxml/Admin/CourseManagement.fxml"));
+            BorderPane borderPane = (BorderPane) courseManagement_btn.getScene().getRoot();
+            borderPane.setCenter(loader.load());
+
+            CourseManagementController courseManagementController = loader.getController();
+            courseManagementController.refreshCourseList();
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    private void onAccountsButtonClicked() {
+        System.out.println("Accounts button clicked");  // Debug để kiểm tra
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/Fxml/Admin/Accounts.fxml"));
+            BorderPane borderPane = (BorderPane) accounts_btn.getScene().getRoot();  // Lấy BorderPane chứa cả menu và nội dung
+
+            borderPane.setCenter(loader.load());
+
+            AccountsController accountsController = loader.getController();
+            accountsController.loadStudentData();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     @FXML
     private void onSelectedMenu(String path) {

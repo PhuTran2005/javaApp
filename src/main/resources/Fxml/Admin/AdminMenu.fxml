@@ -21,7 +21,7 @@
                 </ImageView>
             </VBox>
             <VBox layoutX="21.0" layoutY="165.0" prefHeight="400.0" prefWidth="208.0" styleClass="menu_container" AnchorPane.leftAnchor="21.0" AnchorPane.rightAnchor="20.600000000000023" AnchorPane.topAnchor="165.0">
-                <Button fx:id="dashboard_btn" mnemonicParsing="false" prefHeight="50.0" prefWidth="188.0" text="Thống kê">
+                <Button fx:id="dashboard_btn" onAction="#onDashboardButtonClicked" mnemonicParsing="false" prefHeight="50.0" prefWidth="188.0" text="Thống kê">
                     <graphic>
                         <ImageView fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
                             <image>
@@ -33,7 +33,7 @@
                   <Insets bottom="10.0" />
                </VBox.margin>
                 </Button>
-                <Button fx:id="courseManagement_btn" mnemonicParsing="false" prefHeight="50.0" prefWidth="198.0" text="Khóa học">
+                <Button fx:id="courseManagement_btn" onAction="#onCourseButtonClicker" mnemonicParsing="false" prefHeight="50.0" prefWidth="198.0" text="Khóa học">
                     <graphic>
                         <ImageView fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
                             <image>

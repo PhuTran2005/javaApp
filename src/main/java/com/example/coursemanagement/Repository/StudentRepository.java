@@ -124,7 +124,7 @@ public class StudentRepository {
                 }
             }
 
-            String insertPaymentQuery = "INSERT INTO Payments (enrollment_id, amount, status, payment_date, method) VALUES (?, ?, ?, GETDATE(), ?)";
+            String insertPaymentQuery = "INSERT INTO Payments (enrollments_id, amount, status, payment_date, method) VALUES (?, ?, ?, GETDATE(), ?)";
 
             try (PreparedStatement insertStmt = conn.prepareStatement(insertQuery, Statement.RETURN_GENERATED_KEYS);
                  PreparedStatement paymentStmt = conn.prepareStatement(insertPaymentQuery)) {

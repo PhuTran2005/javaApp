@@ -1,18 +1,14 @@
 package com.example.coursemanagement.Views;
 
 import com.example.coursemanagement.Controllers.Admin.AdminController;
-import com.example.coursemanagement.Controllers.Admin.DashboardController;
 import com.example.coursemanagement.Controllers.Client.ClientController;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
-
-import java.io.IOException;
 
 public class ViewFactory {
     private final StringProperty clientSelectedMenuItem;
@@ -143,7 +139,7 @@ public class ViewFactory {
     public Parent getAssignmentView() {
         if (assignmentView == null) {
             try {
-                assignmentView = new FXMLLoader(getClass().getResource("/Fxml/Client/Assignment.fxml")).load();
+                assignmentView = new FXMLLoader(getClass().getResource("/Fxml/Client/Assignment/AssignmentMain.fxml")).load();
             } catch (Exception e) {
 
                 e.printStackTrace();

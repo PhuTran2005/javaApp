@@ -3,6 +3,7 @@ package com.example.coursemanagement.Controllers.Client.AssignmentsManagement;
 import com.example.coursemanagement.Dto.CourseDetailDTO;
 import com.example.coursemanagement.Repository.CoursesRepository;
 import com.example.coursemanagement.Service.AssignmentService;
+import com.example.coursemanagement.Service.LogService;
 import com.example.coursemanagement.Utils.DatabaseConfig;
 import com.example.coursemanagement.Utils.SessionManager;
 import javafx.fxml.FXML;
@@ -18,7 +19,7 @@ import java.util.stream.Collectors;
 
 
 public class AddAssignmentController {
-
+    private final LogService logService = new LogService();
     @FXML
     private ComboBox<String> courseComboBox;
 
@@ -85,7 +86,7 @@ public class AddAssignmentController {
 
             // Thêm bài tập vào cơ sở dữ liệu
             assignmentService.addAssignment(title, description, SessionManager.getInstance().getUser().getUserId(), courseId, dueDateValue, fileName, filePath);
-
+            logService.createLog(SessionManager.getInstance().getUser().getUserId(), "Giáo viên " + SessionManager.getInstance().getUser().getFullname() + " đã thêm bài tập mới");
             // Gọi callback để reload biểu đồ ở màn chính
             if (onAssignmentAdded != null) {
                 onAssignmentAdded.run();

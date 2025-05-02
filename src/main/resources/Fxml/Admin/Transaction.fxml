@@ -1,12 +1,100 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.text.Text?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.collections.FXCollections?>
+<?import java.lang.String?>
 
+<?import java.lang.Integer?>
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.example.coursemanagement.Controllers.Admin.TransactionController"
+            prefHeight="600.0" prefWidth="900.0">
+    <top>
+        <VBox spacing="10">
+            <padding>
+                <Insets top="15" right="15" bottom="15" left="15"/>
+            </padding>
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Label text="Payment Transactions" style="-fx-font-size: 18; -fx-font-weight: bold;"/>
+                <Region HBox.hgrow="ALWAYS" />
+                <Button text="New Transaction" onAction="#handleNewTransactionAction"/>
+            </HBox>
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <TextField fx:id="searchField" promptText="Search transactions..." prefWidth="250"/>
+                <Button text="Search" onAction="#handleSearchAction"/>
+                <Region HBox.hgrow="ALWAYS" />
+                <HBox spacing="5" alignment="CENTER_RIGHT">
+                    <Label text="Filter by status:" />
+                    <ComboBox fx:id="statusFilterComboBox" onAction="#handleStatusFilterChange">
+                        <items>
+                            <FXCollections fx:factory="observableArrayList">
+                                <String fx:value="All" />
+                                <String fx:value="Success" />
+                                <String fx:value="Pending" />
+                                <String fx:value="Failed" />
+                            </FXCollections>
+                        </items>
+                        <value>
+                            <String fx:value="All" />
+                        </value>
+                    </ComboBox>
+                    <Button text="Reset Filters" onAction="#handleResetAction"/>
+                </HBox>
+            </HBox>
+        </VBox>
+    </top>
 
-<AnchorPane prefHeight="750.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.coursemanagement.Controllers.Admin.TransactionController">
-   <children>
-      <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Text" />
-      <Text layoutX="414.0" layoutY="44.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Transaction" />
-   </children>
-</AnchorPane>
+    <center>
+        <TableView fx:id="transactionTableView" VBox.vgrow="ALWAYS">
+            <columns>
+                <TableColumn fx:id="paymentIdColumn" text="Payment ID" prefWidth="80"/>
+                <TableColumn fx:id="orderIdColumn" text="Order ID" prefWidth="80"/>
+                <TableColumn fx:id="amountColumn" text="Amount" prefWidth="100"/>
+                <TableColumn fx:id="methodColumn" text="Payment Method" prefWidth="120"/>
+                <TableColumn fx:id="statusColumn" text="Status" prefWidth="100"/>
+                <TableColumn fx:id="dateColumn" text="Payment Date" prefWidth="180"/>
+                <TableColumn fx:id="actionsColumn" text="Actions" prefWidth="130"/>
+            </columns>
+        </TableView>
+    </center>
+
+    <bottom>
+        <VBox>
+            <padding>
+                <Insets top="10" right="15" bottom="15" left="15"/>
+            </padding>
+            <HBox spacing="10" alignment="CENTER">
+                <Label text="Total: " />
+                <Label fx:id="totalRecordsLabel" text="0 records" />
+                <Region HBox.hgrow="ALWAYS" />
+                <HBox spacing="5" alignment="CENTER">
+                    <Button text="Previous" onAction="#handlePreviousAction"/>
+                    <Label text="Page:" />
+                    <Label fx:id="currentPageLabel" text="1" />
+                    <Label text="of" />
+                    <Label fx:id="totalPagesLabel" text="1" />
+                    <Button text="Next" onAction="#handleNextAction"/>
+                </HBox>
+                <Region HBox.hgrow="ALWAYS" />
+                <HBox spacing="5" alignment="CENTER_RIGHT">
+                    <Label text="Items per page:" />
+                    <ComboBox fx:id="pageSizeComboBox" onAction="#handlePageSizeChange">
+                        <items>
+                            <FXCollections fx:factory="observableArrayList">
+                                <Integer fx:value="10" />
+                                <Integer fx:value="25" />
+                                <Integer fx:value="50" />
+                                <Integer fx:value="100" />
+                            </FXCollections>
+                        </items>
+                        <value>
+                            <Integer fx:value="10" />
+                        </value>
+                    </ComboBox>
+                </HBox>
+            </HBox>
+        </VBox>
+    </bottom>
+</BorderPane>

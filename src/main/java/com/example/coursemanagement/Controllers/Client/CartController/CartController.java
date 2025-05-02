@@ -96,7 +96,7 @@ public class CartController implements Initializable {
         ) {
             courses.add(courseService.getCourseById(i.getCourseId()));
         }
-        if(courses.isEmpty()){
+        if (courses.isEmpty()) {
             alerts.showErrorAlert("Cart hiện không có sản phẩm");
             return;
         }
@@ -105,6 +105,7 @@ public class CartController implements Initializable {
             Parent root = loader.load();
 
             PaymentDetailController paymentDetailController = loader.getController();
+            paymentDetailController.setCart(true);
             paymentDetailController.setTotalPrice(cartService.getTotalCart(SessionManager.getInstance().getUser().getUserId()));
             paymentDetailController.setList(courses);
             Stage stage = new Stage();
@@ -117,6 +118,6 @@ public class CartController implements Initializable {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
+        refreshCourseList();
     }
 }

@@ -20,6 +20,8 @@ public class AdminMenuController implements Initializable {
     public Button courseManagement_btn;
     @FXML
     public Button transaction_btn;
+    @FXML
+    public Button logs_btn;
     private Alerts alerts = new Alerts();
     @FXML
 
@@ -39,6 +41,8 @@ public class AdminMenuController implements Initializable {
 
     @FXML
     private void addListeners() {
+
+        logs_btn.setOnAction(event -> onLogsMenu("Logs"));
         dashboard_btn.setOnAction(event -> onDashboardMenu("Dashboard"));
         transaction_btn.setOnAction(event -> onTransactionMenu("Transaction"));
         accounts_btn.setOnAction(event -> onAccountsMenu("Accounts"));
@@ -77,6 +81,11 @@ public class AdminMenuController implements Initializable {
 
         Model.getInstance().getViewFactory().getAdminSelectedMenuItemProperty().set(path);
     }
+    @FXML
+    private void onLogsMenu(String path){
+        setActiveButton(logs_btn);
+        Model.getInstance().getViewFactory().getAdminSelectedMenuItemProperty().set(path);
+    }
 
     @FXML
     private void onCourseManagementMenu(String path) {
@@ -94,7 +103,7 @@ public class AdminMenuController implements Initializable {
     }
 
     private void setActiveButton(Button activeButton) {
-        Button[] buttons = {dashboard_btn, courseManagement_btn, transaction_btn, accounts_btn, report_btn};
+        Button[] buttons = {dashboard_btn,logs_btn, courseManagement_btn, transaction_btn, accounts_btn, report_btn};
         for (Button btn : buttons) {
             btn.getStyleClass().remove("active");
         }

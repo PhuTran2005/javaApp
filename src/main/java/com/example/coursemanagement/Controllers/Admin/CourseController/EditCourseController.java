@@ -7,7 +7,9 @@ import com.example.coursemanagement.Models.Instructor;
 import com.example.coursemanagement.Service.CategoriesService;
 import com.example.coursemanagement.Service.CourseService;
 import com.example.coursemanagement.Service.InstructorService;
+import com.example.coursemanagement.Service.LogService;
 import com.example.coursemanagement.Utils.Alerts;
+import com.example.coursemanagement.Utils.SessionManager;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
@@ -22,6 +24,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 public class EditCourseController {
+    private final LogService logService = new LogService();
     @FXML
     public TextField courseNameField;
     @FXML
@@ -264,6 +267,10 @@ public class EditCourseController {
         );
         if (courseService.updateInforCourse(course)) {
             alerts.showSuccessAlert("Chỉnh sửa Khóa học thành công");
+            if(SessionManager.getInstance().getUser().getRoleId() == 2){
+                logService.createLog(SessionManager.getInstance().getUser().getUserId(), "Giáo viên " + SessionManager.getInstance().getUser().getFullname() + " đã chỉnh sửa bài tập");
+
+            }
             if (courseManagementController != null) {
                 courseManagementController.refreshCourseList(); // 👈 Gọi lại giao diện
             }

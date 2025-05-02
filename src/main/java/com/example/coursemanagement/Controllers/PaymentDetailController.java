@@ -28,6 +28,7 @@ public class PaymentDetailController implements Initializable {
     @FXML
     public Label total;
     private List<CourseDetailDTO> courses;
+    private boolean isCart = false;
 
     public List<CourseDetailDTO> getList() {
         return courses;
@@ -109,11 +110,19 @@ public class PaymentDetailController implements Initializable {
     }
 
 
+    public boolean isCart() {
+        return isCart;
+    }
+
+    public void setCart(boolean cart) {
+        isCart = cart;
+    }
+
     // Xử lý sự kiện khi người dùng ấn nút Mua khóa học
     @FXML
     private void handlePurchase() {
         System.out.println("Đang mua khóa học: ");
-        PaymentService.processPaymentForCourse(SessionManager.getInstance().getUser().getUserId(),getTotalPrice(),getList());
+        PaymentService.processPaymentForCourse(SessionManager.getInstance().getUser().getUserId(),getTotalPrice(),getList(),isCart);
         handleCancel();
         // Bạn có thể thêm logic thanh toán ở đây (hoặc gọi phương thức thanh toán)
     }

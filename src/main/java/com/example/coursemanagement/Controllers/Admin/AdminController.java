@@ -42,6 +42,10 @@ public class AdminController implements Initializable {
                 case "deleteCourse":
                     admin_parent.setCenter(Model.getInstance().getViewFactory().getDeletedCourseView());
                     break;
+                case "Logs": {
+                    admin_parent.setCenter(Model.getInstance().getViewFactory().getLogsView());
+                    break;
+                }
                 default:
                     // Load the dashboard view using FXMLLoader
                     FXMLLoader loader = new FXMLLoader(getClass().getResource("/Fxml/Admin/Dashboard.fxml"));

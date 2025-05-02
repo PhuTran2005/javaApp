@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane fx:id="courseBox" prefHeight="500.0" prefWidth="500.0" styleClass="course-box" stylesheets="@../../Styles/CourseBox.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.coursemanagement.Controllers.Client.CourseClientController.MyCourseBoxController">
+    <VBox alignment="CENTER" layoutX="7.2" layoutY="7.2" maxHeight="284.0" prefHeight="284.0" prefWidth="366.0" styleClass="course-thumbnail" AnchorPane.bottomAnchor="126.0" AnchorPane.leftAnchor="6.0" AnchorPane.rightAnchor="8.0" AnchorPane.topAnchor="6.0">
+
+        <ImageView fx:id="courseThumbnail" fitHeight="200.0" fitWidth="260.0" preserveRatio="true" smooth="true" styleClass="course-thumbnail-img">
+            <image>
+                <Image url="@../../Images/book.png" />
+            </image>
+        </ImageView>
+    </VBox>
+
+    <VBox layoutX="9.600000000000001" layoutY="275.0" maxHeight="125.0" prefHeight="112.0" prefWidth="241.0" style="-fx-padding: 10px;" styleClass="course-thumbnail-exp" AnchorPane.bottomAnchor="9.0" AnchorPane.leftAnchor="9.0" AnchorPane.rightAnchor="130.0" AnchorPane.topAnchor="280.0">
+        <Label fx:id="courseName" prefHeight="20.0" prefWidth="300.0" styleClass="course-name" text="Book" />
+        <Label fx:id="courseInstructorName" prefHeight="37.0" prefWidth="244.0" styleClass="course-instructor-name" text="Tran Van Phu" />
+        <Label fx:id="coursePrice" prefHeight="20.0" prefWidth="300.0" styleClass="course-price" text="120000" />
+    </VBox>
+    <VBox layoutX="291.0" layoutY="277.6" maxHeight="398.0" prefHeight="112.0" prefWidth="114.0" style="-fx-alignment: center;" styleClass="course-thumbnail-exp" AnchorPane.bottomAnchor="7.0" AnchorPane.rightAnchor="11.0" AnchorPane.topAnchor="280.0">
+        <Button mnemonicParsing="false" onAction="#handleView" prefHeight="40.0" prefWidth="60.0" styleClass="image-button" text="Xem">
+            <VBox.margin>
+                <Insets bottom="5.0" top="10.0" />
+            </VBox.margin>
+         <font>
+            <Font size="18.0" />
+         </font>
+        </Button>
+        <Button fx:id="Study_btn" mnemonicParsing="false" onAction="#handleStudy" prefHeight="40.0" prefWidth="60.0" styleClass="image-button" text="Học">
+            <VBox.margin>
+                <Insets bottom="10.0" top="5.0" />
+            </VBox.margin>
+         <font>
+            <Font size="18.0" />
+         </font>
+        </Button>
+    </VBox>
+</AnchorPane>

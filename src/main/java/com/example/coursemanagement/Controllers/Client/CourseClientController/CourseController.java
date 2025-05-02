@@ -37,7 +37,7 @@ public class CourseController {
 
     // Các biến liên quan đến phân trang
     private int currentPage = 1;
-    private int pageSize = 8; // Số lượng khóa học trên một trang
+    private int pageSize = 4; // Số lượng khóa học trên một trang
     private int totalPages = 1;
     private String currentSearchQuery = "";
     private Integer currentCategoryFilter = null;

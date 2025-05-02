@@ -187,8 +187,6 @@ CREATE TABLE Submissions (
     UNIQUE (assignment_id, student_id) -- 1 học viên chỉ nộp 1 lần/1 bài
 );
 
-
-
 -- 17. Logs
 CREATE TABLE Logs (
     log_id INT PRIMARY KEY IDENTITY(1,1),
@@ -388,7 +386,7 @@ DROP TABLE IF EXISTS Role_Permissions;
 DROP TABLE IF EXISTS Permissions;
 DROP TABLE IF EXISTS Roles;
 
-
+select * from Users
 -- Roles
 INSERT INTO Roles(role_name, description)
 VALUES 
@@ -423,7 +421,7 @@ VALUES
 ('gv2@example.com', '$2a$10$Y0L8WUUWemHJhCJUG4J17uoUrcePpEA8RgMs1bOgFhNauW5HK5qUe', N'Lê Thị B', 2, '0987654321'),
 ('sv1@example.com', '$2a$10$Y0L8WUUWemHJhCJUG4J17uoUrcePpEA8RgMs1bOgFhNauW5HK5qUe', N'Phạm Học Viên 1', 3, '0901122334'),
 ('sv2@example.com', '$2a$10$Y0L8WUUWemHJhCJUG4J17uoUrcePpEA8RgMs1bOgFhNauW5HK5qUe', N'Ngô Học Viên 2', 3, '0902233445');
-select * from Enrollments
+
 -- Instructors
 INSERT INTO Instructors(instructor_id, specialty, degree, years_of_experience)
 VALUES 
@@ -437,49 +435,28 @@ VALUES
 (5, 'IT02', 2023, 3.8);
 
 -- Categories
+-- Thêm danh mục mở rộng cho bảng Categories
 INSERT INTO Categories(category_name, description)
 VALUES 
 (N'Lập trình', N'Các khóa học về lập trình'),
-(N'Thiết kế', N'Các khóa học về thiết kế');
+(N'Thiết kế', N'Các khóa học về thiết kế'),
+(N'Trí tuệ nhân tạo', N'Khóa học về AI, Machine Learning, Deep Learning'),
+(N'Phân tích dữ liệu', N'Học xử lý và trực quan hóa dữ liệu'),
+(N'Quản trị mạng', N'Các khóa học về bảo mật và mạng máy tính'),
+(N'Kinh doanh', N'Khóa học kỹ năng kinh doanh, khởi nghiệp, marketing'),
+(N'Ngoại ngữ', N'Học tiếng Anh, Nhật, Hàn, Trung...'),
+(N'Tin học văn phòng', N'Học Word, Excel, PowerPoint chuyên sâu'),
+(N'Phát triển web', N'HTML, CSS, JavaScript, React, Node.js,...'),
+(N'Cơ sở dữ liệu', N'MySQL, SQL Server, MongoDB,...'),
+(N'Điện tử - Viễn thông', N'Khóa học về mạch điện, truyền dẫn tín hiệu'),
+(N'Toán - Lý - Hóa', N'Bồi dưỡng kiến thức phổ thông và nâng cao');
 
--- Courses
-INSERT INTO Courses(course_name, description, instructor_id, category_id, start_date, fee, end_date)
-VALUES
-(N'Ja', N'Học Java ', 2, 1, '2025-05-01', 1500000, '2025-08-01'),
-(N'Thi', N'HTML', 3, 2, '2025-05-10', 1206000, '2025-08-10');
-select * from Courses
--- Course_Instructors
-INSERT INTO Course_Instructors(course_id, user_id)
-VALUES
-(1, 2), (2, 3);
+INSERT INTO Courses (course_name, description, instructor_id, category_id, start_date, end_date, fee, course_thumbnail, is_deleted)
+VALUES 
+(N'Java core', N'Khóa học Java core cơ bản cho người mới', 2, 10, '2025-05-02', '2025-05-31', 150000.00, 'Images/java-core.jpg', 0),
+(N'HTML và CSS', N'Khóa học HTML và CSS', 2, 9, '2025-05-02', '2025-05-31', 200000.00, 'Images/html-css.jpg', 0),
+(N'ReactJs', N'Khóa học Reactjs và phát triển web', 3, 9, '2025-05-02', '2025-05-31', 1000000.00, 'Images/reacte.jpg', 0),
+(N'C++', N'Khóa học C++ và Phân tích dữ liệu', 3, 4, '2025-05-02', '2025-05-31', 300000.00, 'Images/c++.jpg', 0),
+(N'Pyhon', N'Khóa học Pyhon', 3, 3, '2025-05-02', '2025-05-31', 350000.00, 'Images/python.jpg', 0),
+(N'Trí tuệ nhân tạo', N'Khóa học trí tuệ nhân tạo', 2, 3, '2025-05-02', '2025-05-30', 500000.00, 'Images/ai.jpg', 0);
 
--- Enrollments
-INSERT INTO Enrollments(user_id, course_id, payment_status)
-VALUES
-(4, 1, 'PAID'),
-(5, 2, 'UNPAID');
-
--- Payments
-INSERT INTO Payments(enrollments_id, amount, method, status, payment_date)
-VALUES
-(1, 1000000, 'VNPay', 'Success', GETDATE());
-
--- Cart
-INSERT INTO Cart(user_id, course_id, quantity, status)
-VALUES
-(5, 1, 1, 'PENDING');
-
-
-INSERT INTO Submissions (assignment_id, student_id, file_path, submitted_at, grade, feedback)
-VALUES (7, 4, 'Submissions/assignment1_sv1.txt', GETDATE(), NULL, NULL);
-
--- Học viên 5 nộp bài
-INSERT INTO Submissions (assignment_id, student_id, file_path, submitted_at, grade, feedback)
-VALUES (7, 5, 'Submissions/assignment1_sv2.txt', GETDATE(), NULL, NULL);
-
--- Logs
-INSERT INTO Logs(user_id, action)
-VALUES
-(1, N'Thêm khóa học mới: Java Cơ Bản'),
-(4, N'Đăng ký khóa học Java Cơ Bản'),
-(5, N'Thêm khóa học vào giỏ hàng: Java Cơ Bản')

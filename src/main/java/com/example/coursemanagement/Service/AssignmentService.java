@@ -29,14 +29,14 @@ public class AssignmentService {
 
     // Thêm bài tập mới
     public void addAssignment(String title, String description,int teacherId, int courseId, Date dueDate, String fileName, String filePath) throws SQLException {
-        String sql = "INSERT INTO assignments (title, description, course_id, due_date, file_name, file_path,teacher_id) VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO assignments (title, description, course_id, due_date, file_name, file_path,teacher_id) VALUES (?, ?, ?, ?, ?, ?,?)";
 
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setString(1, title);
             statement.setString(2, description);
             statement.setInt(3, courseId);
             statement.setDate(4, dueDate);
-            statement.setInt(5, teacherId);
+            statement.setInt(7, teacherId);
 
             // Set fileName and filePath
             statement.setString(5, fileName);

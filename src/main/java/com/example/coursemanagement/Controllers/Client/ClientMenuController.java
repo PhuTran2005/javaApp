@@ -4,9 +4,14 @@ import com.example.coursemanagement.Service.CartService;
 import com.example.coursemanagement.Utils.Alerts;
 import com.example.coursemanagement.Models.Model;
 import com.example.coursemanagement.Utils.SessionManager;
+import com.example.coursemanagement.Utils.UIHelper;
+import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
@@ -27,6 +32,11 @@ public class ClientMenuController implements Initializable {
     public Text welcomeText;
     @FXML
     public Button assignment_btn;
+    @FXML
+    public ImageView avartarView;
+    @FXML
+
+    public Button instructorCourse_btn;
     private Alerts alerts = new Alerts();
     @FXML
     public Button logout_btn;
@@ -48,14 +58,34 @@ public class ClientMenuController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         addListeners();
+
+        Image avatarImage = UIHelper.generateAvatar(UIHelper.getLastWord(SessionManager.getInstance().getUser().getFullname()), 99);
+        if (avartarView != null) {
+            System.out.println("Load anh");
+            avartarView.setImage(avatarImage);
+            avartarView.setFitWidth(100);
+            avartarView.setFitHeight(100);
+            avartarView.setPreserveRatio(false); // giữ đúng tỉ lệ 120x120
+
+            Circle clip = new Circle();
+            clip.centerXProperty().bind(avartarView.fitWidthProperty().divide(2));
+            clip.centerYProperty().bind(avartarView.fitHeightProperty().divide(2));
+            clip.radiusProperty().bind(Bindings.min(
+                    avartarView.fitWidthProperty(),
+                    avartarView.fitHeightProperty()
+            ).divide(2));
+
+            avartarView.setClip(clip);
+
+        }
         if (SessionManager.getInstance().getUser().getRoleId() == 2) {
             if (welcomeText != null) {
-                welcomeText.setText("Giáo viên: " + SessionManager.getInstance().getUser().getFullname());
+                welcomeText.setText("Giáo viên");
             }
             loadInstructorUi();
         } else {
             if (welcomeText != null) {
-                welcomeText.setText("Học viên: " + SessionManager.getInstance().getUser().getFullname());
+                welcomeText.setText("Học viên");
             }
             loadStudentUi();
         }
@@ -65,6 +95,7 @@ public class ClientMenuController implements Initializable {
     @FXML
     private void addListeners() {
 
+        instructorCourse_btn.setOnAction(event -> onInstructorCourse("InstructorCourse"));
         courses_btn.setOnAction(event -> onCoursesMenu("Courses"));
         myCourse_btn.setOnAction(event -> onMyCourseMenu("MyCourse"));
         cart_btn.setOnAction(event -> onCartMenu("Cart"));
@@ -73,12 +104,21 @@ public class ClientMenuController implements Initializable {
         assignment_btn.setOnAction(event -> onAssignmentMenu("Assignment"));
         report_btn.setOnAction(event -> onReportMenu("Report"));
         logout_btn.setOnAction(event -> onLogout());
-        if (courses_btn != null) {
-            if (!courses_btn.getStyleClass().contains("active")) {
-                courses_btn.getStyleClass().add("active");
+        if (SessionManager.getInstance().getUser().getRoleId() == 2) {
+            if (instructorCourse_btn != null) {
+                if (!instructorCourse_btn.getStyleClass().contains("active")) {
+                    instructorCourse_btn.getStyleClass().add("active");
+                }
             }
+            onInstructorCourse("InstructorCourse");
+        } else {
+            if (courses_btn != null) {
+                if (!courses_btn.getStyleClass().contains("active")) {
+                    courses_btn.getStyleClass().add("active");
+                }
+            }
+            onCoursesMenu("Courses");
         }
-        onCoursesMenu("Courses");
         refreshCartSize();
     }
 
@@ -103,6 +143,10 @@ public class ClientMenuController implements Initializable {
             student_btn.setVisible(show);
             student_btn.setManaged(show);
         }
+        if (instructorCourse_btn != null) {
+            instructorCourse_btn.setVisible(show);
+            instructorCourse_btn.setManaged(show);
+        }
 
     }
 
@@ -115,6 +159,11 @@ public class ClientMenuController implements Initializable {
             cart_btn.setVisible(show);
             cart_btn.setManaged(show);
         }
+        if (courses_btn != null) {
+            courses_btn.setVisible(show);
+            courses_btn.setManaged(show);
+        }
+
 
     }
 
@@ -155,6 +204,12 @@ public class ClientMenuController implements Initializable {
     }
 
     @FXML
+    private void onInstructorCourse(String path) {
+        setActiveButton(instructorCourse_btn);
+        Model.getInstance().getViewFactory().getClientSelectedMenuItemProperty().set(path);
+    }
+
+    @FXML
     private void onCartMenu(String path) {
         setActiveButton(cart_btn);
         Model.getInstance().getViewFactory().getClientSelectedMenuItemProperty().set(path);
@@ -182,7 +237,7 @@ public class ClientMenuController implements Initializable {
     }
 
     private void setActiveButton(Button activeButton) {
-        Button[] buttons = {courses_btn, myCourse_btn, cart_btn, profile_btn, report_btn, assignment_btn, student_btn};
+        Button[] buttons = {courses_btn, myCourse_btn, cart_btn, profile_btn, report_btn, assignment_btn, student_btn, instructorCourse_btn};
         for (Button btn : buttons) {
             btn.getStyleClass().remove("active");
         }

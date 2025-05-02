@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TextArea?>
@@ -12,76 +11,62 @@
 
 <AnchorPane prefHeight="600.0" prefWidth="600.0" styleClass="add_course-container" stylesheets="@../../Styles/Profile.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.coursemanagement.Controllers.Admin.CourseController.ViewCourseController">
 
-    <!-- Bố cục tổng thể -->
-    <VBox layoutX="60.0" layoutY="60.0" prefHeight="400.0" prefWidth="500.0" spacing="15" styleClass="profile-container" stylesheets="@../../Styles/Profile.css" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="30.0" AnchorPane.rightAnchor="30.0" AnchorPane.topAnchor="0.0">
+    <!-- Container chính -->
+    <VBox layoutX="60.0" layoutY="60.0" prefHeight="400.0" prefWidth="500.0" spacing="15" styleClass="profile-container" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="30.0" AnchorPane.rightAnchor="30.0" AnchorPane.topAnchor="0.0">
 
         <Label style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-alignment: center;" styleClass="title-label" text="Chi tiết khóa học" />
 
         <HBox spacing="10" styleClass="input-group">
             <Label styleClass="input-label" text="Tên khóa học" />
             <TextField fx:id="courseNameField" editable="false" prefHeight="29.0" prefWidth="280.0" promptText="Nhập tên của khóa học" styleClass="input-field" />
-            <VBox.margin>
-                <Insets bottom="10.0" />
-            </VBox.margin>
         </HBox>
-
 
         <HBox spacing="10" styleClass="input-group">
             <Label styleClass="input-label" text="Tên người hướng dẫn:" />
             <TextField fx:id="instructorField" editable="false" prefWidth="250.0" promptText="Nhập tên của người hướng dẫn" styleClass="input-field" />
             <Button fx:id="toggleInstructorDetailButton" onAction="#handleToggleInstructorDetail" styleClass="action-button" text="Xem thêm" />
-            <VBox.margin>
-                <Insets bottom="10.0" />
-            </VBox.margin>
         </HBox>
-        <!-- Thẻ chi tiết người hướng dẫn (ẩn ban đầu) -->
-        <Label fx:id="instructorDetailLabel" managed="false" styleClass="detail-label" text="Chi tiết người hướng dẫn ở đây..." visible="false" wrapText="true" />
-        <HBox prefHeight="9.0" prefWidth="499.0" spacing="10" styleClass="input-group">
+
+        <HBox spacing="10" styleClass="input-group">
             <Label styleClass="input-label" text="Chủ đề:" />
             <TextField fx:id="categoryField" editable="false" styleClass="input-field" />
             <Button fx:id="toggleCategoryDetailButton" onAction="#handleToggleCategoryDetail" styleClass="action-button" text="Xem thêm" />
-            <VBox.margin>
-                <Insets bottom="10.0" />
-            </VBox.margin>
         </HBox>
-        <!-- Thẻ chi tiết chủ đề (ẩn ban đầu) -->
-        <Label fx:id="categoryDetailLabel" managed="false" styleClass="detail-label" text="Chi tiết chủ đề ở đây..." visible="false" wrapText="true" />
+
         <HBox spacing="10" styleClass="input-group">
             <Label styleClass="input-label" text="Giá:" />
             <TextField fx:id="priceField" editable="false" prefWidth="250.0" promptText="Nhập giá của khóa học" styleClass="input-field" />
-            <VBox.margin>
-                <Insets bottom="10.0" />
-            </VBox.margin>
         </HBox>
-      <HBox spacing="10" styleClass="input-group">
-         <children>
+
+        <HBox spacing="10" styleClass="input-group">
             <Label styleClass="input-label" text="Ngày bắt đầu" />
-            <TextField fx:id="startDate" editable="false" prefWidth="250.0" promptText="Nhập giá của khóa học" styleClass="input-field" />
-         </children>
-      </HBox>
-      <HBox spacing="10" styleClass="input-group">
-         <children>
-            <Label styleClass="input-label" text="Ngày kết thúc" />
-            <TextField fx:id="endDate" editable="false" prefWidth="250.0" promptText="Nhập giá của khóa học" styleClass="input-field" />
-         </children>
-      </HBox>
-        <HBox layoutX="1.6" layoutY="1.6" maxHeight="280.0" prefHeight="106.0" prefWidth="499.0" styleClass="input-group" AnchorPane.bottomAnchor="125.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="101.0" AnchorPane.topAnchor="5.0">
-
-            <Label prefHeight="20.0" prefWidth="161.0" styleClass="input-label" text="Ảnh mô tả:" />
-            <ImageView fx:id="courseThumbnail" fitHeight="127.0" fitWidth="197.0" preserveRatio="true" smooth="true" styleClass="course-thumbnail-img">
-
-            </ImageView>
+            <TextField fx:id="startDate" editable="false" prefWidth="250.0" promptText="Nhập ngày bắt đầu" styleClass="input-field" />
         </HBox>
+
+        <HBox spacing="10" styleClass="input-group">
+            <Label styleClass="input-label" text="Ngày kết thúc" />
+            <TextField fx:id="endDate" editable="false" prefWidth="250.0" promptText="Nhập ngày kết thúc" styleClass="input-field" />
+        </HBox>
+
+        <HBox prefHeight="106.0" prefWidth="499.0" styleClass="input-group">
+            <Label prefHeight="20.0" prefWidth="161.0" styleClass="input-label" text="Ảnh mô tả:" />
+            <ImageView fx:id="courseThumbnail" fitHeight="127.0" fitWidth="197.0" preserveRatio="true" smooth="true" styleClass="course-thumbnail-img" />
+        </HBox>
+
         <HBox prefHeight="96.0" prefWidth="499.0" spacing="10" styleClass="input-group">
             <Label styleClass="input-label" text="Mô tả:" />
             <TextArea fx:id="descriptionField" editable="false" prefHeight="63.0" prefWidth="339.0" promptText="Nhập mô tả" style="-fx-background-color: white;" styleClass="textarea-field" wrapText="true" />
         </HBox>
+
         <HBox prefHeight="13.0" prefWidth="499.0" styleClass="btn-box">
-            <children>
-                <Button fx:id="cancelButton" mnemonicParsing="false" onAction="#handleCancel" prefHeight="70.0" prefWidth="76.0" styleClass="action-button" text="Hủy" />
-            </children>
+            <Button fx:id="cancelButton" mnemonicParsing="false" onAction="#handleCancel" prefHeight="70.0" prefWidth="76.0" styleClass="action-button" text="Hủy" />
         </HBox>
 
     </VBox>
+
+          <!-- Các label "Chi tiết" cố định, không ảnh hưởng layout -->
+    <Label fx:id="instructorDetailLabel" layoutX="205.0" layoutY="170.0" managed="false" prefWidth="370.0" styleClass="detail-label" text="Chi tiết người hướng dẫn ở đây..." visible="false" wrapText="true" />
+
+    <Label fx:id="categoryDetailLabel" layoutX="205.0" layoutY="215.0" managed="false" prefWidth="370.0" styleClass="detail-label" text="Chi tiết chủ đề ở đây..." visible="false" wrapText="true" />
 
 </AnchorPane>

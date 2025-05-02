@@ -5,6 +5,7 @@ import com.example.coursemanagement.Controllers.Client.CartController.Assignment
 import com.example.coursemanagement.Models.Assignment;
 import com.example.coursemanagement.Service.AssignmentService;
 import com.example.coursemanagement.Utils.DatabaseConfig;
+import com.example.coursemanagement.Utils.SessionManager;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -50,7 +51,7 @@ public class AssignmentController {
     private void loadAssignmentsToChart() throws SQLException {
         chartContainer.getChildren().clear(); // Xóa các cart cũ
 
-        List<Assignment> assignments = assignmentService.getAllAssignments();
+        List<Assignment> assignments = assignmentService.getAllAssignmentsByInstructorId(SessionManager.getInstance().getUser().getUserId());
         for (Assignment assignment : assignments) {
             try {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/Fxml/Client/Assignment/AssignmentCart.fxml"));
@@ -84,7 +85,6 @@ public class AssignmentController {
             }
         }
     }
-
 
 
     // Mở form thêm bài tập và cập nhật biểu đồ khi thêm xong

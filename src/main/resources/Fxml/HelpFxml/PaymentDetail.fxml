@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox prefHeight="700.0" prefWidth="600.0" spacing="20" style="-fx-padding: 20; -fx-background-color: #f5f5f5;" stylesheets="@../../Styles/Payment.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.coursemanagement.Controllers.PaymentDetailController">
+
+    <!-- Tiêu đề -->
+    <Label prefHeight="47.0" prefWidth="566.0" styleClass="title-box" text="Thanh toán" />
+
+    <!-- ScrollPane để chứa danh sách khóa học -->
+    <ScrollPane fitToWidth="true" prefHeight="526.0" prefWidth="560.0" style="-fx-background-color: transparent;">
+        <VBox fx:id="courseListContainer" spacing="15" />
+    </ScrollPane>
+   <HBox prefHeight="55.0" prefWidth="560.0" styleClass="title-box">
+      <children>
+         <Label prefHeight="26.0" prefWidth="399.0" text="Tổng tiền: " />
+         <Label fx:id="total" prefHeight="26.0" prefWidth="182.0" style="-fx-alignment: left;" text="20000" textFill="RED" />
+      </children>
+   </HBox>
+   <HBox prefHeight="80.0" prefWidth="460.0" styleClass="btn-box">
+      <children>
+         <Button fx:id="cancelButton" mnemonicParsing="false" onAction="#handleCancel" prefHeight="16.0" prefWidth="76.0" styleClass="action-button" text="Hủy" />
+         <Button fx:id="saveButton" onAction="#handlePurchase" prefHeight="27.0" prefWidth="102.0" styleClass="action-button" text="Mua khóa học" />
+      </children>
+   </HBox>
+
+</VBox>

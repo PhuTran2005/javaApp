@@ -81,11 +81,10 @@ public class StatisticsService {
         XYChart.Series<String, Number> series = new XYChart.Series<>();
         series.setName("Doanh thu");
 
-        String query = "SELECT TOP 10 c.course_name AS course_name, SUM(p.amount) AS revenue " +
+        String query = "SELECT TOP 10 c.course_name AS course_name, SUM(odt.price) AS revenue " +
                 "FROM Courses c " +
                 "LEFT JOIN Enrollments e ON c.course_id = e.course_id " +
-                "LEFT JOIN Payments p ON e.enrollments_id = p.enrollments_id " +
-                "WHERE p.status = 'Success' " +
+                "LEFT JOIN Order_Details odt ON e.enrollments_id = odt.enrollments_id " +
                 "GROUP BY c.course_name " +
                 "ORDER BY revenue DESC";
 

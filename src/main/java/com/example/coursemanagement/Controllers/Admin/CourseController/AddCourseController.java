@@ -7,6 +7,7 @@ import com.example.coursemanagement.Service.CategoriesService;
 import com.example.coursemanagement.Service.CourseService;
 import com.example.coursemanagement.Service.InstructorService;
 import com.example.coursemanagement.Utils.Alerts;
+import com.example.coursemanagement.Utils.SessionManager;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
@@ -17,6 +18,7 @@ import javafx.util.StringConverter;
 
 import java.io.File;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 public class AddCourseController {
@@ -114,8 +116,14 @@ public class AddCourseController {
     }
 
     public void setInstructorVal() {
-        List<Instructor> instructors = instructorService.getAllInstructor();
+        List<Instructor> instructors = new ArrayList<>();
+        if (SessionManager.getInstance().getUser().getRoleId() == 2) {
+            instructors.add(new Instructor(SessionManager.getInstance().getUser().getUserId(), SessionManager.getInstance().getUser().getFullname()));
+        } else {
+            instructors = instructorService.getAllInstructor();
+        }
         instructorField.getItems().addAll(instructors);
+        List<Instructor> finalInstructors = instructors;
         instructorField.setConverter(new StringConverter<>() {
             @Override
             public String toString(Instructor c) {
@@ -124,7 +132,7 @@ public class AddCourseController {
 
             @Override
             public Instructor fromString(String string) {
-                return instructors.stream().filter(c -> c.getFullname().equals(string)).findFirst().orElse(null);
+                return finalInstructors.stream().filter(c -> c.getFullname().equals(string)).findFirst().orElse(null);
             }
         });
         if (!instructors.isEmpty()) instructorField.setValue(instructors.get(0));

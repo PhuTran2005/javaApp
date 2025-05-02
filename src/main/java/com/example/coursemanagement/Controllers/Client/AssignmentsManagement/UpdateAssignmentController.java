@@ -5,6 +5,7 @@ import com.example.coursemanagement.Models.Assignment;
 import com.example.coursemanagement.Repository.CoursesRepository;
 import com.example.coursemanagement.Service.AssignmentService;
 import com.example.coursemanagement.Utils.DatabaseConfig;
+import com.example.coursemanagement.Utils.SessionManager;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.FileChooser;
@@ -18,7 +19,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.example.coursemanagement.Service.UserService.getCurrentInstructorId;
 
 public class UpdateAssignmentController {
 
@@ -68,7 +68,7 @@ public class UpdateAssignmentController {
         fileNameLabel.setText(assignment.getFileName() != null ? assignment.getFileName() : "Chưa chọn file");
 
         try {
-            int currentInstructorId = getCurrentInstructorId();
+            int currentInstructorId = SessionManager.getInstance().getUser().getUserId();
 
             List<CourseDetailDTO> courses = coursesRepository.getCoursesByInstructor(currentInstructorId);
 

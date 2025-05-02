@@ -1,22 +1,23 @@
-﻿CREATE DATABASE IT_Course_Management;
+﻿-- 1. Tạo Database
+CREATE DATABASE IT_Course_Management;
 GO
 USE IT_Course_Management;
 GO
 
--- 1. Bảng Roles
+-- 2. Roles
 CREATE TABLE Roles (
     role_id INT PRIMARY KEY IDENTITY(1,1),
     role_name NVARCHAR(50) NOT NULL UNIQUE,
     description NVARCHAR(MAX)
 );
 
--- 2. Bảng Permissions
+-- 3. Permissions
 CREATE TABLE Permissions (
     permission_id INT PRIMARY KEY IDENTITY(1,1),
     permission_name NVARCHAR(100) NOT NULL UNIQUE
 );
 
--- 3. Gán quyền cho Role
+-- 4. Role_Permissions
 CREATE TABLE Role_Permissions (
     role_id INT,
     permission_id INT,
@@ -25,7 +26,7 @@ CREATE TABLE Role_Permissions (
     FOREIGN KEY (permission_id) REFERENCES Permissions(permission_id) ON DELETE CASCADE
 );
 
--- 4. Bảng Users
+-- 5. Users
 CREATE TABLE Users (
     user_id INT PRIMARY KEY IDENTITY(1,1),
     email NVARCHAR(100) NOT NULL UNIQUE,
@@ -37,7 +38,7 @@ CREATE TABLE Users (
     FOREIGN KEY (role_id) REFERENCES Roles(role_id) ON DELETE SET NULL
 );
 
--- 5. Giao quyền cá nhân
+-- 6. User_Permissions
 CREATE TABLE User_Permissions (
     user_id INT,
     permission_id INT,
@@ -46,7 +47,7 @@ CREATE TABLE User_Permissions (
     FOREIGN KEY (permission_id) REFERENCES Permissions(permission_id) ON DELETE CASCADE
 );
 
--- 6. Bảng Instructors
+-- 7. Instructors
 CREATE TABLE Instructors (
     instructor_id INT PRIMARY KEY,
     specialty NVARCHAR(100),
@@ -55,7 +56,7 @@ CREATE TABLE Instructors (
     FOREIGN KEY (instructor_id) REFERENCES Users(user_id) ON DELETE CASCADE
 );
 
--- 7. Bảng Students
+-- 8. Students
 CREATE TABLE Students (
     student_id INT PRIMARY KEY,
     class NVARCHAR(50),
@@ -64,14 +65,14 @@ CREATE TABLE Students (
     FOREIGN KEY (student_id) REFERENCES Users(user_id) ON DELETE CASCADE
 );
 
--- 8. Bảng Categories
+-- 9. Categories
 CREATE TABLE Categories (
     category_id INT PRIMARY KEY IDENTITY(1,1),
     category_name NVARCHAR(100) UNIQUE NOT NULL,
     description NVARCHAR(MAX)
 );
 
--- 9. Bảng Courses
+-- 10. Courses
 CREATE TABLE Courses (
     course_id INT PRIMARY KEY IDENTITY(1,1),
     course_name NVARCHAR(100) NOT NULL,
@@ -88,7 +89,7 @@ CREATE TABLE Courses (
     FOREIGN KEY (category_id) REFERENCES Categories(category_id) ON DELETE SET NULL
 );
 
--- 10. Bảng Course_Instructors (nhiều GV dạy 1 khóa)
+-- 11. Course_Instructors (nhiều giảng viên dạy 1 khóa)
 CREATE TABLE Course_Instructors (
     id INT PRIMARY KEY IDENTITY(1,1),
     course_id INT,
@@ -98,30 +99,7 @@ CREATE TABLE Course_Instructors (
     UNIQUE (course_id, user_id)
 );
 
--- 11. Bảng Enrollments
-CREATE TABLE Enrollments (
-    enrollments_id INT PRIMARY KEY IDENTITY(1,1),
-    user_id INT NOT NULL,
-    course_id INT NOT NULL,
-    enrollment_date DATETIME DEFAULT GETDATE(),
-    payment_status NVARCHAR(10) CHECK (payment_status IN ('PAID', 'UNPAID')) NOT NULL DEFAULT 'UNPAID',
-    FOREIGN KEY (user_id) REFERENCES Users(user_id) ON DELETE CASCADE,
-    FOREIGN KEY (course_id) REFERENCES Courses(course_id) ON DELETE CASCADE,
-    UNIQUE (user_id, course_id)
-);
-
--- 12. Bảng Payments
-CREATE TABLE Payments (
-    payments_id INT PRIMARY KEY IDENTITY(1,1),
-    enrollments_id INT UNIQUE,
-    amount DECIMAL(10,2) NOT NULL CHECK (amount >= 0),
-    method NVARCHAR(50) CHECK (method IN ('VNPay', 'Momo', 'Bank Transfer', 'Cash')) NOT NULL,
-    status NVARCHAR(10) CHECK (status IN ('Success', 'Pending', 'Failed')) NOT NULL DEFAULT 'Pending',
-    payment_date DATETIME,
-    FOREIGN KEY (enrollments_id) REFERENCES Enrollments(enrollments_id) ON DELETE CASCADE
-);
-
--- 13. Bảng Cart
+-- 12. Cart
 CREATE TABLE Cart (
     cart_id INT PRIMARY KEY IDENTITY(1,1),
     user_id INT NOT NULL,
@@ -133,7 +111,85 @@ CREATE TABLE Cart (
     FOREIGN KEY (course_id) REFERENCES Courses(course_id) ON DELETE CASCADE
 );
 
--- 14. Bảng Logs
+-- 13. Enrollments
+CREATE TABLE Enrollments (
+    enrollments_id INT PRIMARY KEY IDENTITY(1,1),
+    user_id INT NOT NULL,
+    course_id INT NOT NULL,
+    enrollment_date DATETIME DEFAULT GETDATE(),
+    payment_status NVARCHAR(10) CHECK (payment_status IN ('PAID', 'UNPAID')) NOT NULL DEFAULT 'UNPAID',
+    FOREIGN KEY (user_id) REFERENCES Users(user_id) ON DELETE CASCADE,
+    FOREIGN KEY (course_id) REFERENCES Courses(course_id) ON DELETE CASCADE,
+    UNIQUE (user_id, course_id)
+);
+
+-- 14. Orders (MỚI)
+CREATE TABLE Orders (
+    order_id INT PRIMARY KEY IDENTITY(1,1),
+    user_id INT NOT NULL,
+    total_amount DECIMAL(10,2) NOT NULL CHECK (total_amount >= 0),
+    status NVARCHAR(10) CHECK (status IN ('Pending', 'Paid', 'Failed')) DEFAULT 'Pending',
+    created_at DATETIME DEFAULT GETDATE(),
+    payment_method NVARCHAR(50),
+    FOREIGN KEY (user_id) REFERENCES Users(user_id) ON DELETE CASCADE
+);
+
+-- 15. Order_Details (MỚI)
+CREATE TABLE Order_Details (
+    order_detail_id INT PRIMARY KEY IDENTITY(1,1),
+    order_id INT NOT NULL,
+    enrollments_id INT NOT NULL,
+    price DECIMAL(10,2) NOT NULL,
+    FOREIGN KEY (order_id) REFERENCES Orders(order_id) ON DELETE CASCADE,
+    FOREIGN KEY (enrollments_id) REFERENCES Enrollments(enrollments_id) ON DELETE NO ACTION
+);
+
+-- 16. Payments (CHỈNH SỬA)
+CREATE TABLE Payments (
+    payments_id INT PRIMARY KEY IDENTITY(1,1),
+    order_id INT UNIQUE,
+    amount DECIMAL(10,2) NOT NULL CHECK (amount >= 0),
+    method NVARCHAR(50) CHECK (method IN ('VNPay', 'Momo', 'Bank Transfer', 'Cash')) NOT NULL,
+    status NVARCHAR(10) CHECK (status IN ('Success', 'Pending', 'Failed')) NOT NULL DEFAULT 'Pending',
+    payment_date DATETIME DEFAULT GETDATE(),
+    FOREIGN KEY (order_id) REFERENCES Orders(order_id) ON DELETE CASCADE
+);
+select * from Enrollments
+
+--17. bảng Assignments
+CREATE TABLE Assignments (
+    assignment_id INT PRIMARY KEY IDENTITY(1,1),
+    title NVARCHAR(255) NOT NULL,
+    description NVARCHAR(MAX),
+    file_path NVARCHAR(500), -- đường dẫn file bài tập
+	file_name NVARCHAR(200),
+    course_id INT NOT NULL,
+    teacher_id INT NULL, -- sửa thành NULLABLE
+    due_date DATETIME,
+	completed BIT DEFAULT 0,  -- 0 là chưa hoàn thành, 1 là đã hoàn thành
+    created_at DATETIME DEFAULT GETDATE(),
+    FOREIGN KEY (course_id) REFERENCES Courses(course_id) ON DELETE CASCADE,
+    FOREIGN KEY (teacher_id) REFERENCES Users(user_id) ON DELETE SET NULL
+);
+
+
+--18 bảng Submissions 
+CREATE TABLE Submissions (
+    submission_id INT PRIMARY KEY IDENTITY(1,1),
+    assignment_id INT NOT NULL,
+    student_id INT NOT NULL, -- user_id của học viên
+    file_path NVARCHAR(500), -- đường dẫn file học viên nộp
+    submitted_at DATETIME DEFAULT GETDATE(),
+    grade FLOAT CHECK (grade >= 0 AND grade <= 10), -- có thể NULL nếu chưa chấm
+    feedback NVARCHAR(MAX), -- nhận xét của giảng viên
+    FOREIGN KEY (assignment_id) REFERENCES Assignments(assignment_id) ON DELETE CASCADE,
+    FOREIGN KEY (student_id) REFERENCES Users(user_id) ON DELETE CASCADE,
+    UNIQUE (assignment_id, student_id) -- 1 học viên chỉ nộp 1 lần/1 bài
+);
+
+
+
+-- 17. Logs
 CREATE TABLE Logs (
     log_id INT PRIMARY KEY IDENTITY(1,1),
     user_id INT,
@@ -143,11 +199,182 @@ CREATE TABLE Logs (
 );
 
 
+-- insert từng Procedure
+-- Stored Procedure để lấy danh sách khóa học có phân trang
+CREATE PROCEDURE GetPaginatedCourses
+    @PageNumber INT = 1,            -- Số trang hiện tại
+    @PageSize INT = 8,              -- Số lượng mục trên mỗi trang
+    @TotalRecords INT OUTPUT        -- Tổng số bản ghi
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    -- Tính tổng số bản ghi
+    SELECT @TotalRecords = COUNT(*)
+    FROM Courses
+    WHERE is_deleted = 0;
+
+    -- Lấy danh sách khóa học theo trang
+    SELECT 
+                    c.course_id, 
+                    c.course_name, 
+                    c.description AS course_description, 
+                    c.fee,
+                    c.start_date, 
+                    c.end_date,
+                    c.create_date AS course_create_date,
+                    c.course_thumbnail, 
+                    c.is_deleted, 
+
+                -- Instructor Info
+                    i.specialty,
+                    i.degree, 
+                    i.years_of_experience, 
+
+                -- User Info (người giảng dạy)
+                    u.user_id, 
+                    u.full_name AS instructor_name,
+                    u.email AS instructor_email,
+                    u.role_id, 
+                    u.phonenumber, 
+                    u.create_date, 
+
+                -- Category Info
+                    cat.category_id, 
+                    cat.category_name,
+                    cat.description AS category_description -- // ← Không có dấu phẩy ở cuối dòng này
+
+    FROM Courses c
+    LEFT JOIN Instructors i ON c.instructor_id = i.instructor_id
+    LEFT JOIN Users u ON i.instructor_id = u.user_id
+    LEFT JOIN Categories cat ON c.category_id = cat.category_id
+    WHERE c.is_deleted = 0
+    ORDER BY c.create_date DESC
+    OFFSET (@PageNumber - 1) * @PageSize ROWS
+    FETCH NEXT @PageSize ROWS ONLY;
+END
+
+
+-- Stored Procedure để tìm kiếm khóa học có phân trang
+CREATE PROCEDURE SearchPaginatedCourses
+    @SearchQuery NVARCHAR(100),     -- Từ khóa tìm kiếm
+    @PageNumber INT = 1,            -- Số trang hiện tại
+    @PageSize INT = 8,              -- Số lượng mục trên mỗi trang
+    @TotalRecords INT OUTPUT        -- Tổng số bản ghi
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    -- Tính tổng số bản ghi phù hợp với từ khóa tìm kiếm
+    SELECT @TotalRecords = COUNT(*)
+    FROM Courses c
+    WHERE c.is_deleted = 0 AND 
+          (c.course_name LIKE '%' + @SearchQuery + '%' OR c.description LIKE '%' + @SearchQuery + '%');
+
+    -- Lấy danh sách khóa học theo trang và từ khóa
+    SELECT 
+                    c.course_id, 
+                    c.course_name, 
+                    c.description AS course_description, 
+                    c.fee,
+                    c.start_date, 
+                    c.end_date,
+                    c.create_date AS course_create_date,
+                    c.course_thumbnail, 
+                    c.is_deleted, 
+
+                -- Instructor Info
+                    i.specialty,
+                    i.degree, 
+                    i.years_of_experience, 
+
+                -- User Info (người giảng dạy)
+                    u.user_id, 
+                    u.full_name AS instructor_name,
+                    u.email AS instructor_email,
+                    u.role_id, 
+                    u.phonenumber, 
+                    u.create_date, 
+
+                -- Category Info
+                    cat.category_id, 
+                    cat.category_name,
+                    cat.description AS category_description -- // ← Không có dấu phẩy ở cuối dòng này
+    FROM Courses c
+    LEFT JOIN Instructors i ON c.instructor_id = i.instructor_id
+    LEFT JOIN Users u ON i.instructor_id = u.user_id
+    LEFT JOIN Categories cat ON c.category_id = cat.category_id
+    WHERE c.is_deleted = 0 AND 
+          (c.course_name LIKE '%' + @SearchQuery + '%' OR c.description LIKE '%' + @SearchQuery + '%')
+    ORDER BY c.create_date DESC
+    OFFSET (@PageNumber - 1) * @PageSize ROWS
+    FETCH NEXT @PageSize ROWS ONLY;
+END
+
+
+-- Stored Procedure để lọc khóa học theo danh mục có phân trang
+CREATE PROCEDURE FilterPaginatedCoursesByCategory
+    @CategoryId INT,                -- ID danh mục
+    @PageNumber INT = 1,            -- Số trang hiện tại
+    @PageSize INT = 8,              -- Số lượng mục trên mỗi trang
+    @TotalRecords INT OUTPUT        -- Tổng số bản ghi
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    -- Tính tổng số bản ghi theo danh mục
+    SELECT @TotalRecords = COUNT(*)
+    FROM Courses c
+    WHERE c.is_deleted = 0 AND c.category_id = @CategoryId;
+
+    -- Lấy danh sách khóa học theo trang và danh mục
+    SELECT 
+                    c.course_id, 
+                    c.course_name, 
+                    c.description AS course_description, 
+                    c.fee,
+                    c.start_date, 
+                    c.end_date,
+                    c.create_date AS course_create_date,
+                    c.course_thumbnail, 
+                    c.is_deleted, 
+
+                -- Instructor Info
+                    i.specialty,
+                    i.degree, 
+                    i.years_of_experience, 
+
+                -- User Info (người giảng dạy)
+                    u.user_id, 
+                    u.full_name AS instructor_name,
+                    u.email AS instructor_email,
+                    u.role_id, 
+                    u.phonenumber, 
+                    u.create_date, 
+
+                -- Category Info
+                    cat.category_id, 
+                    cat.category_name,
+                    cat.description AS category_description -- // ← Không có dấu phẩy ở cuối dòng này
+    FROM Courses c
+    LEFT JOIN Instructors i ON c.instructor_id = i.instructor_id
+    LEFT JOIN Users u ON i.instructor_id = u.user_id
+    LEFT JOIN Categories cat ON c.category_id = cat.category_id
+    WHERE c.is_deleted = 0 AND c.category_id = @CategoryId
+    ORDER BY c.create_date DESC
+    OFFSET (@PageNumber - 1) * @PageSize ROWS
+    FETCH NEXT @PageSize ROWS ONLY;
+END
+
 
 -- Xóa các bảng có khóa ngoại trước
 -- Xóa các bảng cũ nếu tồn tại (đưa lên đầu)
 DROP TABLE IF EXISTS Logs;
+DROP TABLE IF EXISTS Submissions;
+DROP TABLE IF EXISTS Assignments;
 DROP TABLE IF EXISTS Payments;
+DROP TABLE IF EXISTS Order_Details;
+DROP TABLE IF EXISTS Orders;
 DROP TABLE IF EXISTS Enrollments;
 DROP TABLE IF EXISTS Course_Instructors;
 DROP TABLE IF EXISTS Cart;
@@ -161,12 +388,6 @@ DROP TABLE IF EXISTS Role_Permissions;
 DROP TABLE IF EXISTS Permissions;
 DROP TABLE IF EXISTS Roles;
 
-
-
--- Thêm người dùng với quyền ADMIN
-INSERT INTO Users (full_name, password_hash, role_id, email, phonenumber)
-VALUES 
-('admin', '$2a$10$Y0L8WUUWemHJhCJUG4J17uoUrcePpEA8RgMs1bOgFhNauW5HK5qUe', 1, 'admin@gmail.com', '0123456789');
 
 -- Roles
 INSERT INTO Roles(role_name, description)
@@ -188,6 +409,12 @@ VALUES
 (2, 1), (2, 2), (2, 6),  -- Instructor có thể tạo, sửa khóa học và chấm điểm
 (3, 4), (3, 5);          -- Student có quyền đăng ký và xem khóa học
 
+
+SELECT FORMAT(p.payment_date, 'yyyy-MM-dd') AS month, SUM(p.amount) AS revenue 
+                FROM Payments p 
+                WHERE p.status = 'Success' 
+                GROUP BY FORMAT(p.payment_date, 'yyyy-MM-dd') 
+                ORDER BY month ASC
 -- Users (mật khẩu giả lập, hash ở đây là chỉ để mẫu)
 INSERT INTO Users(email, password_hash, full_name, role_id, phonenumber)
 VALUES 
@@ -196,7 +423,7 @@ VALUES
 ('gv2@example.com', '$2a$10$Y0L8WUUWemHJhCJUG4J17uoUrcePpEA8RgMs1bOgFhNauW5HK5qUe', N'Lê Thị B', 2, '0987654321'),
 ('sv1@example.com', '$2a$10$Y0L8WUUWemHJhCJUG4J17uoUrcePpEA8RgMs1bOgFhNauW5HK5qUe', N'Phạm Học Viên 1', 3, '0901122334'),
 ('sv2@example.com', '$2a$10$Y0L8WUUWemHJhCJUG4J17uoUrcePpEA8RgMs1bOgFhNauW5HK5qUe', N'Ngô Học Viên 2', 3, '0902233445');
-
+select * from Enrollments
 -- Instructors
 INSERT INTO Instructors(instructor_id, specialty, degree, years_of_experience)
 VALUES 
@@ -218,9 +445,9 @@ VALUES
 -- Courses
 INSERT INTO Courses(course_name, description, instructor_id, category_id, start_date, fee, end_date)
 VALUES
-(N'Java Cơ Bản', N'Học Java từ đầu', 2, 1, '2025-05-01', 1000000, '2025-08-01'),
-(N'Thiết kế Web', N'HTML/CSS/JS cơ bản', 3, 2, '2025-05-10', 1200000, '2025-08-10');
-
+(N'Ja', N'Học Java ', 2, 1, '2025-05-01', 1500000, '2025-08-01'),
+(N'Thi', N'HTML', 3, 2, '2025-05-10', 1206000, '2025-08-10');
+select * from Courses
 -- Course_Instructors
 INSERT INTO Course_Instructors(course_id, user_id)
 VALUES
@@ -242,10 +469,17 @@ INSERT INTO Cart(user_id, course_id, quantity, status)
 VALUES
 (5, 1, 1, 'PENDING');
 
+
+INSERT INTO Submissions (assignment_id, student_id, file_path, submitted_at, grade, feedback)
+VALUES (7, 4, 'Submissions/assignment1_sv1.txt', GETDATE(), NULL, NULL);
+
+-- Học viên 5 nộp bài
+INSERT INTO Submissions (assignment_id, student_id, file_path, submitted_at, grade, feedback)
+VALUES (7, 5, 'Submissions/assignment1_sv2.txt', GETDATE(), NULL, NULL);
+
 -- Logs
 INSERT INTO Logs(user_id, action)
 VALUES
 (1, N'Thêm khóa học mới: Java Cơ Bản'),
 (4, N'Đăng ký khóa học Java Cơ Bản'),
-(5, N'Thêm khóa học vào giỏ hàng: Java Cơ Bản');
-select * from Cart
+(5, N'Thêm khóa học vào giỏ hàng: Java Cơ Bản')

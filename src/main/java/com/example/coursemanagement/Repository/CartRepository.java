@@ -3,6 +3,7 @@ package com.example.coursemanagement.Repository;
 import com.example.coursemanagement.Models.Cart;
 import com.example.coursemanagement.Utils.DatabaseConfig;
 
+import java.net.ConnectException;
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -44,6 +45,19 @@ public class CartRepository {
         try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, cartId);
+            stmt.executeUpdate();
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public boolean removeFromCartUser(int userId) {
+        String sql = "DELETE FROM Cart WHERE user_id = ?";
+        try (Connection conn = DatabaseConfig.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, userId);
             stmt.executeUpdate();
             return true;
         } catch (SQLException e) {
@@ -121,6 +135,23 @@ public class CartRepository {
             e.printStackTrace();
         }
         return count;
+    }
+
+    public double getTotalCart(int userId) {
+        String sql = "select  sum(co.fee) as total  from Cart c\n" +
+                "join Courses co on co.course_id = c.course_id\n" +
+                "where c.user_Id = ?";
+        try (Connection conn = DatabaseConfig.getConnection()) {
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            stmt.setInt(1, userId);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getDouble("total");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
     }
 
 

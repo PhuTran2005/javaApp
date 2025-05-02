@@ -4,6 +4,7 @@ import com.example.coursemanagement.Dto.CourseDetailDTO;
 import com.example.coursemanagement.Models.Course;
 import com.example.coursemanagement.Service.CourseService;
 import com.example.coursemanagement.Utils.Alerts;
+import com.example.coursemanagement.Utils.SessionManager;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -38,6 +39,8 @@ public class CourseBoxController {
     public ImageView courseThumbnail;
     @FXML
     public Button recover_btn;
+    @FXML
+    public Button delete_btn;
     private CourseDetailDTO currCourse;
     private final Alerts alerts = new Alerts(); // Tạo repository
     private final CourseService courseService = new CourseService(); // Tạo repository
@@ -59,15 +62,17 @@ public class CourseBoxController {
 
     //Load data cho mỗi box
     public void setData(CourseDetailDTO course) {
+        if (SessionManager.getInstance().getUser().getRoleId() == 2) {
+            if (delete_btn != null) {
+                delete_btn.setVisible(false);
+                delete_btn.setManaged(false);
+            }
+        }
         this.currCourse = course;
         courseName.setText(course.getCourse().getCourseName());
         courseInstructorName.setText("GV: " + course.getInstructor().getFullname());
         coursePrice.setText("Giá: " + course.getCourse().getCoursePrice() + " VND");
 
-
-        //load nút
-//        loadModifierUI();
-        // Load ảnh
 
         String thumbnailPath = "/" + course.getCourse().getCourseThumbnail();
         try {

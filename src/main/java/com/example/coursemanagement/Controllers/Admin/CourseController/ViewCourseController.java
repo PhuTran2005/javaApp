@@ -75,8 +75,8 @@ public class ViewCourseController {
 
     public void initDataFromCurrCourse(CourseDetailDTO course) {
         if (course != null) {
-            categoryDetailLabel.setText(course.getCategory().getCategoryDescription());
-            instructorDetailLabel.setText(course.getInstructor().getExpertise());
+            categoryDetailLabel.setText("Mô tả: " + course.getCategory().getCategoryDescription());
+            instructorDetailLabel.setText("Chuyên ngành: " + course.getInstructor().getExpertise());
             courseNameField.setText(course.getCourse().getCourseName());
             instructorField.setText(course.getInstructor().getFullname());
             categoryField.setText(course.getCategory().getCategoryName());

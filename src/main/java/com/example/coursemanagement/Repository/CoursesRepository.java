@@ -102,7 +102,8 @@ public class CoursesRepository {
                 "LEFT JOIN Instructors i ON c.instructor_id = i.instructor_id " +
                 "LEFT JOIN Users u ON i.instructor_id = u.user_id " +
                 "LEFT JOIN Categories cat ON c.category_id = cat.category_id " +
-                "where c.is_deleted = ? ";
+                "where c.is_deleted = ? " +
+                "ORDER BY course_create_date DESC";
 
 
         try (Connection conn = DatabaseConfig.getConnection()) {
@@ -124,7 +125,65 @@ public class CoursesRepository {
 
         return list;
     }
+    public List<CourseDetailDTO> getAllCourseDetailsByInstructorId(int instructorId) {
+        List<CourseDetailDTO> list = new ArrayList<>();
 
+        String sql = "SELECT " +
+                "    c.course_id, " +
+                "    c.course_name, " +
+                "    c.description AS course_description, " +
+                "    c.fee, " +
+                "    c.start_date, " +
+                "    c.end_date, " +
+                "    c.create_date AS course_create_date, " +
+                "    c.course_thumbnail, " +
+                "    c.is_deleted, " +
+
+                // Instructor Info
+                "    i.specialty, " +
+                "    i.degree, " +
+                "    i.years_of_experience, " +
+
+                // User Info (người giảng dạy)
+                "    u.user_id, " +
+                "    u.full_name AS instructor_name, " +
+                "    u.email AS instructor_email, " +
+                "    u.role_id, " +
+                "    u.phonenumber, " +
+                "    u.create_date, " +
+
+                // Category Info
+                "    cat.category_id, " +
+                "    cat.category_name, " +
+                "    cat.description AS category_description " +  // ← Không có dấu phẩy ở cuối dòng này
+
+                "FROM Courses c " +  // ← Nhớ thêm khoảng trắng
+                "LEFT JOIN Instructors i ON c.instructor_id = i.instructor_id " +
+                "LEFT JOIN Users u ON i.instructor_id = u.user_id " +
+                "LEFT JOIN Categories cat ON c.category_id = cat.category_id " +
+                "where c.is_deleted = 0 and c.instructor_id = ?" +
+                "ORDER BY course_create_date DESC";
+
+
+        try (Connection conn = DatabaseConfig.getConnection()) {
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            stmt.setInt(1, instructorId);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                Course course = new Course(rs.getInt("course_id"), rs.getInt("category_id"), rs.getInt("user_id"), rs.getString("course_name"), rs.getString("course_description"), rs.getString("course_thumbnail"), rs.getDouble("fee"), rs.getString("course_create_date"), rs.getDate("start_date").toLocalDate(), rs.getDate("end_date").toLocalDate(), rs.getBoolean("is_deleted"));
+                Category category = new Category(rs.getInt("category_id"), rs.getString("category_name"), rs.getString("category_description"));
+                Instructor instructor = new Instructor(rs.getInt("user_id"), rs.getString("instructor_email"), rs.getString("instructor_name"), rs.getInt("role_id"), rs.getString("phonenumber"), rs.getString("create_date"), rs.getString("specialty"), rs.getString("degree"), rs.getInt("years_of_experience"));
+                CourseDetailDTO dto = new CourseDetailDTO(course, category, instructor);
+                list.add(dto);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return list;
+    }
 
     public List<CourseDetailDTO> getAllCoursesByName(String query) {
         List<CourseDetailDTO> list = new ArrayList<>();
@@ -162,7 +221,8 @@ public class CoursesRepository {
                 "LEFT JOIN Instructors i ON c.instructor_id = i.instructor_id " +
                 "LEFT JOIN Users u ON i.instructor_id = u.user_id " +
                 "LEFT JOIN Categories cat ON c.category_id = cat.category_id " +
-                "WHERE c.course_name LIKE ? and c.is_deleted = 0;";
+                "WHERE c.course_name LIKE ? and c.is_deleted = 0 " +
+                "ORDER BY course_create_date DESC";
 
 
         try (Connection conn = DatabaseConfig.getConnection()) {
@@ -219,8 +279,8 @@ public class CoursesRepository {
                 "LEFT JOIN Instructors i ON c.instructor_id = i.instructor_id " +
                 "LEFT JOIN Users u ON i.instructor_id = u.user_id " +
                 "LEFT JOIN Categories cat ON c.category_id = cat.category_id "
-
-                + "where c.course_id = ? and c.is_deleted = 0";
+                + "where c.course_id = ? and c.is_deleted = 0 " +
+                "ORDER BY course_create_date DESC";
         try (Connection conn = DatabaseConfig.getConnection()) {
             PreparedStatement stmt = conn.prepareStatement(sql);
             stmt.setInt(1, courseId);
@@ -238,6 +298,20 @@ public class CoursesRepository {
         }
 
         return null;
+    }
+
+    public boolean checkBuyCourse(int userId, int courseId) {
+        String sql = "select * from Enrollments where user_id = ? and course_id = ?";
+        try (Connection conn = DatabaseConfig.getConnection()) {
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            stmt.setInt(1, userId);
+            stmt.setInt(2, courseId);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 
     public boolean softDeleteCourse(int courseId) {

@@ -17,10 +17,9 @@
          <children>
 
             <!-- Thanh công cụ: Add, Upload, Filter, Search -->
-            <AnchorPane prefHeight="130.0" prefWidth="886.0" styleClass="white-bg" stylesheets="@../../Styles/admin_dashboard.css">
+            <AnchorPane prefHeight="130.0" prefWidth="900.0" styleClass="white-bg" stylesheets="@../../Styles/admin_dashboard.css">
                <children>
-                  <Button fx:id="editButton" graphicTextGap="2.0" layoutX="685.0" layoutY="116.0" mnemonicParsing="false" prefHeight="31.0" prefWidth="66.0" style="-fx-background-color: #007bff;" styleClass="shadow" stylesheets="@../../Styles/admin_dashboard.css"
-                          onAction="#onEditClicked" text="Edit" textFill="WHITE">
+                  <Button fx:id="editButton" graphicTextGap="2.0" layoutX="685.0" layoutY="116.0" mnemonicParsing="false" onAction="#onEditClicked" prefHeight="31.0" prefWidth="66.0" style="-fx-background-color: #007bff;" styleClass="shadow" stylesheets="@../../Styles/admin_dashboard.css" text="Edit" textFill="WHITE">
                      <font>
                         <Font name="System Bold" size="13.0" />
                      </font>

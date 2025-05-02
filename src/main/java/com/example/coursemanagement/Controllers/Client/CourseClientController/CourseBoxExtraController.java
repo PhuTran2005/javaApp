@@ -1,7 +1,9 @@
 package com.example.coursemanagement.Controllers.Client.CourseClientController;
 
+import com.example.coursemanagement.Controllers.Admin.CourseController.AddCourseController;
 import com.example.coursemanagement.Controllers.Admin.CourseController.ViewCourseController;
 import com.example.coursemanagement.Controllers.Client.ClientMenuController;
+import com.example.coursemanagement.Controllers.PaymentDetailController;
 import com.example.coursemanagement.Dto.CourseDetailDTO;
 import com.example.coursemanagement.Models.Course;
 import com.example.coursemanagement.Service.CartService;
@@ -23,6 +25,7 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.Collections;
 import java.util.ResourceBundle;
 
 
@@ -101,6 +104,10 @@ public class CourseBoxExtraController implements Initializable {
     //Xử lý add Cart
     @FXML
     private void handleAddCart() {
+        if (courseService.isExistCourse(SessionManager.getInstance().getUser().getUserId(), currCourse.getCourse().getCourseId())) {
+            alerts.showErrorAlert("Bạn đã đăng ký khóa học");
+            return;
+        }
         if (cartService.isExistedInCart(SessionManager.getInstance().getUser().getUserId(), currCourse.getCourse().getCourseId())) {
             alerts.showErrorAlert("Khóa học đã được thêm vào cart");
         } else {
@@ -117,8 +124,27 @@ public class CourseBoxExtraController implements Initializable {
     //Xử lý mua
     @FXML
     private void handleBuy() {
-        System.out.println("Buy now");
+        if (courseService.isExistCourse(SessionManager.getInstance().getUser().getUserId(), currCourse.getCourse().getCourseId())) {
+            alerts.showErrorAlert("Bạn đã đăng ký khóa học");
+            return;
+        }
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/Fxml/HelpFxml/PaymentDetail.fxml"));
+            Parent root = loader.load();
 
+            PaymentDetailController paymentDetailController = loader.getController();
+            paymentDetailController.setTotalPrice(currCourse.getCourse().getCoursePrice());
+            paymentDetailController.setList(Collections.singletonList(currCourse));
+            Stage stage = new Stage();
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.setTitle("Thanh toán");
+            stage.setResizable(false);
+            stage.setScene(new Scene(root));
+            stage.showAndWait();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
     }
 

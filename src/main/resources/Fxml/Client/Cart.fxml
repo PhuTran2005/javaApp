@@ -11,57 +11,74 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane prefHeight="750.0" prefWidth="850.0" stylesheets="@../../Styles/Course.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.coursemanagement.Controllers.Client.CartController.CartController">
-   <HBox layoutX="20.0" layoutY="23.0" prefHeight="46.0" prefWidth="840.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="20.0">
-      <children>
-         <HBox prefHeight="46.0" prefWidth="539.0" style="-fx-alignment: center;" styleClass="title-box">
-            <children>
-               <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-text-alignment: center;" text="Giỏ hàng của bạn" wrappingWidth="742.1367220878601">
-                  <font>
-                     <Font size="18.0" />
-                  </font>
-               </Text>
-            </children>
-         </HBox>
-         <Button mnemonicParsing="false" onAction="#handleClear" prefHeight="46.0" prefWidth="66.0" styleClass="image-button">
-            <graphic>
-               <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
-                  <image>
-                     <Image url="@../../Images/bin.png" />
-                  </image>
-               </ImageView>
-            </graphic>
-            <HBox.margin>
-               <Insets left="10.0" />
-            </HBox.margin>
-         </Button>
-      </children>
-   </HBox>
-   <ScrollPane fx:id="listCourse" layoutX="24.0" layoutY="138.0" prefHeight="574.0" prefWidth="850.0" AnchorPane.bottomAnchor="80.0" AnchorPane.leftAnchor="25.0" AnchorPane.rightAnchor="25.0" AnchorPane.topAnchor="80.0">
-      <content>
-         <FlowPane fx:id="courseContainer" hgap="30" prefWrapLength="800" vgap="30" />
+<AnchorPane prefHeight="750.0" prefWidth="850.0" stylesheets="@../../Styles/Course.css"
+            xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.example.coursemanagement.Controllers.Client.CartController.CartController">
+    <HBox layoutX="20.0" layoutY="23.0" prefHeight="46.0" prefWidth="840.0" AnchorPane.leftAnchor="20.0"
+          AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="20.0">
+        <children>
+            <HBox prefHeight="46.0" prefWidth="539.0" style="-fx-alignment: center;" styleClass="title-box">
+                <children>
+                    <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-text-alignment: center;"
+                          text="Giỏ hàng của bạn" wrappingWidth="742.1367220878601">
+                        <font>
+                            <Font size="18.0"/>
+                        </font>
+                    </Text>
+                </children>
+            </HBox>
+            <Button mnemonicParsing="false" onAction="#handleClear" prefHeight="46.0" prefWidth="66.0"
+                    styleClass="image-button">
+                <graphic>
+                    <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                        <image>
+                            <Image url="@../../Images/clean.png"/>
+                        </image>
+                    </ImageView>
+                </graphic>
+                <HBox.margin>
+                    <Insets left="10.0"/>
+                </HBox.margin>
+            </Button>
+        </children>
+    </HBox>
+    <ScrollPane fx:id="listCourse" layoutX="24.0" layoutY="138.0" prefHeight="574.0" prefWidth="850.0"
+                AnchorPane.bottomAnchor="80.0" AnchorPane.leftAnchor="25.0" AnchorPane.rightAnchor="25.0"
+                AnchorPane.topAnchor="80.0">
+        <content>
+            <FlowPane fx:id="courseContainer" hgap="30" prefWrapLength="800" vgap="30"/>
 
-      </content>
-   </ScrollPane>
-   <HBox layoutX="20.0" layoutY="670.0" prefHeight="46.0" prefWidth="836.0" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0">
-      <children>
-         <HBox prefHeight="46.0" prefWidth="690.0" style="-fx-alignment: center;" styleClass="title-box">
-            <children>
-               <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-text-alignment: left;" text="Tổng tiền: " wrappingWidth="686.1367220878601">
-                  <font>
-                     <Font size="18.0" />
-                  </font>
-               </Text>
-            </children>
-         </HBox>
-         <Button mnemonicParsing="false" onAction="#handleClear" prefHeight="46.0" prefWidth="121.0" styleClass="image-button" text="Thanh toán">
-            <HBox.margin>
-               <Insets left="10.0" />
-            </HBox.margin>
-            <font>
-               <Font size="14.0" />
-            </font>
-         </Button>
-      </children>
-   </HBox>
+        </content>
+    </ScrollPane>
+    <HBox layoutX="20.0" layoutY="670.0" prefHeight="46.0" prefWidth="836.0" AnchorPane.bottomAnchor="20.0"
+          AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0">
+        <children>
+            <HBox prefHeight="46.0" prefWidth="690.0" style="-fx-alignment: left;" styleClass="title-box">
+                <children>
+                    <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-text-alignment: left;"
+                          text="Tổng tiền: " wrappingWidth="92.53676128387451">
+                        <font>
+                            <Font name="System Bold" size="18.0"/>
+                        </font>
+                    </Text>
+                    <Text fx:id="cartTotal" fill="#ff4300" fontSmoothingType="LCD" strokeType="OUTSIDE"
+                          strokeWidth="0.0" style="-fx-text-alignment: left;" text="Tổng tiền: "
+                          wrappingWidth="136.53670167922974">
+                        <font>
+                            <Font size="18.0"/>
+                        </font>
+                    </Text>
+                </children>
+            </HBox>
+            <Button mnemonicParsing="false" onAction="#handlePay" prefHeight="46.0" prefWidth="130.0"
+                    styleClass="image-button" text="Thanh toán">
+                <HBox.margin>
+                    <Insets left="10.0"/>
+                </HBox.margin>
+                <font>
+                    <Font size="14.0"/>
+                </font>
+            </Button>
+        </children>
+    </HBox>
 </AnchorPane>

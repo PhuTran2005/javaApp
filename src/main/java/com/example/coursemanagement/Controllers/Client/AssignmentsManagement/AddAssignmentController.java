@@ -4,6 +4,7 @@ import com.example.coursemanagement.Dto.CourseDetailDTO;
 import com.example.coursemanagement.Repository.CoursesRepository;
 import com.example.coursemanagement.Service.AssignmentService;
 import com.example.coursemanagement.Utils.DatabaseConfig;
+import com.example.coursemanagement.Utils.SessionManager;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.FileChooser;
@@ -15,7 +16,6 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.example.coursemanagement.Service.UserService.getCurrentInstructorId;
 
 public class AddAssignmentController {
 
@@ -84,7 +84,7 @@ public class AddAssignmentController {
             }
 
             // Thêm bài tập vào cơ sở dữ liệu
-            assignmentService.addAssignment(title, description, courseId, dueDateValue, fileName, filePath);
+            assignmentService.addAssignment(title, description, SessionManager.getInstance().getUser().getUserId(), courseId, dueDateValue, fileName, filePath);
 
             // Gọi callback để reload biểu đồ ở màn chính
             if (onAssignmentAdded != null) {
@@ -128,7 +128,7 @@ public class AddAssignmentController {
     public void initialize() {
         try {
             // Lấy ID giảng viên hiện tại (giả định bạn có cách lấy ID giảng viên hiện tại)
-            int currentInstructorId = getCurrentInstructorId();
+            int currentInstructorId = SessionManager.getInstance().getUser().getUserId();
 
             // Lấy danh sách khóa học của giảng viên hiện tại
             List<CourseDetailDTO> courses = coursesRepository.getCoursesByInstructor(currentInstructorId);
@@ -152,7 +152,6 @@ public class AddAssignmentController {
             showAlert("Lỗi khi lấy danh sách khóa học.");
         }
     }
-
 
 
     private void showAlert(String message) {

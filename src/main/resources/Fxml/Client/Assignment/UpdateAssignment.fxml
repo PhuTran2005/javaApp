@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.String?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane prefHeight="450.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.coursemanagement.Controllers.Client.AssignmentsManagement.UpdateAssignmentController">
+
+    <VBox layoutX="20.0" layoutY="20.0" spacing="15.0" stylesheets="@../../../Styles/Accounts.css" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
+        <padding>
+            <Insets bottom="20" left="20" right="20" top="20" />
+        </padding>
+
+        <!-- Tiêu đề -->
+        <Label style="-fx-font-size: 18px; -fx-font-weight: bold;" text="Cập nhật bài tập" />
+
+        <!-- Chọn khóa học -->
+        <HBox prefHeight="40.0" prefWidth="539.0" spacing="10.0">
+            <Label minWidth="100" prefHeight="39.0" prefWidth="100.0" text="Chọn khóa học:" />
+            <ComboBox fx:id="courseComboBox" prefHeight="37.0" prefWidth="430.0" promptText="Chọn khóa học" HBox.hgrow="ALWAYS" />
+        </HBox>
+
+        <!-- Tên bài tập -->
+        <HBox prefHeight="40.0" prefWidth="539.0" spacing="10.0">
+            <Label minWidth="100" prefHeight="39.0" prefWidth="100.0" text="Tên bài tập:" />
+            <TextField fx:id="assignmentTitle" prefHeight="38.0" prefWidth="429.0" promptText="Nhập tên bài tập" HBox.hgrow="ALWAYS" />
+        </HBox>
+
+        <!-- Mô tả bài tập -->
+        <HBox prefHeight="102.0" prefWidth="539.0" spacing="10.0">
+            <Label minWidth="100" prefHeight="31.0" prefWidth="100.0" text="Mô tả:" />
+            <TextArea fx:id="assignmentDescription" prefRowCount="3" promptText="Nhập mô tả bài tập" HBox.hgrow="ALWAYS" />
+        </HBox>
+
+        <!-- Hạn nộp -->
+        <HBox prefHeight="36.0" prefWidth="539.0" spacing="10.0">
+            <Label minWidth="100" prefHeight="36.0" prefWidth="100.0" text="Hạn nộp:" />
+            <DatePicker fx:id="dueDate" prefHeight="34.0" prefWidth="175.0" promptText="Chọn hạn nộp" />
+        </HBox>
+
+        <!-- Tải lên file -->
+        <HBox spacing="10.0">
+            <Label minWidth="100" prefHeight="27.0" prefWidth="100.0" text="Tải lên file:" />
+            <Button fx:id="uploadButton" onAction="#handleUploadFile" text="Chọn file" />
+            <Label fx:id="fileNameLabel" prefHeight="32.0" prefWidth="81.0" text="Chưa chọn file" />
+        </HBox>
+
+        <!-- Nút hành động -->
+        <HBox alignment="CENTER" prefHeight="74.0" prefWidth="539.0" spacing="10.0">
+            <Button fx:id="updateAssignmentButton"  style="-fx-background-color: #22A4F1;" text="Cập nhật" textFill="WHITE">
+            <font>
+               <Font name="System Bold" size="12.0" />
+            </font></Button>
+            <Button fx:id="cancelButton" onAction="#handleCancel" style="-fx-background-color: #D2161B;" text="Hủy" textFill="WHITE">
+            <font>
+               <Font name="System Bold" size="12.0" />
+            </font></Button>
+        </HBox>
+      <styleClass>
+         <String fx:value="shadow" />
+         <String fx:value="white-bg" />
+      </styleClass>
+    </VBox>
+
+</AnchorPane>

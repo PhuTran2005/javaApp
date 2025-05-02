@@ -21,7 +21,6 @@ public class ViewFactory {
     private Parent courseManagementView;
     private Parent coursesView;
     private Parent studentView;
-    private Parent assignmentView;
     private Parent myCourseView;
     private Parent transactionView;
     private Parent accountView;
@@ -141,16 +140,12 @@ public class ViewFactory {
     }
 
     public Parent getAssignmentView() {
-        if (assignmentView == null) {
-            try {
-                assignmentView = new FXMLLoader(getClass().getResource("/Fxml/Client/Assignment.fxml")).load();
-            } catch (Exception e) {
-
-                e.printStackTrace();
-            }
+        try {
+            return new FXMLLoader(getClass().getResource("/Fxml/Client/Assignment/AssignmentMain.fxml")).load();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
         }
-        return assignmentView;
-
     }
 
     public Parent getTransactionView() {

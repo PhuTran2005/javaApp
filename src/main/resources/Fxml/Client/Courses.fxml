@@ -13,7 +13,7 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane prefHeight="750.0" prefWidth="850.0" stylesheets="@../../Styles/Course.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.coursemanagement.Controllers.Client.CourseClientController.CourseController">
+<AnchorPane maxWidth="850.0" prefHeight="750.0" prefWidth="850.0" stylesheets="@../../Styles/Course.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.coursemanagement.Controllers.Client.CourseClientController.CourseController">
     <VBox layoutX="171.2" layoutY="14.0" prefHeight="39.0" prefWidth="508.0" AnchorPane.leftAnchor="171.0" AnchorPane.rightAnchor="171.0" AnchorPane.topAnchor="15.0">
         <children>
             <HBox prefHeight="34.0" prefWidth="587.0">
@@ -78,7 +78,7 @@
         <!-- Container phân trang -->
         <HBox fx:id="paginationContainer" alignment="CENTER" prefHeight="50.0" prefWidth="800.0" spacing="5.0">
             <padding>
-                <Insets top="10.0" bottom="10.0" />
+                <Insets bottom="10.0" top="10.0" />
             </padding>
         </HBox>
     </VBox>

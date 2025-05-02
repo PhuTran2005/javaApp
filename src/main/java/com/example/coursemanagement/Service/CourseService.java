@@ -177,6 +177,9 @@ public class CourseService {
     public List<CourseDetailDTO> getCourseList(int flag) {
         return coursesRepository.getAllCourseDetails(flag);
     }
+    public List<CourseDetailDTO> getCourseListByInstructorId(int instructorId) {
+        return coursesRepository.getCoursesByInstructor(instructorId);
+    }
 
     public List<CourseDetailDTO> getCourseListByName(String query) {
         return coursesRepository.getAllCoursesByName(query);

@@ -44,4 +44,7 @@ module com.example.coursemanagement {
     exports com.example.coursemanagement.Controllers.Client.CartController;
     opens com.example.coursemanagement.Controllers.Client.CartController to javafx.fxml;
 
+    opens com.example.coursemanagement.Controllers.Client.AssignmentsManagement to javafx.fxml;
+    exports com.example.coursemanagement.Controllers.Client.AssignmentsManagement;
+    opens com.example.coursemanagement.Dto to javafx.base;
 }

@@ -5,6 +5,8 @@ import com.example.coursemanagement.Dto.CourseDetailDTO;
 import com.example.coursemanagement.Models.Model;
 import com.example.coursemanagement.Service.CourseService;
 
+import com.example.coursemanagement.Utils.Alerts;
+import com.example.coursemanagement.Utils.SessionManager;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -16,12 +18,14 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 public class CourseManagementController {
 
     private final CourseService courseService = new CourseService(); // Tạo repository
+    private final Alerts alerts = new Alerts(); // Tạo repository
 
     @FXML
 
@@ -29,6 +33,9 @@ public class CourseManagementController {
     @FXML
 
     public FlowPane courseContainer;
+    @FXML
+
+    public Button recycle_btn;
 
     // Box Khóa học
     public void initialize() {
@@ -38,7 +45,13 @@ public class CourseManagementController {
     //Load data
     public void loadCoursesList() {
         if (courseContainer != null) {
-            List<CourseDetailDTO> courses = courseService.getCourseList(0);
+            List<CourseDetailDTO> courses = new ArrayList<>();
+            if (SessionManager.getInstance().getUser().getRoleId() == 2) {
+                courses = courseService.getCourseListByInstructorId(SessionManager.getInstance().getUser().getUserId());
+
+            } else {
+                courses = courseService.getCourseList(0);
+            }
             for (CourseDetailDTO course : courses) {
                 try {
                     FXMLLoader loader = new FXMLLoader(getClass().getResource("/Fxml/HelpFxml/CourseBox.fxml"));
@@ -54,13 +67,15 @@ public class CourseManagementController {
             }
         }
     }
-//    reset data
+
+    //    reset data
     public void refreshCourseList() {
         if (courseContainer != null) {
             courseContainer.getChildren().clear(); // Xóa hết các course đang hiển thị
             loadCoursesList();
         }        // Tải lại từ CSDL
     }
+
     //Xử lý thêm khóa học
     public void handleAddCourse() {
         try {
@@ -87,6 +102,10 @@ public class CourseManagementController {
 
     //Xử lý khôi phục khóa học
     public void handleRecycleCourse() throws IOException {
+        if (SessionManager.getInstance().getUser().getRoleId() == 2) {
+            alerts.showErrorAlert("Chức năng không khả thi");
+            return;
+        }
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/Fxml/HelpFxml/CourseDeletedManagement.fxml"));
         Parent view = loader.load();
         Model.getInstance().getViewFactory().setAdminCenterContent(view);

@@ -53,7 +53,7 @@ public class DatabaseConfig {
     }
 
     public static void test() {
-
+    getConnection();
     }
 
     public static void main(String[] args) {

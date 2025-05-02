@@ -198,6 +198,8 @@ CREATE TABLE Logs (
     FOREIGN KEY (user_id) REFERENCES Users(user_id) ON DELETE SET NULL
 );
 
+
+-- insert từng Procedure
 -- Stored Procedure để lấy danh sách khóa học có phân trang
 CREATE PROCEDURE GetPaginatedCourses
     @PageNumber INT = 1,            -- Số trang hiện tại
@@ -386,12 +388,6 @@ DROP TABLE IF EXISTS Role_Permissions;
 DROP TABLE IF EXISTS Permissions;
 DROP TABLE IF EXISTS Roles;
 
-
-
--- Thêm người dùng với quyền ADMIN
-INSERT INTO Users (full_name, password_hash, role_id, email, phonenumber)
-VALUES 
-('admin', '$2a$10$Y0L8WUUWemHJhCJUG4J17uoUrcePpEA8RgMs1bOgFhNauW5HK5qUe', 1, 'admin@gmail.com', '0123456789');
 
 -- Roles
 INSERT INTO Roles(role_name, description)

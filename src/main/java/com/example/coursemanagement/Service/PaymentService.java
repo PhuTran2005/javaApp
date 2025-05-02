@@ -28,6 +28,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
+import com.example.coursemanagement.Controllers.Client.CartController.CartController;
+import com.example.coursemanagement.Controllers.Client.ClientMenuController;
 import com.example.coursemanagement.Dto.CourseDetailDTO;
 import com.example.coursemanagement.Utils.Alerts;
 import com.example.coursemanagement.Utils.DatabaseConfig;
@@ -40,6 +42,8 @@ import com.google.zxing.qrcode.QRCodeWriter;
 
 public class PaymentService {
     private Alerts alerts = new Alerts();
+    private static LogService logService = new LogService();
+
     // Thiết lập môi trường thử nghiệm
     private static final String SEPAY_ACCOUNT_NUMBER = "1518893947588";
     private static final String SEPAY_BANK_CODE = "MBBank";
@@ -443,7 +447,7 @@ public class PaymentService {
      * @param courseId ID của khóa học
      * @return true nếu thanh toán thành công, false nếu thất bại
      */
-    public static boolean processPaymentForCourse(int userId, double amount, List<CourseDetailDTO> list) {
+    public static boolean processPaymentForCourse(int userId, double amount, List<CourseDetailDTO> list, boolean isCart) {
         try {
             // Lấy thông tin khóa học từ database
 
@@ -455,6 +459,7 @@ public class PaymentService {
             boolean paymentSuccess = paymentFuture.get(); // lưu ý: đợi kết quả
 
             if (paymentSuccess) {
+                logService.createLog(SessionManager.getInstance().getUser().getUserId(), "Học viên " + SessionManager.getInstance().getUser().getFullname() + " đã mua khóa học");
                 // Xử lý khi thanh toán thành công
                 // Xử lý logic thanh toán thành công
 //                handleSuccessfulPayment(userId, amount, courseInfo);
@@ -462,6 +467,13 @@ public class PaymentService {
                 int orderId = purchaseCourseService.purchaseCoursesFromCart(userId, list);
                 if (orderId != -1) {
                     insertPayment(orderId, amount);
+                    if (isCart) {
+
+                        CartService cartService = new CartService();
+                        cartService.deleteAllCartItem(SessionManager.getInstance().getUser().getUserId());
+                        SessionManager.getInstance().setCartSize();
+                        ClientMenuController.getInstance().refreshCartSize();
+                    }
                     System.out.println("add thanh cong");
                 } else {
                     System.out.println("add that bai");
@@ -481,7 +493,7 @@ public class PaymentService {
      */
     public static void main(String[] args) {
         List<CourseDetailDTO> list = new ArrayList<>();
-        PaymentService.processPaymentForCourse(3, 100000, list);
+//        PaymentService.processPaymentForCourse(3, 100000, list);
 
     }
 }

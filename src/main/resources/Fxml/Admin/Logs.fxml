@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.example.coursemanagement.Controllers.Admin.LogController"
+            prefHeight="600.0" prefWidth="800.0">
+    <top>
+        <VBox spacing="10">
+            <padding>
+                <Insets top="15" right="15" bottom="15" left="15"/>
+            </padding>
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Label text="System Logs" style="-fx-font-size: 18; -fx-font-weight: bold;"/>
+                <Region HBox.hgrow="ALWAYS" />
+                <HBox spacing="5" alignment="CENTER_RIGHT">
+                    <TextField fx:id="searchField" promptText="Search logs..." prefWidth="250"/>
+                    <Button text="Search" onAction="#handleSearchAction"/>
+                    <Button text="Reset" onAction="#handleResetAction"/>
+                </HBox>
+            </HBox>
+        </VBox>
+    </top>
+
+    <center>
+        <TableView fx:id="logTableView" VBox.vgrow="ALWAYS">
+            <columns>
+                <TableColumn fx:id="logIdColumn" text="Log ID" prefWidth="80"/>
+                <TableColumn fx:id="userIdColumn" text="User ID" prefWidth="80"/>
+                <TableColumn fx:id="actionColumn" text="Action" prefWidth="400"/>
+                <TableColumn fx:id="timeColumn" text="Time" prefWidth="200"/>
+            </columns>
+        </TableView>
+    </center>
+
+    <bottom>
+        <VBox>
+            <padding>
+                <Insets top="10" right="15" bottom="15" left="15"/>
+            </padding>
+            <HBox spacing="10" alignment="CENTER">
+                <Button text="Previous" onAction="#handlePreviousAction"/>
+                <Label text="Page:" />
+                <Label fx:id="currentPageLabel" text="1" />
+                <Label text="of" />
+                <Label fx:id="totalPagesLabel" text="1" />
+                <Button text="Next" onAction="#handleNextAction"/>
+                <Region HBox.hgrow="ALWAYS" />
+                <HBox spacing="5" alignment="CENTER_RIGHT">
+                    <Label text="Items per page:" />
+                    <ComboBox fx:id="pageSizeComboBox" onAction="#handlePageSizeChange"/>
+                </HBox>
+            </HBox>
+        </VBox>
+    </bottom>
+</BorderPane>

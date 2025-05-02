@@ -4,6 +4,7 @@ import com.example.coursemanagement.Dto.CourseDetailDTO;
 import com.example.coursemanagement.Models.Assignment;
 import com.example.coursemanagement.Repository.CoursesRepository;
 import com.example.coursemanagement.Service.AssignmentService;
+import com.example.coursemanagement.Service.LogService;
 import com.example.coursemanagement.Utils.DatabaseConfig;
 import com.example.coursemanagement.Utils.SessionManager;
 import javafx.fxml.FXML;
@@ -36,7 +37,7 @@ public class UpdateAssignmentController {
 
     @FXML
     private Button uploadButton;
-
+    private final LogService logService = new LogService();
     @FXML
     private Button updateAssignmentButton;
 
@@ -135,6 +136,7 @@ public class UpdateAssignmentController {
 
             // Cập nhật bài tập vào cơ sở dữ liệu
             assignmentService.updateAssignment(assignment);
+            logService.createLog(SessionManager.getInstance().getUser().getUserId(), "Giáo viên " + SessionManager.getInstance().getUser().getFullname() + " đã cập nhật bài tập");
 
             // Hiển thị thông báo thành công
             showAlert("Cập nhật bài tập thành công!");

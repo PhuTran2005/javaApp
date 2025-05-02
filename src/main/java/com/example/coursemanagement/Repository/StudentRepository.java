@@ -88,7 +88,7 @@ public class StudentRepository {
     // Cập nhật các khóa học đã chọn cho sinh viên
     public void updateStudentCourses(Student student) {
         String selectQuery = "SELECT course_id, payment_status FROM Enrollments WHERE user_id = ?";
-        String deleteQuery = "DELETE FROM Enrollments WHERE user_id = ? AND course_id = ?";
+        String deleteQuery = "DELETE FROM Enrollments WHERE enrollments_id = ? AND course_id = ?";
         String insertQuery = "INSERT INTO Enrollments (user_id, course_id, payment_status) VALUES (?, ?, ?)";
 
         try (Connection conn = DatabaseConfig.getConnection()) {
@@ -124,7 +124,7 @@ public class StudentRepository {
                 }
             }
 
-            String insertPaymentQuery = "INSERT INTO Payments (enrollments_id, amount, status, payment_date, method) VALUES (?, ?, ?, GETDATE(), ?)";
+            String insertPaymentQuery = "INSERT INTO Payments (payments_id, amount, status, payment_date, method) VALUES (?, ?, ?, GETDATE(), ?)";
 
             try (PreparedStatement insertStmt = conn.prepareStatement(insertQuery, Statement.RETURN_GENERATED_KEYS);
                  PreparedStatement paymentStmt = conn.prepareStatement(insertPaymentQuery)) {

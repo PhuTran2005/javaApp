@@ -1,6 +1,7 @@
 package com.example.coursemanagement.Controllers.Client.CourseClientController;
 
 import com.example.coursemanagement.Controllers.Admin.CourseController.CourseManagementController;
+import com.example.coursemanagement.Controllers.Client.MyCourseController;
 import com.example.coursemanagement.Dto.CourseDetailDTO;
 import com.example.coursemanagement.Models.Category;
 import com.example.coursemanagement.Models.Course;
@@ -45,9 +46,14 @@ public class FilterCourseController {
 
     public ChoiceBox<Instructor> instructorField;
     private CourseController courseController;
+    private MyCourseController myCourseController;
 
     public void setCourseController(CourseController courseController) {
         this.courseController = courseController;
+    }
+
+    public void setMyCourseController(MyCourseController myCourseController) {
+        this.myCourseController = myCourseController;
     }
 
     private boolean courseAdded = false; // <== Để thông báo về sau
@@ -171,8 +177,11 @@ public class FilterCourseController {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        courseController.refreshCourseList();
-        courseController.loadCoursesListByFilter(courses);
+        if (courseController != null) {
+
+            courseController.refreshCourseList();
+            courseController.loadCoursesListByFilter(courses);
+        }
         handleCancel();
         alerts.showSuccessAlert("Lọc thành công");
     }

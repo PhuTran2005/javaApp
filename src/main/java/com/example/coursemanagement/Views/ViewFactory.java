@@ -53,6 +53,7 @@ public class ViewFactory {
     public void setAdminCenterContent(Parent content) {
         ((BorderPane) adminRoot).setCenter(content);
     }
+
     public void setClientRoot(Parent clientRoot) {
         this.clientRoot = clientRoot;
     }
@@ -105,16 +106,12 @@ public class ViewFactory {
     }
 
     public Parent getMyCoursesView() {
-        if (myCourseView == null) {
-            try {
-                myCourseView = new FXMLLoader(getClass().getResource("/Fxml/Client/MyCourse.fxml")).load();
-            } catch (Exception e) {
-
-                e.printStackTrace();
-            }
+        try {
+            return new FXMLLoader(getClass().getResource("/Fxml/Client/MyCourse.fxml")).load();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
         }
-        return myCourseView;
-
     }
 
     public Parent getCartView() {
@@ -127,16 +124,12 @@ public class ViewFactory {
     }
 
     public Parent getStudentView() {
-        if (studentView == null) {
-            try {
-                studentView = new FXMLLoader(getClass().getResource("/Fxml/Client/Student.fxml")).load();
-            } catch (Exception e) {
-
-                e.printStackTrace();
-            }
+        try {
+            return new FXMLLoader(getClass().getResource("/Fxml/Client/Student.fxml")).load();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
         }
-        return studentView;
-
     }
 
     public Parent getAssignmentView() {
@@ -149,15 +142,12 @@ public class ViewFactory {
     }
 
     public Parent getTransactionView() {
-        if (transactionView == null) {
-            try {
-                transactionView = new FXMLLoader(getClass().getResource("/Fxml/Admin/Transaction.fxml")).load();
-            } catch (Exception e) {
-
-                e.printStackTrace();
-            }
+        try {
+            return new FXMLLoader(getClass().getResource("/Fxml/Admin/Transaction.fxml")).load();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
         }
-        return transactionView;
 
     }
 
@@ -171,6 +161,17 @@ public class ViewFactory {
             }
         }
         return deletedCourseView;
+
+    }
+
+    public Parent getLogsView() {
+        try {
+            return new FXMLLoader(getClass().getResource("/Fxml/Admin/Logs.fxml")).load();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+
 
     }
 
@@ -188,16 +189,12 @@ public class ViewFactory {
     }
 
     public Parent getAccountView() {
-        if (accountView == null) {
-            try {
-                accountView = new FXMLLoader(getClass().getResource("/Fxml/Admin/Accounts.fxml")).load();
-            } catch (Exception e) {
-
-                e.printStackTrace();
-            }
+        try {
+            return new FXMLLoader(getClass().getResource("/Fxml/Admin/Accounts.fxml")).load();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
         }
-        return accountView;
-
     }
 
     private void createStage(FXMLLoader loader, String wdName) {

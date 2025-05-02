@@ -6,6 +6,7 @@ import com.example.coursemanagement.Models.Instructor;
 import com.example.coursemanagement.Service.CategoriesService;
 import com.example.coursemanagement.Service.CourseService;
 import com.example.coursemanagement.Service.InstructorService;
+import com.example.coursemanagement.Service.LogService;
 import com.example.coursemanagement.Utils.Alerts;
 import com.example.coursemanagement.Utils.SessionManager;
 import javafx.fxml.FXML;
@@ -22,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AddCourseController {
+    private final LogService logService = new LogService();
     @FXML
     public TextField courseNameField;
     @FXML
@@ -214,6 +216,10 @@ public class AddCourseController {
         );
         if (courseService.createNewCourse(course) != null) {
             alerts.showSuccessAlert("Thêm Khóa học thành công");
+            if(SessionManager.getInstance().getUser().getRoleId() == 2){
+                logService.createLog(SessionManager.getInstance().getUser().getUserId(), "Giáo viên " + SessionManager.getInstance().getUser().getFullname() + " đã thêm khoá học mới");
+
+            }
             courseAdded = true; // <== Đánh dấu đã thêm
             handleCancel();     // đóng popup
         } else {

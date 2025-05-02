@@ -312,5 +312,47 @@ public class StudentRepository {
         }
     }
 
+    public List<Student> getStudentsByCourseId(int courseId) {
+        List<Student> students = new ArrayList<>();
+        String query = "SELECT u.user_id, u.full_name, u.email, " +
+                "CAST(100.0 * COUNT(DISTINCT s.assignment_id) / " +
+                "NULLIF(COUNT(DISTINCT a.assignment_id), 0) AS FLOAT) AS progress " +
+                "FROM Users u " +
+                "LEFT JOIN Enrollments e ON u.user_id = e.user_id " +
+                "LEFT JOIN Assignments a ON e.course_id = a.course_id " +
+                "LEFT JOIN Submissions s ON u.user_id = s.student_id AND s.assignment_id = a.assignment_id " +
+                "WHERE u.role_id = 3 AND e.course_id = ? " +  // Thêm điều kiện lọc theo courseId
+                "GROUP BY u.user_id, u.full_name, u.email";
+
+        try (Connection conn = DatabaseConfig.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            stmt.setInt(1, courseId);  // Đặt giá trị courseId vào câu truy vấn
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    int userId = rs.getInt("user_id");
+                    String fullname = rs.getString("full_name");
+                    String email = rs.getString("email");
+                    float progress = rs.getFloat("progress");
+
+                    Student student = new Student();
+                    student.setUserId(userId);
+                    student.setFullname(fullname);
+                    student.setUserEmail(email);
+                    student.setProgress(progress);
+
+                    students.add(student);
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return students;
+    }
+
+
 
 }

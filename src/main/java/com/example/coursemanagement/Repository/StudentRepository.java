@@ -88,7 +88,7 @@ public class StudentRepository {
     // Cập nhật các khóa học đã chọn cho sinh viên
     public void updateStudentCourses(Student student) {
         String selectQuery = "SELECT course_id, payment_status FROM Enrollments WHERE user_id = ?";
-        String deleteQuery = "DELETE FROM Enrollments WHERE user_id = ? AND course_id = ?";
+        String deleteQuery = "DELETE FROM Enrollments WHERE enrollments_id = ? AND course_id = ?";
         String insertQuery = "INSERT INTO Enrollments (user_id, course_id, payment_status) VALUES (?, ?, ?)";
 
         try (Connection conn = DatabaseConfig.getConnection()) {
@@ -124,7 +124,7 @@ public class StudentRepository {
                 }
             }
 
-            String insertPaymentQuery = "INSERT INTO Payments (enrollments_id, amount, status, payment_date, method) VALUES (?, ?, ?, GETDATE(), ?)";
+            String insertPaymentQuery = "INSERT INTO Payments (payments_id, amount, status, payment_date, method) VALUES (?, ?, ?, GETDATE(), ?)";
 
             try (PreparedStatement insertStmt = conn.prepareStatement(insertQuery, Statement.RETURN_GENERATED_KEYS);
                  PreparedStatement paymentStmt = conn.prepareStatement(insertPaymentQuery)) {
@@ -311,6 +311,48 @@ public class StudentRepository {
             return false;
         }
     }
+
+    public List<Student> getStudentsByCourseId(int courseId) {
+        List<Student> students = new ArrayList<>();
+        String query = "SELECT u.user_id, u.full_name, u.email, " +
+                "CAST(100.0 * COUNT(DISTINCT s.assignment_id) / " +
+                "NULLIF(COUNT(DISTINCT a.assignment_id), 0) AS FLOAT) AS progress " +
+                "FROM Users u " +
+                "LEFT JOIN Enrollments e ON u.user_id = e.user_id " +
+                "LEFT JOIN Assignments a ON e.course_id = a.course_id " +
+                "LEFT JOIN Submissions s ON u.user_id = s.student_id AND s.assignment_id = a.assignment_id " +
+                "WHERE u.role_id = 3 AND e.course_id = ? " +  // Thêm điều kiện lọc theo courseId
+                "GROUP BY u.user_id, u.full_name, u.email";
+
+        try (Connection conn = DatabaseConfig.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            stmt.setInt(1, courseId);  // Đặt giá trị courseId vào câu truy vấn
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    int userId = rs.getInt("user_id");
+                    String fullname = rs.getString("full_name");
+                    String email = rs.getString("email");
+                    float progress = rs.getFloat("progress");
+
+                    Student student = new Student();
+                    student.setUserId(userId);
+                    student.setFullname(fullname);
+                    student.setUserEmail(email);
+                    student.setProgress(progress);
+
+                    students.add(student);
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return students;
+    }
+
 
 
 }

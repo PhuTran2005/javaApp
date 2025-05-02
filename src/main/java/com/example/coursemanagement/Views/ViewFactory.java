@@ -124,16 +124,12 @@ public class ViewFactory {
     }
 
     public Parent getStudentView() {
-        if (studentView == null) {
-            try {
-                studentView = new FXMLLoader(getClass().getResource("/Fxml/Client/Student.fxml")).load();
-            } catch (Exception e) {
-
-                e.printStackTrace();
-            }
+        try {
+            return new FXMLLoader(getClass().getResource("/Fxml/Client/Student.fxml")).load();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
         }
-        return studentView;
-
     }
 
     public Parent getAssignmentView() {
@@ -193,16 +189,12 @@ public class ViewFactory {
     }
 
     public Parent getAccountView() {
-        if (accountView == null) {
-            try {
-                accountView = new FXMLLoader(getClass().getResource("/Fxml/Admin/Accounts.fxml")).load();
-            } catch (Exception e) {
-
-                e.printStackTrace();
-            }
+        try {
+            return new FXMLLoader(getClass().getResource("/Fxml/Admin/Accounts.fxml")).load();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
         }
-        return accountView;
-
     }
 
     private void createStage(FXMLLoader loader, String wdName) {

@@ -1,7 +1,9 @@
 package com.example.coursemanagement.Models;
 
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.FloatProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleFloatProperty;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,6 +14,7 @@ public class Student extends User {
     private int enrollment_year;
     public float gpa;
     private BooleanProperty selected;
+    private FloatProperty progress = new SimpleFloatProperty(0);
 
     // Constructor, getters, setters
 
@@ -84,5 +87,16 @@ public class Student extends User {
 
     public void setSelected(boolean selected) {
         this.selected.set(selected);
+    }
+    public float getProgress() {
+        return progress.get();
+    }
+
+    public void setProgress(float progress) {
+        this.progress.set(progress);
+    }
+
+    public FloatProperty progressProperty() {
+        return progress;
     }
 }

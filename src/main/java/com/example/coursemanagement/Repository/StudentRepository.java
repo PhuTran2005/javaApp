@@ -3,10 +3,16 @@ package com.example.coursemanagement.Repository;
 import com.example.coursemanagement.Models.Student;
 import com.example.coursemanagement.Utils.DatabaseConfig;
 
+import java.math.BigDecimal;
 import java.sql.*;
 import java.util.*;
 
 public class StudentRepository {
+    private Connection conn;
+
+    public StudentRepository(Connection conn) {
+        this.conn = conn;
+    }
 
     public List<Student> getAllStudentsWithCourses() {
         List<Student> students = new ArrayList<>();
@@ -246,5 +252,32 @@ public class StudentRepository {
         return 0;
     }
 
+    public Student findById(int studentId) throws SQLException {
+        String sql = "SELECT userId, email, name, account_balance FROM Users WHERE userId = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, studentId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    Student s = new Student();
+                    s.setStudentId(rs.getInt("userId"));
+                    s.setStudentEmail(rs.getString("email"));
+                    s.setStudentName(rs.getString("name"));
+                    s.setStudentPhone(rs.getString("phone"));
+                    s.setStudentBalance(rs.getBigDecimal("account_balance"));
+                    return s;
+                }
+            }
+        }
+        return null;
+    }
+
+    public void updateAccountBalance(int studentId, BigDecimal newBalance) throws SQLException {
+        String sql = "UPDATE Users SET account_balance = ? WHERE userId = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setBigDecimal(1, newBalance);
+            stmt.setInt(2, studentId);
+            stmt.executeUpdate();
+        }
+    }
 
 }

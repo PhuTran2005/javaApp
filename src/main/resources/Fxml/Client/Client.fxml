@@ -2,13 +2,20 @@
 
 <?import javafx.scene.layout.*?>
 
-<BorderPane fx:id="client_parent" xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml">
+<BorderPane fx:id="client_parent"
+            xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.example.coursemanagement.Controllers.Client.ClientController">
+
     <left>
         <fx:include source="ClientMenu.fxml"/>
     </left>
-    <center>
-        <fx:include source="../Client/Courses.fxml"/>
-    </center>
 
+    <center>
+        <!-- Vùng thay đổi động -->
+        <AnchorPane fx:id="mainContent"
+                    xmlns:fx="http://javafx.com/fxml">
+            <fx:include source="../Client/Courses.fxml"/>
+        </AnchorPane>
+    </center>
 </BorderPane>

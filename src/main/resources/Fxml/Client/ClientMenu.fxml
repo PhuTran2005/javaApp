@@ -89,6 +89,18 @@
                   <Insets bottom="10.0" top="10.0" />
                </VBox.margin>
             </Button>
+            <Button fx:id="payment_btn" mnemonicParsing="false" prefHeight="50.0" prefWidth="150.0" styleClass="alt_menu_btn" text="Payment">
+               <graphic>
+                  <ImageView fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../../Images/payment.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+               <VBox.margin>
+                  <Insets bottom="10.0" top="10.0" />
+               </VBox.margin>
+            </Button>
             <Button fx:id="logout_btn" mnemonicParsing="false" prefHeight="50.0" prefWidth="150.0" styleClass="alt_menu_btn" text="Logout">
                <graphic>
                   <ImageView fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">

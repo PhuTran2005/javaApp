@@ -54,7 +54,59 @@ public class DatabaseConfig {
         }
     }
 
+    public static void selectAllUsers() {
+        String query = "SELECT * FROM Users";
+
+        try (Connection conn = DatabaseConfig.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query);
+             ResultSet rs = stmt.executeQuery()) {
+
+            boolean hasResult = false;
+            while (rs.next()) {
+                hasResult = true;
+                int id = rs.getInt("user_id");
+                String email = rs.getString("email");
+                String fullName = rs.getString("full_name");
+                int roleId = rs.getInt("role_id");
+
+                System.out.println("ID: " + id + ", Email: " + email + ", Fullname: " + fullName + ", Role ID: " + roleId);
+            }
+            if (!hasResult) {
+                System.out.println("⚠️ Không có người dùng nào trong bảng Users.");
+            }
+
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
     public static void main(String[] args) {
-        test();
+        String query = "SELECT * FROM Users";
+
+        try (Connection conn = DatabaseConfig.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query);
+             ResultSet rs = stmt.executeQuery()) {
+
+            boolean hasResult = false;
+            while (rs.next()) {
+                hasResult = true;
+                int id = rs.getInt("user_id");
+                String email = rs.getString("email");
+                String fullName = rs.getString("full_name");
+                int roleId = rs.getInt("role_id");
+
+                System.out.println("ID: " + id + ", Email: " + email + ", Fullname: " + fullName + ", Role ID: " + roleId);
+            }
+            if (!hasResult) {
+                System.out.println("⚠️ Không có người dùng nào trong bảng Users.");
+            }
+
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        selectAllUsers();
+//        test();
     }
 }

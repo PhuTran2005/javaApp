@@ -65,4 +65,7 @@ public class SessionManager {
     public User getUser() {
         return currentUser;
     }
+    public int getCurrentStudentId() {
+        return currentUser != null ? currentUser.getUserId() : -1;
+    }
 }

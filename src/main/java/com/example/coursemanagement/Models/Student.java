@@ -2,6 +2,8 @@ package com.example.coursemanagement.Models;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,6 +12,7 @@ public class Student {
     private String studentName;
     private String studentEmail;
     private String studentPhone;
+    private BigDecimal accountBalance;
     private List<String> enrolledCourses; // Thay đổi từ String thành List<String>
     private BooleanProperty selected;
 
@@ -69,6 +72,9 @@ public class Student {
         this.enrolledCourses = enrolledCourses;
     }
 
+    public BigDecimal getStudentBalance() { return accountBalance; }
+    public void setStudentBalance(BigDecimal accountBalance) { this.accountBalance = accountBalance; }
+
     // Thêm một khóa học vào danh sách
     public void addCourse(String course) {
         this.enrolledCourses.add(course); // Thêm vào danh sách khóa học
@@ -85,4 +91,6 @@ public class Student {
     public void setSelected(boolean selected) {
         this.selected.set(selected);
     }
+
+
 }

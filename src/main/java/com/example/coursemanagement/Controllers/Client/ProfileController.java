@@ -26,12 +26,12 @@ public class ProfileController {
     @FXML
     public TextField confirmNewPasswordField;
     @FXML
-
     public Button cancelButton;
     @FXML
     private TextField userEmailField, usernameField, userPhoneNumberField, createDateField;
     @FXML
     private Button saveButton;
+
 
     private final Alerts alerts = new Alerts();
     private final UserService userService = new UserService();

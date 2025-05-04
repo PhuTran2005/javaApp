@@ -11,7 +11,6 @@ import java.util.List;
 
 public class CoursesRepository {
 
-
     public Course addCourse(Course course) {
         String sql = "INSERT INTO Courses (courseName, courseDescription, categoryId, courseThumbnail, instructorId, coursePrice) " +
                 "VALUES (?, ?, ?, ?, ?, ?)";
@@ -31,24 +30,25 @@ public class CoursesRepository {
                 ResultSet generatedKeys = stmt.getGeneratedKeys();
                 if (generatedKeys.next()) {
                     int newCourseId = generatedKeys.getInt(1);
-                    course.setCourseId(newCourseId); // Gán lại ID vào object
+                    course.setCourseId(newCourseId);
                 }
-                return course; // ✅ Trả lại Course đã có courseId
+                return course;
             }
 
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        return null; // ❌ Trả null nếu có lỗi
+        return null;
     }
 
     public List<Course> getAllCourseDetails() {
         List<Course> list = new ArrayList<>();
 
-        String sql = "SELECT * " +
+        // không join tới Categories vì bảng không tồn tại
+        String sql = "SELECT c.courseId, c.categoryId, c.instructorId, c.courseName, c.courseDescription, c.courseThumbnail, c.coursePrice, " +
+                "ins.instructorName, ins.expertise, ins.instructorEmail, ins.instructorPhone " +
                 "FROM Courses c " +
-                "LEFT JOIN Categories cat ON c.categoryId = cat.categoryId " +
                 "LEFT JOIN Instructors ins ON c.instructorId = ins.instructorId";
 
         try (Connection conn = DatabaseConfig.getConnection();
@@ -56,9 +56,26 @@ public class CoursesRepository {
              ResultSet rs = stmt.executeQuery()) {
 
             while (rs.next()) {
-                Category category = new Category(rs.getInt("categoryId"), rs.getString("categoryName"), rs.getString("categoryDescription"));
-                Instructor instructor = new Instructor(rs.getInt("instructorId"), rs.getString("instructorName"), rs.getString("expertise"), rs.getString("instructorEmail"), rs.getString("instructorPhone"));
-                Course dto = new Course(rs.getInt("courseId"), rs.getInt("categoryId"), rs.getInt("instructorId"), rs.getString("courseName"), rs.getString("courseDescription"), rs.getString("courseThumbnail"), rs.getDouble("coursePrice"), category, instructor);
+                // Tạo Category đơn giản chỉ với ID (name và description không có dữ liệu)
+                Category category = new Category(rs.getInt("categoryId"), "", "");
+                Instructor instructor = new Instructor(
+                        rs.getInt("instructorId"),
+                        rs.getString("instructorName"),
+                        rs.getString("expertise"),
+                        rs.getString("instructorEmail"),
+                        rs.getString("instructorPhone")
+                );
+                Course dto = new Course(
+                        rs.getInt("courseId"),
+                        rs.getInt("categoryId"),
+                        rs.getInt("instructorId"),
+                        rs.getString("courseName"),
+                        rs.getString("courseDescription"),
+                        rs.getString("courseThumbnail"),
+                        rs.getDouble("coursePrice"),
+                        category,
+                        instructor
+                );
 
                 list.add(dto);
             }
@@ -70,25 +87,41 @@ public class CoursesRepository {
         return list;
     }
 
-
     public List<Course> getAllCoursesByName(String query) {
         List<Course> courses = new ArrayList<>();
-        String sql = "SELECT * " +
+        // thêm dấu cách trước WHERE
+        String sql = "SELECT c.courseId, c.categoryId, c.instructorId, c.courseName, c.courseDescription, c.courseThumbnail, c.coursePrice, " +
+                "ins.instructorName, ins.expertise, ins.instructorEmail, ins.instructorPhone " +
                 "FROM Courses c " +
-                "LEFT JOIN Categories cat ON c.categoryId = cat.categoryId " +
-                "LEFT JOIN Instructors ins ON c.instructorId = ins.instructorId" +
+                "LEFT JOIN Instructors ins ON c.instructorId = ins.instructorId " + // bỏ join Categories
                 "WHERE courseName LIKE ?";
 
-        try (Connection conn = DatabaseConfig.getConnection()) {
-            PreparedStatement stmt = conn.prepareStatement(sql);
+        try (Connection conn = DatabaseConfig.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, "%" + query + "%");
-            ResultSet rs = stmt.executeQuery();
-            while (rs.next()) {
-                Category category = new Category(rs.getInt("categoryId"), rs.getString("categoryName"), rs.getString("categoryDescription"));
-                Instructor instructor = new Instructor(rs.getInt("instructorId"), rs.getString("instructorName"), rs.getString("expertise"), rs.getString("instructorEmail"), rs.getString("instructorPhone"));
-                Course dto = new Course(rs.getInt("courseId"), rs.getInt("categoryId"), rs.getInt("instructorId"), rs.getString("courseName"), rs.getString("courseDescription"), rs.getString("courseThumbnail"), rs.getDouble("coursePrice"), category, instructor);
-                courses.add(dto);
-
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    Category category = new Category(rs.getInt("categoryId"), "", ""); // Đã sửa
+                    Instructor instructor = new Instructor(
+                            rs.getInt("instructorId"),
+                            rs.getString("instructorName"),
+                            rs.getString("expertise"),
+                            rs.getString("instructorEmail"),
+                            rs.getString("instructorPhone")
+                    );
+                    Course dto = new Course(
+                            rs.getInt("courseId"),
+                            rs.getInt("categoryId"),
+                            rs.getInt("instructorId"),
+                            rs.getString("courseName"),
+                            rs.getString("courseDescription"),
+                            rs.getString("courseThumbnail"),
+                            rs.getDouble("coursePrice"),
+                            category,
+                            instructor
+                    );
+                    courses.add(dto);
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -98,20 +131,38 @@ public class CoursesRepository {
     }
 
     public Course getCourse(int courseId) {
-        String sql = "SELECT * " +
+        // thêm khoảng trắng trước where và bỏ join Categories
+        String sql = "SELECT c.courseId, c.categoryId, c.instructorId, c.courseName, c.courseDescription, c.courseThumbnail, c.coursePrice, " +
+                "ins.instructorName, ins.expertise, ins.instructorEmail, ins.instructorPhone " +
                 "FROM Courses c " +
-                "LEFT JOIN Categories cat ON c.categoryId = cat.categoryId " +
-                "LEFT JOIN Instructors ins ON c.instructorId = ins.instructorId"
-                + "where courseId = ?";
-        try (Connection conn = DatabaseConfig.getConnection()) {
-            PreparedStatement stmt = conn.prepareStatement(sql);
+                "LEFT JOIN Instructors ins ON c.instructorId = ins.instructorId " +
+                "WHERE courseId = ?";
+        try (Connection conn = DatabaseConfig.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, courseId);
-            ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
-                Category category = new Category(rs.getInt("categoryId"), rs.getString("categoryName"), rs.getString("categoryDescription"));
-                Instructor instructor = new Instructor(rs.getInt("instructorId"), rs.getString("instructorName"), rs.getString("expertise"), rs.getString("instructorEmail"), rs.getString("instructorPhone"));
-                Course dto = new Course(rs.getInt("courseId"), rs.getInt("categoryId"), rs.getInt("instructorId"), rs.getString("courseName"), rs.getString("courseDescription"), rs.getString("courseThumbnail"), rs.getDouble("coursePrice"), category, instructor);
-                return dto;
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    Category category = new Category(rs.getInt("categoryId"), "", ""); // Đã sửa
+                    Instructor instructor = new Instructor(
+                            rs.getInt("instructorId"),
+                            rs.getString("instructorName"),
+                            rs.getString("expertise"),
+                            rs.getString("instructorEmail"),
+                            rs.getString("instructorPhone")
+                    );
+                    Course dto = new Course(
+                            rs.getInt("courseId"),
+                            rs.getInt("categoryId"),
+                            rs.getInt("instructorId"),
+                            rs.getString("courseName"),
+                            rs.getString("courseDescription"),
+                            rs.getString("courseThumbnail"),
+                            rs.getDouble("coursePrice"),
+                            category,
+                            instructor
+                    );
+                    return dto;
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -136,7 +187,7 @@ public class CoursesRepository {
 
     public boolean updateCourse(Course course) {
         try (Connection conn = DatabaseConfig.getConnection()) {
-            String sql = "UPDATE Courses SET courseName = ?, instructorId = ?,categoryId = ?,coursePrice = ?,courseThumbnail = ?,courseDescription = ? WHERE courseId = ?";
+            String sql = "UPDATE Courses SET courseName = ?, instructorId = ?, categoryId = ?, coursePrice = ?, courseThumbnail = ?, courseDescription = ? WHERE courseId = ?";
 
             PreparedStatement stmt = conn.prepareStatement(sql);
             stmt.setString(1, course.getCourseName());
@@ -146,12 +197,11 @@ public class CoursesRepository {
             stmt.setString(5, course.getCourseThumbnail());
             stmt.setString(6, course.getCourseDescription());
             stmt.setInt(7, course.getCourseId());
-            return stmt.executeUpdate() > 0; // Nếu có ít nhất 1 dòng được cập nhật
+            return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
             e.printStackTrace();
             return false;
         }
     }
-
 
 }

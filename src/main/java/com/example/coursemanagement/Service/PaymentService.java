@@ -1,6 +1,11 @@
 package com.example.coursemanagement.Service;
 
+import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.nio.file.Files;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
@@ -10,9 +15,8 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
+import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -23,12 +27,11 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.SwingUtilities;
-import javax.swing.Timer;
-import java.util.ArrayList;
-import java.util.List;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
-import com.example.coursemanagement.Controllers.Client.CartController.CartController;
 import com.example.coursemanagement.Controllers.Client.ClientMenuController;
 import com.example.coursemanagement.Dto.CourseDetailDTO;
 import com.example.coursemanagement.Utils.Alerts;
@@ -39,37 +42,226 @@ import com.google.zxing.WriterException;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 
 public class PaymentService {
     private Alerts alerts = new Alerts();
     private static LogService logService = new LogService();
 
     // Thiết lập môi trường thử nghiệm
-    private static final String SEPAY_ACCOUNT_NUMBER = "1518893947588";
-    private static final String SEPAY_BANK_CODE = "MBBank";
     private static PurchaseCourseService purchaseCourseService = new PurchaseCourseService();
 
     // Đường dẫn kết nối database
     private static final String DB_URL = "jdbc:sqlserver://localhost:1433;databaseName=IT_Course_Management;encrypt=true;trustServerCertificate=true";
 //    private static final String DB_URL = "jdbc:sqlserver://localhost:1433;databaseName=IT_Course_Management;integratedSecurity=true;encrypt=true;trustServerCertificate=true";
     private static final String DB_USER = "sa";
-    private static final String DB_PASSWORD = "18082005";
+    private static final String DB_PASSWORD = "1234567890";
 
     // Thời gian đợi mô phỏng thanh toán (mili giây)
     private static final int PAYMENT_SIMULATION_TIME = 5000; // 10 giây
 
-    /**
+    private static final String SEPAY_API_URL = "https://my.sepay.vn/userapi";
+    private static final String SEPAY_API_KEY = "EYQJJ4VKTUFAFV55XH1FUWEGNT4KA7I6MRBJXDCCZZNIGLS9NM70AMP6KPRJQEYS";
+    private static final String SEPAY_ACCOUNT_NUMBER = "1518893947588";
+    private static final String SEPAY_BANK_CODE = "970437"; // bankCode của MB Bank
+
+    // Tạo mã QR, hiển thị lên màn hình, và lưu vào file
+    public static void createQRCode(String accountNumber, String bankCode, String memo, int amount, int qrSize) {
+        try {
+            // Xóa tất cả các file trong thư mục "qr"
+            File qrDirectory = new File("qr");
+            if (qrDirectory.exists() && qrDirectory.isDirectory()) {
+                File[] files = qrDirectory.listFiles();
+                if (files != null) {
+                    for (File file : files) {
+                        if (file.isFile()) {
+                            boolean deleted = file.delete();
+                            if (deleted) {
+                                System.out.println("✅ Đã xóa file: " + file.getName());
+                            } else {
+                                System.out.println("❌ Không thể xóa file: " + file.getName());
+                            }
+                        }
+                    }
+                }
+            }
+            // Dự phòng: tạo dữ liệu VietQR nếu API fail
+            String qrData = generateVietQRData(accountNumber, bankCode, amount, memo);
+            String fileName = "qrcode_" + safeMemo(memo).replaceAll("[^a-zA-Z0-9]", "_") + ".png";
+            generateQRCodeImage(qrData, qrSize, qrSize, fileName);
+
+        } catch (IOException |  WriterException e) {
+            System.err.println("❌ Lỗi khi tạo QR: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    // code tạo chuỗi nội dung của qr bằng VietQR
+    public static String generateVietQRData(String accountNumber, String bankCode, int amount, String memo) {
+        StringBuilder qr = new StringBuilder();
+
+        qr.append("000201"); // Payload Format Indicator
+        qr.append("010212"); // Point of initiation method
+
+        // Merchant Account Info
+//        String gui = "A000000727";
+//        String shortBankCode = bankCode.substring(0, 4); // MB = "9704"
+//        String merchantID = "0006" + shortBankCode + "2201" + accountNumber;
+//
+//        String accInfo =
+//                "00" + String.format("%02d", gui.length()) + gui +
+//                        "01" + String.format("%02d", merchantID.length()) + merchantID +
+//                        "03" + String.format("%02d", "QRIBFTTA".length()) + "QRIBFTTA";
+//
+//        String field38 = "38" + String.format("%02d", accInfo.length()) + accInfo;
+//        qr.append(field38);
+
+        // Merchant Account Info (Strict VietQR format)
+        String gui = "A000000727";
+        String shortBankCode = bankCode.substring(0, 4); // 970437 → 9704
+        String merchantVal = "0006" + shortBankCode + "220113" + accountNumber;
+
+        String accInfo =
+                "00" + String.format("%02d", gui.length()) + gui +
+                        "01" + String.format("%02d", merchantVal.length()) + merchantVal +
+                        "02" + String.format("%02d", "QRIBFTTA".length()) + "QRIBFTTA";
+
+        String field38 = "38" + String.format("%02d", accInfo.length()) + accInfo;
+        qr.append(field38);
+
+
+
+
+        qr.append("52040000"); // Merchant Category Code (MCC)
+        qr.append("5303704");  // Currency = VND (704)
+
+        if (amount > 0) {
+            String amtStr = String.valueOf(amount);
+            qr.append("54").append(String.format("%02d", amtStr.length())).append(amtStr);
+        }
+
+        qr.append("5802VN"); // Country Code
+
+        if (memo != null && !memo.isEmpty()) {
+            String addData = "08" + String.format("%02d", memo.length()) + memo;
+            qr.append("62").append(String.format("%02d", addData.length())).append(addData);
+        }
+
+        // CRC
+        qr.append("6304");
+        String dataForCRC = qr.toString();
+        String crc = calculateCRC16(dataForCRC);
+        qr.append(crc);
+
+
+
+        return qr.toString();
+    }
+
+
+
+
+    private static String calculateCRC16(String data) {
+        int crc = 0xFFFF;
+        int polynomial = 0x1021;
+
+        for (int i = 0; i < data.length(); i++) {
+            crc ^= (data.charAt(i) << 8);
+            for (int j = 0; j < 8; j++) {
+                if ((crc & 0x8000) != 0) {
+                    crc = (crc << 1) ^ polynomial;
+                } else {
+                    crc <<= 1;
+                }
+                crc &= 0xFFFF;
+            }
+        }
+
+        return String.format("%04X", crc);
+    }
+
+
+
+    private static String safeMemo(String memo) {
+        return memo == null ? "NoMemo" : memo;
+    }
+
+
+    static BufferedImage generateQRCodeImage(String text, int width, int height, String fileName) throws WriterException, IOException {
+        QRCodeWriter qrCodeWriter = new QRCodeWriter();
+        BitMatrix bitMatrix = qrCodeWriter.encode(text, BarcodeFormat.QR_CODE, width, height);
+
+        // Đường dẫn tuyệt đối đến thư mục lưu mã QR
+        String qrDirectory = "qr";
+        Path directoryPath = FileSystems.getDefault().getPath(qrDirectory);
+
+        // Tạo thư mục nếu chưa tồn tại
+        Files.createDirectories(directoryPath);
+
+        // Đường dẫn đầy đủ cho file mã QR
+        Path filePath = directoryPath.resolve(fileName);
+
+        System.out.println("Đường dẫn lưu mã QR: " + filePath.toAbsolutePath());
+        MatrixToImageWriter.writeToPath(bitMatrix, "PNG", filePath);
+
+        // Trả về BufferedImage để hiển thị
+        return MatrixToImageWriter.toBufferedImage(bitMatrix);
+    }
+    public static byte[] getQRCodeBytes(String accountNumber, String bankCode, int amount, String memo) {
+        return null;
+    }
+
+        private void displayQRCodeImage(String fileName) {
+        logInfo("🔍 Đang kiểm tra sự tồn tại của file QR: " + fileName);
+
+        File qrFile = new File(fileName);
+        if (!qrFile.exists()) {
+            logWarn("⚠️ File QR không tồn tại: " + fileName + ". Bỏ qua hiển thị.");
+            return;
+        }
+
+        long fileSize = qrFile.length();
+        logInfo("📁 Dung lượng file: " + fileSize + " bytes");
+
+        try {
+            Thread.sleep(100); // Mô phỏng loading
+            logInfo("🖼️ [HIỂN THỊ QR]: " + fileName);
+            for (int i = 0; i < 5; i++) {
+                System.out.print("█");
+                Thread.sleep(50);
+            }
+            System.out.println(" ✅");
+        } catch (InterruptedException e) {
+            logError("Lỗi khi mô phỏng hiển thị ảnh QR: " + e.getMessage());
+        }
+
+        logInfo("✅ File QR đã được xử lý thành công.");
+    }
+
+    private void logError(String s) {
+    }
+
+    private void logInfo(String s) {
+        
+    }
+
+
+    private void logWarn(String message) {    }
+
+        /**
      * Khởi tạo quá trình thanh toán đầy đủ và trả về CompletableFuture
      * để người gọi có thể xử lý kết quả thanh toán
      */
-    public static CompletableFuture<Boolean> startPaymentProcess(int userId, double amount) {
+    public static CompletableFuture<Boolean> startPaymentProcess(int userId, int amount) {
         CompletableFuture<Boolean> paymentResult = new CompletableFuture<>();
 
         // Tạo mã giao dịch duy nhất
-        String transactionCode = "PAY" + System.currentTimeMillis() + "_" + userId;
+        String transactionCode = "PAY" + System.currentTimeMillis();
 
         // Tạo nội dung giao dịch
-        String memo = "COURSE_" + transactionCode;
+        String memo =transactionCode;
 
         try {
             // Lấy thông tin người dùng từ DB
@@ -99,20 +291,88 @@ public class PaymentService {
     }
 
     /**
+     * Xử lý khi thanh toán thành công
+     */
+
+    /**
+     * Tạo một panel thông tin với label và giá trị
+     */
+    private static JPanel createInfoRow(String labelText, String valueText,
+                                        Font labelFont, Font valueFont, int height) {
+        JPanel row = new JPanel();
+        row.setLayout(new BorderLayout());
+        row.setBackground(Color.WHITE);
+        row.setPreferredSize(new Dimension(400, height));
+
+        JLabel label = new JLabel(labelText);
+        label.setFont(labelFont);
+        label.setPreferredSize(new Dimension(120, height));
+
+        JLabel value = new JLabel(valueText);
+        value.setFont(valueFont);
+
+        row.add(label, BorderLayout.WEST);
+        row.add(value, BorderLayout.CENTER);
+
+        return row;
+    }
+
+    /**
+     * Format số tiền dạng tiền tệ
+     */
+    private static String formatCurrency(int amount) {
+        return String.format("%d", amount).replace(",", ".");
+    }
+
+
+    /**
+     * Lấy kết nối database
+     */
+    private static Connection getConnection() throws SQLException {
+        return DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+    }
+
+    public static void insertPayment(int orderId, int amount) throws SQLException {
+        String sql = "INSERT INTO Payments (order_id, amount, status,method) VALUES (?, ?, 'Success','Bank Transfer')";
+        try (Connection conn = DatabaseConfig.getConnection()) {
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            stmt.setInt(1, orderId);
+            stmt.setDouble(2, amount);
+            stmt.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Phương thức tiện ích để xử lý thanh toán khóa học
+     *
+     * @param userId ID của người dùng
+     *               //     * @param courseId ID của khóa học
+     * @return true nếu thanh toán thành công, false nếu thất bại
+     */
+    public static boolean processPaymentForCourse(int userId, int amount, List<CourseDetailDTO> list, boolean isCart) {
+        return false;
+    }
+
+    /**
      * Hiển thị dialog thanh toán với QR code và mô phỏng thanh toán sau 10 giây
      */
     private static void showPaymentDialog(int userId, String accountNumber, String bankCode,
-                                          String memo, double amount, String userName, String transactionCode,
+                                          String memo, int amount, String userName, String transactionCode,
                                           CompletableFuture<Boolean> paymentResult) {
+//        String memo="abcD";
 
         try {
-            // Tạo dữ liệu QR
-            String qrData = generateVietQRData(accountNumber, bankCode, amount, memo);
-
             // Tạo hình ảnh QR
             int qrSize = 250;
-            BufferedImage qrImage = generateQRCodeImage(qrData, qrSize, qrSize,
-                    "qrcode" + ".png");
+            // Tạo dữ liệu QR
+            createQRCode(accountNumber, bankCode, memo, amount, qrSize);
+
+
+            BufferedImage qrImage =  ImageIO.read(new File("qr/qrcode_"+memo+".png"));
+
 
             // Tạo dialog hiển thị QR và thông tin thanh toán
             JDialog paymentDialog = new JDialog((JFrame) null, "Thanh toán khóa học", true);
@@ -243,256 +503,126 @@ public class PaymentService {
             // Thêm các panel vào dialog
             paymentDialog.add(qrPanel, BorderLayout.NORTH);
             paymentDialog.add(infoPanel, BorderLayout.CENTER);
-            boolean close = false;
-            // Timer để mô phỏng thanh toán thành công sau 1 giây
-            Timer timer = new Timer(PAYMENT_SIMULATION_TIME, new ActionListener() {
+            Thread checkerThread = new Thread(() -> {
+                boolean found = false;
+                int maxRetry = 20; // chạy tối đa 20 lần = 100s
+                int retry = 0;
 
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    ((Timer) e.getSource()).stop(); // Dừng timer
-                    // Cập nhật giao diện
-                    statusLabel.setText("Thanh toán thành công");
-                    statusLabel.setForeground(new Color(40, 167, 69));
-                    progressBar.setIndeterminate(false);
-                    progressBar.setValue(100);
+                while (!found && retry < maxRetry) {
+                    found = kiemTraLichSuGiaoDich(memo, amount);
 
+                    if (found) {
+                        SwingUtilities.invokeLater(() -> {
+                            statusLabel.setText("Thanh toán thành công");
+                            statusLabel.setForeground(new Color(40, 167, 69));
+                            progressBar.setIndeterminate(false);
+                            progressBar.setValue(100);
 
-                    // Hoàn thành CompletableFuture
-                    paymentResult.complete(true);
+                            JOptionPane.showMessageDialog(paymentDialog,
+                                    "Thanh toán thành công! Số tiền " + formatCurrency(amount) + " VNĐ đã được ghi nhận.",
+                                    "Thanh toán thành công",
+                                    JOptionPane.INFORMATION_MESSAGE);
 
-                    // Hiển thị thông báo thành công và đóng dialog
-                    SwingUtilities.invokeLater(() -> {
-                        Alerts alerts1 = new Alerts();
-                        JOptionPane.showMessageDialog(paymentDialog,
-                                "Thanh toán thành công! Số tiền " + formatCurrency(amount) + " VNĐ đã được ghi nhận.",
-                                "Thanh toán thành công",
-                                JOptionPane.INFORMATION_MESSAGE);
-                        paymentDialog.dispose();
-                    });
+                            paymentDialog.dispose();
+                        });
+                        paymentResult.complete(true);
+                        break;
+                    } else {
+                        try {
+                            Thread.sleep(5000); // chờ 5s
+                        } catch (InterruptedException e) {
+                            break;
+                        }
+                        retry++;
+                    }
+                }
+
+                if (!found) {
+                    paymentResult.complete(false); // Sau khi thử max lần vẫn fail
                 }
             });
-            timer.setRepeats(false); // Chỉ chạy 1 lần
-            timer.start();
-            // Xử lý nút hủy
+            checkerThread.start();
+
+            // Nút huỷ
             cancelButton.addActionListener(e -> {
-                timer.stop();
+                checkerThread.interrupt(); // Dừng vòng lặp kiểm tra
                 paymentResult.complete(false);
                 paymentDialog.dispose();
             });
 
-            // Xử lý khi đóng dialog
+            // Khi đóng cửa sổ
             paymentDialog.addWindowListener(new java.awt.event.WindowAdapter() {
                 @Override
                 public void windowClosing(java.awt.event.WindowEvent windowEvent) {
-                    timer.stop();
+                    checkerThread.interrupt();
                     paymentResult.complete(false);
                 }
             });
 
-            // Hiển thị dialog và bắt đầu timer
+            // Hiển thị dialog
             SwingUtilities.invokeLater(() -> {
                 paymentDialog.setVisible(true);
             });
 
-        } catch (WriterException | IOException e) {
+        } catch (IOException e) {
             System.err.println("Lỗi khi tạo mã QR: " + e.getMessage());
             e.printStackTrace();
             paymentResult.completeExceptionally(e);
         }
     }
 
-    /**
-     * Xử lý khi thanh toán thành công
-     */
-
-    /**
-     * Tạo một panel thông tin với label và giá trị
-     */
-    private static JPanel createInfoRow(String labelText, String valueText,
-                                        Font labelFont, Font valueFont, int height) {
-        JPanel row = new JPanel();
-        row.setLayout(new BorderLayout());
-        row.setBackground(Color.WHITE);
-        row.setPreferredSize(new Dimension(400, height));
-
-        JLabel label = new JLabel(labelText);
-        label.setFont(labelFont);
-        label.setPreferredSize(new Dimension(120, height));
-
-        JLabel value = new JLabel(valueText);
-        value.setFont(valueFont);
-
-        row.add(label, BorderLayout.WEST);
-        row.add(value, BorderLayout.CENTER);
-
-        return row;
-    }
-
-    /**
-     * Format số tiền dạng tiền tệ
-     */
-    private static String formatCurrency(double amount) {
-        return String.format("%,.0f", amount).replace(",", ".");
-    }
-
-
-    /**
-     * Tạo chuỗi VietQR theo chuẩn chính thức
-     */
-    public static String generateVietQRData(String accountNumber, String bankCode, double amount, String memo) {
-        StringBuilder qrData = new StringBuilder();
-        qrData.append("000201");
-        qrData.append("010212");
-
-        String beneficiaryInfo = String.format(
-                "3800%02d0100%02dA000000727%02d%02d%s%02d%s%02d%s",
-                38,
-                bankCode.length(),
-                bankCode.length() + 26,
-                bankCode.length(),
-                bankCode,
-                accountNumber.length(),
-                accountNumber,
-                memo.length(),
-                memo
-        );
-        qrData.append(beneficiaryInfo);
-
-        qrData.append("5303704");
-
-        String amountStr = String.format("%.0f", amount);
-        qrData.append(String.format("54%02d%s", amountStr.length(), amountStr));
-
-        String purpose = String.format("08%02d%s", memo.length(), memo);
-        qrData.append(purpose);
-
-        qrData.append("6304");
-
-        String crc = calculateCRC16(qrData.toString());
-        qrData.append(crc);
-
-        return qrData.toString();
-    }
-
-    /**
-     * Tính CRC16 theo chuẩn VietQR
-     */
-    private static String calculateCRC16(String data) {
-        int crc = 0xFFFF;
-        int polynomial = 0x1021;
-
-        for (int i = 0; i < data.length(); i++) {
-            crc ^= (data.charAt(i) << 8);
-            for (int j = 0; j < 8; j++) {
-                if ((crc & 0x8000) != 0) {
-                    crc = (crc << 1) ^ polynomial;
-                } else {
-                    crc <<= 1;
-                }
-                crc &= 0xFFFF;
-            }
-        }
-
-        return String.format("%04X", crc);
-    }
-
-    /**
-     * Tạo hình ảnh QR và lưu vào file, trả về BufferedImage
-     */
-    private static BufferedImage generateQRCodeImage(String text, int width, int height, String fileName) throws WriterException, IOException {
-        QRCodeWriter qrCodeWriter = new QRCodeWriter();
-        BitMatrix bitMatrix = qrCodeWriter.encode(text, BarcodeFormat.QR_CODE, width, height);
-
-        // Đường dẫn tuyệt đối đến thư mục lưu mã QR
-        String qrDirectory = "A:\\document\\BTL\\Java\\javaApp\\qr";
-        Path directoryPath = FileSystems.getDefault().getPath(qrDirectory);
-
-        // Tạo thư mục nếu chưa tồn tại
-        Files.createDirectories(directoryPath);
-
-        // Đường dẫn đầy đủ cho file mã QR
-        Path filePath = directoryPath.resolve(fileName);
-
-        System.out.println("Đường dẫn lưu mã QR: " + filePath.toAbsolutePath());
-        MatrixToImageWriter.writeToPath(bitMatrix, "PNG", filePath);
-
-        // Trả về BufferedImage để hiển thị
-        return MatrixToImageWriter.toBufferedImage(bitMatrix);
-    }
-
-    /**
-     * Lấy kết nối database
-     */
-    private static Connection getConnection() throws SQLException {
-        return DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
-    }
-
-    public static void insertPayment(int orderId, double amount) throws SQLException {
-        String sql = "INSERT INTO Payments (order_id, amount, status,method) VALUES (?, ?, 'Success','Bank Transfer')";
-        try (Connection conn = DatabaseConfig.getConnection()) {
-            PreparedStatement stmt = conn.prepareStatement(sql);
-            stmt.setInt(1, orderId);
-            stmt.setDouble(2, amount);
-            stmt.executeUpdate();
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     * Phương thức tiện ích để xử lý thanh toán khóa học
-     *
-     * @param userId   ID của người dùng
-     * @param courseId ID của khóa học
-     * @return true nếu thanh toán thành công, false nếu thất bại
-     */
-    public static boolean processPaymentForCourse(int userId, double amount, List<CourseDetailDTO> list, boolean isCart) {
+    // Kiểm tra lịch sử giao dịch và cập nhật số dư nếu tìm thấy
+    public static boolean kiemTraLichSuGiaoDich(String tuKhoaNoiDung,  int amount) {
         try {
-            // Lấy thông tin khóa học từ database
+            String url = SEPAY_API_URL + "/transactions/list?account_number=" + SEPAY_ACCOUNT_NUMBER + "&limit=20";
 
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(url))
+                    .header("Authorization", "Bearer " + SEPAY_API_KEY)
+                    .header("Content-Type", "application/json")
+                    .GET()
+                    .build();
 
-            // Thực hiện thanh toán và đợi kết quả
-            CompletableFuture<Boolean> paymentFuture = PaymentService.startPaymentProcess(userId, amount);
+            HttpClient client = HttpClient.newHttpClient();
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-            // Đợi kết quả thanh toán (blocking call)
-            boolean paymentSuccess = paymentFuture.get(); // lưu ý: đợi kết quả
+            int statusCode = response.statusCode();
 
-            if (paymentSuccess) {
-                logService.createLog(SessionManager.getInstance().getUser().getUserId(), "Học viên " + SessionManager.getInstance().getUser().getFullname() + " đã mua khóa học");
-                // Xử lý khi thanh toán thành công
-                // Xử lý logic thanh toán thành công
-//                handleSuccessfulPayment(userId, amount, courseInfo);
-                purchaseCourseService.setTotal(amount);
-                int orderId = purchaseCourseService.purchaseCoursesFromCart(userId, list);
-                if (orderId != -1) {
-                    insertPayment(orderId, amount);
-                    if (isCart) {
-
-                        CartService cartService = new CartService();
-                        cartService.deleteAllCartItem(SessionManager.getInstance().getUser().getUserId());
-                        SessionManager.getInstance().setCartSize();
-                        ClientMenuController.getInstance().refreshCartSize();
-                    }
-                    System.out.println("add thanh cong");
-                } else {
-                    System.out.println("add that bai");
-                }
+            if (statusCode != 200) {
+                throw new IOException("Lỗi khi lấy lịch sử giao dịch. Status code: " + statusCode + ", Response: " + response.body());
             }
 
-            return paymentSuccess;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
+            JSONObject jsonResponse = new JSONObject(response.body());
+            JSONArray transactions = jsonResponse.getJSONArray("transactions");
+            for (int i = 0; i < transactions.length(); i++) {
+                JSONObject transaction = transactions.getJSONObject(i);
+                String description = transaction.getString("transaction_content");
+                String amountInStr = transaction.getString("amount_in");
+                int amountIn = (int) Double.parseDouble(amountInStr); // vì amount là int
 
+                if (description.contains(tuKhoaNoiDung) && amountIn == amount) {
+                    System.out.println("Tìm thấy giao dịch: " + transaction.toString());
+                    return true;
+                }
+
+            }
+
+        } catch (IOException e) {
+            System.err.println("Lỗi kết nối hoặc đọc phản hồi (SePay - Transactions): " + e.getMessage());
+            e.printStackTrace();
+
+        } catch (InterruptedException e) {
+            System.err.println("Yêu cầu bị gián đoạn (SePay - Transactions): " + e.getMessage());
+            e.printStackTrace();
+        }
+        return false;
+    }
 
     /**
      * Phương thức main để test chức năng
      */
     public static void main(String[] args) {
-        List<CourseDetailDTO> list = new ArrayList<>();
+        kiemTraLichSuGiaoDich("COURSE_PAY1746408050140_5",2000);
 //        PaymentService.processPaymentForCourse(3, 100000, list);
 
     }

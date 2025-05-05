@@ -122,7 +122,7 @@ public class PaymentDetailController implements Initializable {
     @FXML
     private void handlePurchase() {
         System.out.println("Đang mua khóa học: ");
-        PaymentService.processPaymentForCourse(SessionManager.getInstance().getUser().getUserId(),getTotalPrice(),getList(),isCart);
+        PaymentService.processPaymentForCourse(SessionManager.getInstance().getUser().getUserId(),(int) getTotalPrice(),getList(),isCart);
         handleCancel();
         // Bạn có thể thêm logic thanh toán ở đây (hoặc gọi phương thức thanh toán)
     }

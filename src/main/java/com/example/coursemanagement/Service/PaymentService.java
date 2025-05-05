@@ -50,8 +50,8 @@ public class PaymentService {
     private static PurchaseCourseService purchaseCourseService = new PurchaseCourseService();
 
     // Đường dẫn kết nối database
-    private static final String DB_URL = "jdbc:sqlserver://localhost:1433;databaseName=IT_Course_Management;encrypt=true;trustServerCertificate=true";
-//    private static final String DB_URL = "jdbc:sqlserver://localhost:1433;databaseName=IT_Course_Management;integratedSecurity=true;encrypt=true;trustServerCertificate=true";
+    //private static final String DB_URL = "jdbc:sqlserver://localhost:1433;databaseName=IT_Course_Management;encrypt=true;trustServerCertificate=true";
+    private static final String DB_URL = "jdbc:sqlserver://localhost:1433;databaseName=IT_Course_Management;integratedSecurity=true;encrypt=true;trustServerCertificate=true";
     private static final String DB_USER = "sa";
     private static final String DB_PASSWORD = "18082005";
 
@@ -404,7 +404,7 @@ public class PaymentService {
         BitMatrix bitMatrix = qrCodeWriter.encode(text, BarcodeFormat.QR_CODE, width, height);
 
         // Đường dẫn tuyệt đối đến thư mục lưu mã QR
-        String qrDirectory = "A:\\document\\BTL\\Java\\javaApp\\qr";
+        String qrDirectory = "D:\\BTL_JAVA_App\\javaApp\\qr";
         Path directoryPath = FileSystems.getDefault().getPath(qrDirectory);
 
         // Tạo thư mục nếu chưa tồn tại

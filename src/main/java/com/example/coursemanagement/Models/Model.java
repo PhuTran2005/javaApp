@@ -2,7 +2,6 @@ package com.example.coursemanagement.Models;
 
 import com.example.coursemanagement.Views.ViewFactory;
 
-import javax.swing.text.View;
 
 public class Model {
     private static Model model;

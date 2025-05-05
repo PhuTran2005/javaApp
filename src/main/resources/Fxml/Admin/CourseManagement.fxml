@@ -9,7 +9,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane prefHeight="750.0" prefWidth="850.0" stylesheets="@../../Styles/CourseManagement.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.coursemanagement.Controllers.Admin.CourseController.CourseManagementController">
+<AnchorPane prefHeight="750.0" prefWidth="900.0" stylesheets="@../../Styles/CourseManagement.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.coursemanagement.Controllers.Admin.CourseController.CourseManagementController">
     <children>
         <Text layoutX="414.0" layoutY="27.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Course Management" />
     </children>
@@ -23,11 +23,20 @@
             </ImageView>
         </graphic>
     </Button>
-    <VBox layoutX="186.4" layoutY="11.2" prefHeight="54.0" prefWidth="639.0" style="co: white;" styleClass="title-box" AnchorPane.leftAnchor="186.0" AnchorPane.rightAnchor="25.0" AnchorPane.topAnchor="11.0">
+    <VBox layoutX="186.4" layoutY="11.2" prefHeight="54.0" prefWidth="456.0" style="co: white;" styleClass="title-box" AnchorPane.leftAnchor="190.0" AnchorPane.rightAnchor="190.0" AnchorPane.topAnchor="11.0">
         <children>
             <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Danh sách khóa học" />
         </children>
     </VBox>
+   <Button fx:id="recycle_btn" layoutX="655.0" layoutY="11.0" onAction="#handleRecycleCourse" prefHeight="54.0" prefWidth="146.0" styleClass="action-button" text="Khóa Học đã xóa" AnchorPane.rightAnchor="25.0">
+      <graphic>
+         <ImageView fitHeight="25.0" fitWidth="26.0" pickOnBounds="true" preserveRatio="true">
+            <image>
+               <Image url="@../../Images/recycle-bin.png" />
+            </image>
+         </ImageView>
+      </graphic>
+   </Button>
     <ScrollPane fx:id="listCourse" layoutX="14.0" layoutY="83.0" prefHeight="650.0" prefWidth="800.0" AnchorPane.bottomAnchor="25.0" AnchorPane.leftAnchor="25.0" AnchorPane.rightAnchor="25.0" AnchorPane.topAnchor="80.0">
         <content>
             <FlowPane fx:id="courseContainer" hgap="30" prefWrapLength="800" vgap="30" />

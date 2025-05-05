@@ -6,23 +6,37 @@ import com.example.coursemanagement.Utils.Alerts;
 import com.example.coursemanagement.Models.Model;
 import com.example.coursemanagement.Models.User;
 import com.example.coursemanagement.Utils.SessionManager;
+import javafx.animation.TranslateTransition;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.net.URL;
+import java.util.ResourceBundle;
 
+import javafx.animation.ScaleTransition;
+import javafx.scene.control.Button;
+import javafx.util.Duration;
+import javafx.animation.RotateTransition;
+import javafx.scene.image.ImageView;
+import javafx.util.Duration;
 
-public class LoginController {
+public class LoginController implements Initializable {
     @FXML
     public TextField LGEmailname;
+    public ImageView logo13;
+    public AnchorPane loginForm;
     private Alerts alerts = new Alerts();
 
     @FXML
@@ -36,6 +50,22 @@ public class LoginController {
     private final UserRepository userRepository = new UserRepository(); // Tạo repository
     private final CartService cartService = new CartService(); // Tạo repository
 
+    @Override
+    public void initialize(URL url, ResourceBundle resourceBundle) {
+        pulseButton(btnLogin);
+    }
+
+    // Cho ImageView logo xoay khi vừa load
+    public void shake(Node node) {
+        TranslateTransition tt = new TranslateTransition(Duration.millis(50), node);
+        tt.setFromX(0);
+        tt.setByX(10);
+        tt.setCycleCount(6);
+        tt.setAutoReverse(true);
+        tt.play();
+    }
+
+
     private void showMessage(String message, String color, double width) {
         messageLabel.setText(message);
         messageLabel.setStyle("-fx-text-fill: " + color + ";");
@@ -44,12 +74,25 @@ public class LoginController {
         messageLabel.setVisible(true);
     }
 
+
+    public void pulseButton(Button button) {
+        ScaleTransition st = new ScaleTransition(Duration.seconds(1), button);
+        st.setFromX(1);
+        st.setToX(1.05);
+        st.setFromY(1);
+        st.setToY(1.05);
+        st.setAutoReverse(true);
+        st.setCycleCount(ScaleTransition.INDEFINITE);
+        st.play();
+    }
+
     @FXML
     private void handleLogin() {
         String email = LGEmailname.getText().trim();
         String password = LGPassword.getText().trim();
 
         if (email.isEmpty() || password.isEmpty()) {
+            shake(loginForm);
             showMessage("Vui lòng nhập đầy đủ thông tin!", "RED", 400);
             return;
         }
@@ -61,12 +104,15 @@ public class LoginController {
         if (response != null) {
             showMessage("Đăng nhập thành công!", "GREEN", 400);
             SessionManager.getInstance().setUser(response); // Cập nhật user mới
-            SessionManager.getInstance().setCartSize();
+            if (response.getRoleId() == 3) {
+                SessionManager.getInstance().setCartSize();
+            }
             alerts.showSuccessAlert("Đăng nhập thành công!");
             Stage stage = (Stage) messageLabel.getScene().getWindow();
             Model.getInstance().getViewFactory().closeStage(stage);
-            openDashboard(response.getRole());
+            openDashboard(response.getRoleId());
         } else {
+            shake(loginForm);
             showMessage("Sai tên đăng nhập hoặc mật khẩu!", "RED", 400);
         }
 
@@ -93,13 +139,14 @@ public class LoginController {
     }
 
 
-    public void openDashboard(String role) {
+    public void openDashboard(int roleId) {
         try {
-            if (role.equals("USER")) {
-                Model.getInstance().getViewFactory().showClientWindow();
-            } else {
+            if (roleId == 1) {
                 Model.getInstance().getViewFactory().showAdminWindow();
+            } else {
+                Model.getInstance().getViewFactory().showClientWindow();
             }
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -122,5 +169,6 @@ public class LoginController {
             e.printStackTrace();
         }
     }
+
 
 }

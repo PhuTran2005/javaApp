@@ -8,66 +8,113 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-
-<AnchorPane prefHeight="750.0" prefWidth="850.0" styleClass="profile-container" stylesheets="@../../Styles/Profile.css"
-            xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="com.example.coursemanagement.Controllers.Client.ProfileController">
+<AnchorPane prefHeight="750.0" prefWidth="850.0" styleClass="profile-container" stylesheets="@../../Styles/Profile.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.coursemanagement.Controllers.Client.ProfileController">
 
 
     <!-- Bố cục tổng thể -->
-    <VBox layoutX="200.0" layoutY="100.0" prefHeight="462.0" prefWidth="468.0" spacing="15"
-          styleClass="profile-container" stylesheets="@../../Styles/Profile.css">
+    <VBox layoutX="200.0" layoutY="100.0" prefHeight="462.0" prefWidth="468.0" spacing="15" styleClass="profile-container" stylesheets="@../../Styles/Profile.css" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="150.0" AnchorPane.rightAnchor="150.0" AnchorPane.topAnchor="10.0">
 
         <!-- Tiêu đề -->
-        <Label style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-alignment: center;" styleClass="title-label"
-               text="Thông Tin Cá Nhân"/>
+        <Label style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-alignment: center;" styleClass="title-label" text="Thông Tin Cá Nhân" />
 
         <!-- Họ và tên -->
         <HBox spacing="10" styleClass="input-group">
-            <Label styleClass="input-label" text="Họ và tên:"/>
-            <TextField fx:id="usernameField" prefWidth="250.0" styleClass="input-field"/>
+            <Label styleClass="input-label" text="Họ và tên:" />
+            <TextField fx:id="usernameField" prefWidth="250.0" styleClass="input-field" />
             <VBox.margin>
-                <Insets bottom="10.0"/>
+                <Insets bottom="10.0" />
+            </VBox.margin>
+        </HBox>
+        <HBox spacing="10" styleClass="input-group">
+            <children>
+                <Label styleClass="input-label" text="Số điện thoại:" />
+                <TextField fx:id="userPhoneNumberField" prefWidth="250.0" styleClass="input-field" />
+            </children>
+            <VBox.margin>
+                <Insets bottom="10.0" />
+            </VBox.margin>
+        </HBox>
+        <HBox fx:id="instructorBox1" spacing="10" styleClass="input-group">
+            <children>
+                <Label styleClass="input-label" text="Chuyên ngành" />
+                <TextField fx:id="specialtyField" prefWidth="250.0" styleClass="input-field" />
+            </children>
+            <VBox.margin>
+                <Insets bottom="10.0" />
+            </VBox.margin>
+        </HBox>
+        <HBox fx:id="instructorBox2" spacing="10" styleClass="input-group">
+            <children>
+                <Label styleClass="input-label" text="Bằng cấp" />
+                <TextField fx:id="degreeField" prefWidth="250.0" styleClass="input-field" />
+            </children>
+            <VBox.margin>
+                <Insets bottom="10.0" />
+            </VBox.margin>
+        </HBox>
+        <HBox fx:id="instructorBox3" spacing="10" styleClass="input-group">
+            <children>
+                <Label styleClass="input-label" text="Năm kinh nghiệm" />
+                <TextField fx:id="yearsExperimentField" prefWidth="250.0" styleClass="input-field" />
+            </children>
+            <VBox.margin>
+                <Insets bottom="10.0" />
+            </VBox.margin>
+        </HBox>
+        <HBox fx:id="studentBox1" spacing="10" styleClass="input-group">
+            <children>
+                <Label styleClass="input-label" text="Lớp" />
+                <TextField fx:id="classField" prefWidth="250.0" styleClass="input-field" />
+            </children>
+            <VBox.margin>
+                <Insets bottom="10.0" />
             </VBox.margin>
         </HBox>
 
 
         <!-- Số điện thoại -->
-        <HBox spacing="10" styleClass="input-group">
-            <Label styleClass="input-label" text="Số điện thoại:"/>
-            <TextField fx:id="userPhoneNumberField" prefWidth="250.0" styleClass="input-field"/>
+        <HBox fx:id="studentBox2" spacing="10" styleClass="input-group">
+            <Label styleClass="input-label" text="Tuyển sinh năm" />
+            <TextField fx:id="enrollmentYearField" prefWidth="250.0" styleClass="input-field" />
             <VBox.margin>
-                <Insets bottom="10.0"/>
+                <Insets bottom="10.0" />
+            </VBox.margin>
+        </HBox>
+        <HBox fx:id="studentBox3" spacing="10" styleClass="input-group">
+            <children>
+                <Label styleClass="input-label" text="GPA" />
+                <TextField fx:id="GpaField" prefWidth="250.0" styleClass="input-field" />
+            </children>
+            <VBox.margin>
+                <Insets bottom="10.0" />
             </VBox.margin>
         </HBox>
         <!-- Email (Không chỉnh sửa) -->
         <HBox spacing="10" styleClass="input-group">
-            <Label styleClass="input-label" text="Email:"/>
-            <TextField fx:id="userEmailField" editable="false" prefWidth="250.0" styleClass="input-field"/>
+            <Label styleClass="input-label" text="Email:" />
+            <TextField fx:id="userEmailField" editable="false" prefWidth="250.0" styleClass="input-field" />
             <VBox.margin>
-                <Insets bottom="10.0"/>
+                <Insets bottom="10.0" />
             </VBox.margin>
         </HBox>
         <!-- Ngày tạo tài khoản (Không chỉnh sửa) -->
         <HBox spacing="10" styleClass="input-group">
-            <Label styleClass="input-label" text="Ngày tạo tài khoản:"/>
-            <TextField fx:id="createDateField" editable="false" prefWidth="250.0" styleClass="input-field"/>
+            <Label styleClass="input-label" text="Ngày tạo tài khoản:" />
+            <TextField fx:id="createDateField" editable="false" prefWidth="250.0" styleClass="input-field" />
             <VBox.margin>
-                <Insets bottom="10.0"/>
+                <Insets bottom="10.0" />
             </VBox.margin>
         </HBox>
         <HBox prefHeight="44.0" prefWidth="428.0" spacing="10" styleClass="input-group">
-            <Label styleClass="input-label" text="Mật khẩu:"/>
-            <Button mnemonicParsing="false" onAction="#handleChangePassword" styleClass="action-button"
-                    text="Thay đổi mật khẩu"/>
+            <Label styleClass="input-label" text="Mật khẩu:" />
+            <Button mnemonicParsing="false" onAction="#handleChangePassword" styleClass="action-button" text="Thay đổi mật khẩu" />
             <VBox.margin>
-                <Insets bottom="30.0"/>
+                <Insets bottom="30.0" />
             </VBox.margin>
         </HBox>
 
         <!-- Nút Lưu -->
-        <Button fx:id="saveButton" onAction="#handleSave" style="-fx-font-size: 14px; -fx-padding: 8px 16px;"
-                styleClass="action-button" text="Lưu thay đổi"/>
+        <Button fx:id="saveButton" onAction="#handleSave" style="-fx-font-size: 14px; -fx-padding: 8px 16px;" styleClass="action-button" text="Lưu thay đổi" />
 
     </VBox>
 

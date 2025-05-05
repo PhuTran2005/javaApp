@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.String?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="142.0" prefWidth="805.0" stylesheets="@../../../Styles/Accounts.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.coursemanagement.Controllers.Client.CartController.CourseCartOfInstructorController">
+   <children>
+      <VBox fx:id="courseCard" alignment="CENTER" layoutX="7.0" layoutY="6.0" prefHeight="124.0" prefWidth="790.0" spacing="8" style="-fx-background-color: #E7FBFF; -fx-border-color: #cccccc; -fx-border-radius: 10; -fx-background-radius: 10;">
+         <children>
+            <HBox prefHeight="100.0" prefWidth="200.0">
+               <children>
+                  <Label prefHeight="28.0" prefWidth="353.0" text="Tên khóa học:">
+                     <font>
+                        <Font name="System Bold" size="13.0" />
+                     </font>
+                     <HBox.margin>
+                        <Insets />
+                     </HBox.margin>
+                     <padding>
+                        <Insets bottom="5.0" left="200.0" />
+                     </padding>
+                  </Label>
+                  <Label fx:id="courseNameLabel" prefHeight="61.0" prefWidth="275.0" style="-fx-font-size: 19px; -fx-font-weight: bold;" text="Tên khóa học" textFill="#4706b7">
+                     <font>
+                        <Font size="17.0" />
+                     </font>
+                  </Label>
+               </children>
+            </HBox>
+            <HBox prefHeight="100.0" prefWidth="200.0">
+               <children>
+                  <Label prefHeight="26.0" prefWidth="353.0" text="Tên giảng viên: ">
+                     <font>
+                        <Font name="System Bold" size="13.0" />
+                     </font>
+                     <padding>
+                        <Insets bottom="5.0" left="200.0" />
+                     </padding>
+                  </Label>
+                  <Label fx:id="teacherNameLabel" prefHeight="38.0" prefWidth="299.0" text="Giảng viên: ..." textFill="#0fa43b">
+                     <font>
+                        <Font name="System Bold" size="17.0" />
+                     </font>
+                  </Label>
+               </children>
+            </HBox>
+            <HBox prefHeight="100.0" prefWidth="200.0">
+               <children>
+                  <Label prefHeight="24.0" prefWidth="353.0" text="Số lượng học viên: ">
+                     <font>
+                        <Font name="System Bold" size="13.0" />
+                     </font>
+                     <padding>
+                        <Insets bottom="5.0" left="200.0" />
+                     </padding>
+                  </Label>
+                  <Label fx:id="studentCountLabel" prefHeight="39.0" prefWidth="310.0" text=" ... người" textFill="RED">
+                     <font>
+                        <Font name="System Bold" size="14.0" />
+                     </font>
+                  </Label>
+               </children>
+            </HBox>
+            <Button fx:id="viewButton" onAction="#handleViewDetails" prefHeight="20.0" prefWidth="79.0" style="-fx-background-color: #24c1b7; -fx-text-fill: white; -fx-background-radius: 5;" text="Xem chi tiết" />
+         </children>
+      </VBox>
+   </children>
+   <styleClass>
+      <String fx:value="shadow" />
+      <String fx:value="gridPane-white" />
+   </styleClass>
+</AnchorPane>

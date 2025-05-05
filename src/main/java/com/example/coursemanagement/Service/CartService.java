@@ -14,8 +14,15 @@ public class CartService {
     }
 
     public boolean deleteCartItem(int cartId) {
-
         return cartRepository.removeFromCart(cartId);
+    }
+
+    public boolean deleteAllCartItem(int userId) {
+        return cartRepository.removeFromCartUser(userId);
+    }
+
+    public double getTotalCart(int userId) {
+        return cartRepository.getTotalCart(userId);
     }
 
     public boolean isExistedInCart(int userId, int courseId) {
@@ -25,11 +32,9 @@ public class CartService {
 
     public List<Cart> getAllCartOfUser(int userId) {
         return cartRepository.getCartByUser(userId);
-
     }
 
     public int getCartSize(int userId) {
-
         return cartRepository.getCartSize(userId);
     }
 

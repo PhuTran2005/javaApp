@@ -1,12 +1,16 @@
 package com.example.coursemanagement.Controllers.Admin.CourseController;
 
+import com.example.coursemanagement.Dto.CourseDetailDTO;
 import com.example.coursemanagement.Models.Course;
 import com.example.coursemanagement.Service.CourseService;
 import com.example.coursemanagement.Utils.Alerts;
+import com.example.coursemanagement.Utils.SessionManager;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -15,6 +19,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.net.URL;
 
 
 public class CourseBoxController {
@@ -32,35 +37,66 @@ public class CourseBoxController {
     @FXML
 
     public ImageView courseThumbnail;
-    private Course currCourse;
+    @FXML
+    public Button recover_btn;
+    @FXML
+    public Button delete_btn;
+    private CourseDetailDTO currCourse;
     private final Alerts alerts = new Alerts(); // Tạo repository
     private final CourseService courseService = new CourseService(); // Tạo repository
-    private CourseManagementController courseManagementController;
+    private CourseManagementController courseManagementController; //Lưu controller để xử lý load giao diện
+    private boolean isDelete = false;
+    private CourseDeletedController courseDeletedController; //Lưu controller để xử lý load giao diện
 
     public void setCourseManagementController(CourseManagementController controller) {
         this.courseManagementController = controller;
     }
 
-    public void setData(Course course) {
-        this.currCourse = course;
-        courseName.setText(course.getCourseName());
-        courseInstructorName.setText("GV: " + course.getInstructor().getInstructorName());
-        coursePrice.setText("Giá: " + course.getCoursePrice() + " VND");
+    public void setCourseDeletedManagementController(CourseDeletedController controller) {
+        this.courseDeletedController = controller;
+    }
 
-        // Load ảnh
-        try {
-            Image image = new Image(course.getCourseThumbnail());
-            courseThumbnail.setImage(image);
-            System.out.println(course.getCourseThumbnail());
-        } catch (Exception e) {
-            e.printStackTrace();
+    public void setIsDelete(boolean val) {
+        this.isDelete = val;
+    }
+
+    //Load data cho mỗi box
+    public void setData(CourseDetailDTO course) {
+        if (SessionManager.getInstance().getUser().getRoleId() == 2) {
+            if (delete_btn != null) {
+                delete_btn.setVisible(false);
+                delete_btn.setManaged(false);
+            }
         }
+        this.currCourse = course;
+        courseName.setText(course.getCourse().getCourseName());
+        courseInstructorName.setText("GV: " + course.getInstructor().getFullname());
+        coursePrice.setText("Giá: " + course.getCourse().getCoursePrice() + " VND");
+
+
+        String thumbnailPath = "/" + course.getCourse().getCourseThumbnail();
+        try {
+            Image image = new Image(getClass().getResource(thumbnailPath).toExternalForm());
+            courseThumbnail.setImage(image);
+        } catch (Exception e) {
+            System.err.println("Không tìm thấy ảnh: " + thumbnailPath + ", dùng ảnh mặc định.");
+            try {
+                Image defaultImage = new Image(getClass().getResource("/Images/logo.png").toExternalForm());
+                courseThumbnail.setImage(defaultImage);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
+
 
     }
 
+    //Load nút xử lý
+
+
+    //Xử lý nút xem khóa học
     @FXML
     private void handleView() {
-        System.out.println("Chỉnh sửa: " + currCourse.getCourseName());
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/Fxml/HelpFxml/ViewCourse.fxml"));
             Parent root = loader.load();
@@ -76,10 +112,10 @@ public class CourseBoxController {
             e.printStackTrace();
         }
     }
+    //Xử lý nút chỉnh khóa học
 
     @FXML
     private void handleEdit() {
-        System.out.println("Chỉnh sửa: " + currCourse.getCourseName());
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/Fxml/HelpFxml/EditCourse.fxml"));
             Parent root = loader.load();
@@ -100,21 +136,32 @@ public class CourseBoxController {
         }
         // Mở giao diện chỉnh sửa -> có thể dùng lại AddCourse.fxml nhưng truyền Course vào
     }
+    //Xử lý nút xóa khóa học
 
     @FXML
     private void handleDelete() {
         System.out.println("Xóa: " + currCourse);
 
         if (alerts.showConfirmationSelectedAlert("Bạn có chắc muốn xóa? ")) {
-            courseService.deleteCourseById(currCourse.getCourseId());
-            courseManagementController.refreshCourseList();
+            courseService.deleteCourseById(currCourse.getCourse().getCourseId());
+            if (courseManagementController != null) {
+                courseManagementController.refreshCourseList();
+            }
             alerts.showSuccessAlert("Xóa khóa học thành công");
-            System.out.println("Xoá" + currCourse.getCourseName() + "thành công");
-        } else {
-            System.out.println("Xoá" + currCourse.getCourseName() + "không thành công");
-
         }
 
 
+    }
+    //Xử lý nút khôi phục khóa học
+
+    @FXML
+    public void handleRecover() {
+        if (alerts.showConfirmationSelectedAlert("Bạn có chắc muốn khôi phục không? ")) {
+            courseService.recoveryCourse(currCourse.getCourse().getCourseId());
+            if (courseDeletedController != null) {
+                courseDeletedController.refreshCourseList();
+            }
+            alerts.showSuccessAlert("Khôi phục khóa học thành công");
+        }
     }
 }

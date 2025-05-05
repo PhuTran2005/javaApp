@@ -20,10 +20,10 @@ public class StatisticsService {
     public static ObservableList<PieChart.Data> getStudentsPerCourse() {
         ObservableList<PieChart.Data> data = FXCollections.observableArrayList();
 
-        String query = "SELECT c.courseName AS course_name, COUNT(e.id) AS student_count " +
+        String query = "SELECT c.course_name AS course_name, COUNT(e.enrollments_id) AS student_count " +
                 "FROM Courses c " +
-                "LEFT JOIN Enrollments e ON c.courseId = e.courseId " +
-                "GROUP BY c.courseName";
+                "LEFT JOIN Enrollments e ON c.course_id = e.course_id " +
+                "GROUP BY c.course_name";
 
         int totalStudents = 0; // Tổng số học viên
 
@@ -81,12 +81,11 @@ public class StatisticsService {
         XYChart.Series<String, Number> series = new XYChart.Series<>();
         series.setName("Doanh thu");
 
-        String query = "SELECT TOP 10 c.courseName AS course_name, SUM(p.amount) AS revenue " +
+        String query = "SELECT TOP 10 c.course_name AS course_name, SUM(odt.price) AS revenue " +
                 "FROM Courses c " +
-                "LEFT JOIN Enrollments e ON c.courseId = e.courseId " +
-                "LEFT JOIN Payments p ON e.id = p.enrollment_id " +
-                "WHERE p.status = 'Success' " +
-                "GROUP BY c.courseName " +
+                "LEFT JOIN Enrollments e ON c.course_id = e.course_id " +
+                "LEFT JOIN Order_Details odt ON e.enrollments_id = odt.enrollments_id " +
+                "GROUP BY c.course_name " +
                 "ORDER BY revenue DESC";
 
         try (Connection conn = DatabaseConfig.getConnection();

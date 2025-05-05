@@ -1,53 +1,50 @@
 package com.example.coursemanagement.Controllers.Client;
 
 import com.example.coursemanagement.Service.CartService;
-import com.example.coursemanagement.Service.PaymentService;
 import com.example.coursemanagement.Utils.Alerts;
 import com.example.coursemanagement.Models.Model;
 import com.example.coursemanagement.Utils.SessionManager;
+import com.example.coursemanagement.Utils.UIHelper;
+import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
-import javafx.scene.layout.AnchorPane;
-import javafx.stage.Stage;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.stage.Modality;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.shape.Circle;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
-import java.io.IOException;
-import java.net.URL;
 import java.net.URL;
 import java.util.ResourceBundle;
 
 public class ClientMenuController implements Initializable {
-    private final PaymentService paymentService = new PaymentService();
     private final CartService cartService = new CartService();
-
-
     @FXML
     public Button myCourse_btn;
     @FXML
     public Button courses_btn;
     @FXML
-
     public Button cart_btn;
+    @FXML
+    public Button student_btn;
+    @FXML
+    public Text welcomeText;
+    @FXML
+    public Button assignment_btn;
+    @FXML
+    public ImageView avartarView;
+    @FXML
+
+    public Button instructorCourse_btn;
     private Alerts alerts = new Alerts();
     @FXML
-
     public Button logout_btn;
     @FXML
-
     public Button profile_btn;
     @FXML
-    public Button payment_btn;
-
-    @FXML
-    private AnchorPane mainContent;
-    @FXML
-
     public Button report_btn;
+
     private static ClientMenuController instance;
 
     public ClientMenuController() {
@@ -61,59 +58,172 @@ public class ClientMenuController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         addListeners();
+
+        Image avatarImage = UIHelper.generateAvatar(UIHelper.getLastWord(SessionManager.getInstance().getUser().getFullname()), 99);
+        if (avartarView != null) {
+            System.out.println("Load anh");
+            avartarView.setImage(avatarImage);
+            avartarView.setFitWidth(100);
+            avartarView.setFitHeight(100);
+            avartarView.setPreserveRatio(false); // giữ đúng tỉ lệ 120x120
+
+            Circle clip = new Circle();
+            clip.centerXProperty().bind(avartarView.fitWidthProperty().divide(2));
+            clip.centerYProperty().bind(avartarView.fitHeightProperty().divide(2));
+            clip.radiusProperty().bind(Bindings.min(
+                    avartarView.fitWidthProperty(),
+                    avartarView.fitHeightProperty()
+            ).divide(2));
+
+            avartarView.setClip(clip);
+
+        }
+        if (SessionManager.getInstance().getUser().getRoleId() == 2) {
+            if (welcomeText != null) {
+                welcomeText.setText("Giáo viên");
+            }
+            loadInstructorUi();
+        } else {
+            if (welcomeText != null) {
+                welcomeText.setText("Học viên");
+            }
+            loadStudentUi();
+        }
     }
 
+    //Thêm action cho các nút
     @FXML
     private void addListeners() {
+
+        instructorCourse_btn.setOnAction(event -> onInstructorCourse("InstructorCourse"));
         courses_btn.setOnAction(event -> onCoursesMenu("Courses"));
         myCourse_btn.setOnAction(event -> onMyCourseMenu("MyCourse"));
-        cart_btn.setOnAction(event -> onCart("Cart"));
+        cart_btn.setOnAction(event -> onCartMenu("Cart"));
         profile_btn.setOnAction(event -> onProfileMenu("Profile"));
-        payment_btn.setOnAction(event -> onPaymentMenu("Payment"));
+        student_btn.setOnAction(event -> onStudentMenu("Student"));
+        assignment_btn.setOnAction(event -> onAssignmentMenu("Assignment"));
         report_btn.setOnAction(event -> onReportMenu("Report"));
         logout_btn.setOnAction(event -> onLogout());
+        if (SessionManager.getInstance().getUser().getRoleId() == 2) {
+            if (instructorCourse_btn != null) {
+                if (!instructorCourse_btn.getStyleClass().contains("active")) {
+                    instructorCourse_btn.getStyleClass().add("active");
+                }
+            }
+            onInstructorCourse("InstructorCourse");
+        } else {
+            if (courses_btn != null) {
+                if (!courses_btn.getStyleClass().contains("active")) {
+                    courses_btn.getStyleClass().add("active");
+                }
+            }
+            onCoursesMenu("Courses");
+        }
         refreshCartSize();
+    }
+
+    //load giao diện cho giáo viên
+    public void loadInstructorUi() {
+        toggleInstructorBoxes(true);
+        toggleStudentBoxes(false);
+    }
+
+    public void loadStudentUi() {
+        toggleInstructorBoxes(false);
+        toggleStudentBoxes(true);
+    }
+
+    //handle on/off button
+    private void toggleInstructorBoxes(boolean show) {
+        if (assignment_btn != null) {
+            assignment_btn.setVisible(show);
+            assignment_btn.setManaged(show);
+        }
+        if (student_btn != null) {
+            student_btn.setVisible(show);
+            student_btn.setManaged(show);
+        }
+        if (instructorCourse_btn != null) {
+            instructorCourse_btn.setVisible(show);
+            instructorCourse_btn.setManaged(show);
+        }
 
     }
 
+    private void toggleStudentBoxes(boolean show) {
+        if (myCourse_btn != null) {
+            myCourse_btn.setVisible(show);
+            myCourse_btn.setManaged(show);
+        }
+        if (cart_btn != null) {
+            cart_btn.setVisible(show);
+            cart_btn.setManaged(show);
+        }
+        if (courses_btn != null) {
+            courses_btn.setVisible(show);
+            courses_btn.setManaged(show);
+        }
+
+
+    }
+
+    //load lại giỏ hàng
     public void refreshCartSize() {
         if (cart_btn != null) {
-            int cartSize = SessionManager.getInstance().getCartSize(); // Lấy số lượng sản phẩm từ DB
+            int cartSize = SessionManager.getInstance().getCartSize();
             if (cartSize > 0) {
                 cart_btn.setText("Cart (" + cartSize + ")");
+            } else {
+                cart_btn.setText("Cart");
             }
-            System.out.println(cartSize);
         }
     }
 
     @FXML
     private void onCoursesMenu(String path) {
+        setActiveButton(courses_btn);
         Model.getInstance().getViewFactory().getClientSelectedMenuItemProperty().set(path);
     }
 
     @FXML
     private void onMyCourseMenu(String path) {
+        setActiveButton(myCourse_btn);
         Model.getInstance().getViewFactory().getClientSelectedMenuItemProperty().set(path);
     }
 
     @FXML
-    private void onCart(String path) {
+    private void onStudentMenu(String path) {
+        setActiveButton(student_btn);
+        Model.getInstance().getViewFactory().getClientSelectedMenuItemProperty().set(path);
+    }
+
+    @FXML
+    private void onAssignmentMenu(String path) {
+        setActiveButton(assignment_btn);
+        Model.getInstance().getViewFactory().getClientSelectedMenuItemProperty().set(path);
+    }
+
+    @FXML
+    private void onInstructorCourse(String path) {
+        setActiveButton(instructorCourse_btn);
+        Model.getInstance().getViewFactory().getClientSelectedMenuItemProperty().set(path);
+    }
+
+    @FXML
+    private void onCartMenu(String path) {
+        setActiveButton(cart_btn);
         Model.getInstance().getViewFactory().getClientSelectedMenuItemProperty().set(path);
     }
 
     @FXML
     private void onProfileMenu(String path) {
+        setActiveButton(profile_btn);
         Model.getInstance().getViewFactory().getClientSelectedMenuItemProperty().set(path);
     }
 
     @FXML
-    private void onPaymentMenu(String path) {
-        Parent view = Model.getInstance().getViewFactory().getPaymentView();
-        mainContent.getChildren().setAll(view); // mainContent là AnchorPane trong ClientMenuController
-    }
-
-    @FXML
     private void onReportMenu(String path) {
+        setActiveButton(report_btn);
         Model.getInstance().getViewFactory().getClientSelectedMenuItemProperty().set(path);
     }
 
@@ -126,135 +236,13 @@ public class ClientMenuController implements Initializable {
         }
     }
 
-    private void showPaymentWindow() {
-        try {
-            URL fxml = getClass().getResource("/Fxml/Client/Payment.fxml");
-            System.out.println("Loading Payment.fxml from: " + fxml);
-            Parent root = new FXMLLoader(fxml).load();
-
-            Stage stage = new Stage();
-            stage.setTitle("Thanh toán");
-            stage.initModality(Modality.APPLICATION_MODAL);
-            stage.setScene(new Scene(root));
-            stage.showAndWait();
-        } catch (Exception e) {
-            e.printStackTrace();
+    private void setActiveButton(Button activeButton) {
+        Button[] buttons = {courses_btn, myCourse_btn, cart_btn, profile_btn, report_btn, assignment_btn, student_btn, instructorCourse_btn};
+        for (Button btn : buttons) {
+            btn.getStyleClass().remove("active");
         }
-    }
-
-    @FXML
-    private void showPayment() {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/Fxml/Client/Payment.fxml"));
-            Parent paymentUI = loader.load();
-
-            PaymentController controller = loader.getController();
-
-            // Lay thong tin so du, ma QR (ví dụ PaymentService sinh ra)
-            double balance = paymentService.getBalanceForCurrentUser();
-            String base64QR = paymentService.generatePaymentQR();
-
-            // Day du lieu vao PaymentController
-            controller.setBalance(balance);
-            controller.setQRCode(base64QR);
-
-            mainContent.getChildren().clear();
-            mainContent.getChildren().add(paymentUI);
-            AnchorPane.setTopAnchor(paymentUI, 0.0);
-            AnchorPane.setBottomAnchor(paymentUI, 0.0);
-            AnchorPane.setLeftAnchor(paymentUI, 0.0);
-            AnchorPane.setRightAnchor(paymentUI, 0.0);
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void showPaymentWindo() {
-        try {
-            URL fxml = getClass().getResource("/Fxml/Client/Payment.fxml");
-            System.out.println("Loading Payment.fxml from: " + fxml);
-            Parent root = new FXMLLoader(fxml).load();
-
-            Stage stage = new Stage();
-            stage.setTitle("Thanh toán");
-            stage.initModality(Modality.APPLICATION_MODAL);
-            stage.setScene(new Scene(root));
-            stage.showAndWait();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    @FXML
-    private void showPaymen() {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/Fxml/Client/Payment.fxml"));
-            Parent paymentUI = loader.load();
-
-            PaymentController controller = loader.getController();
-
-            // Lay thong tin so du, ma QR (ví dụ PaymentService sinh ra)
-            double balance = paymentService.getBalanceForCurrentUser();
-            String base64QR = paymentService.generatePaymentQR();
-
-            // Day du lieu vao PaymentController
-            controller.setBalance(balance);
-            controller.setQRCode(base64QR);
-
-            mainContent.getChildren().clear();
-            mainContent.getChildren().add(paymentUI);
-            AnchorPane.setTopAnchor(paymentUI, 0.0);
-            AnchorPane.setBottomAnchor(paymentUI, 0.0);
-            AnchorPane.setLeftAnchor(paymentUI, 0.0);
-            AnchorPane.setRightAnchor(paymentUI, 0.0);
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void showPaymentWind() {
-        try {
-            URL fxml = getClass().getResource("/Fxml/Client/Payment.fxml");
-            System.out.println("Loading Payment.fxml from: " + fxml);
-            Parent root = new FXMLLoader(fxml).load();
-
-            Stage stage = new Stage();
-            stage.setTitle("Thanh toán");
-            stage.initModality(Modality.APPLICATION_MODAL);
-            stage.setScene(new Scene(root));
-            stage.showAndWait();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    @FXML
-    private void showPayme() {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/Fxml/Client/Payment.fxml"));
-            Parent paymentUI = loader.load();
-
-            PaymentController controller = loader.getController();
-
-            // Lay thong tin so du, ma QR (ví dụ PaymentService sinh ra)
-            double balance = paymentService.getBalanceForCurrentUser();
-            String base64QR = paymentService.generatePaymentQR();
-
-            // Day du lieu vao PaymentController
-            controller.setBalance(balance);
-            controller.setQRCode(base64QR);
-
-            mainContent.getChildren().clear();
-            mainContent.getChildren().add(paymentUI);
-            AnchorPane.setTopAnchor(paymentUI, 0.0);
-            AnchorPane.setBottomAnchor(paymentUI, 0.0);
-            AnchorPane.setLeftAnchor(paymentUI, 0.0);
-            AnchorPane.setRightAnchor(paymentUI, 0.0);
-
-        } catch (IOException e) {
-            e.printStackTrace();
+        if (!activeButton.getStyleClass().contains("active")) {
+            activeButton.getStyleClass().add("active");
         }
     }
 }

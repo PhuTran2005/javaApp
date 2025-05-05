@@ -106,10 +106,10 @@ public class PaymentController implements Initializable {
             logger.info(logPrefix + " Student found at " + formattedTime);
 
             // Hiển thị thông tin sinh viên
-            String name = student.getStudentName();
-            String email = student.getStudentEmail();
-            String phone = student.getStudentPhone();
-            BigDecimal balance = student.getStudentBalance();
+            String name = student.getStudentName().toString();
+            String email = student.getStudentEmail().toString();
+            String phone = student.getStudentPhone().toString();
+            BigDecimal balance = (BigDecimal) student.getStudentBalance();
 
             Label studentInfoLabel = new Label(
                     String.format("Tên: %s\nEmail: %s\nSố dư: %,.2f VND\nSố điện thoại: %s",

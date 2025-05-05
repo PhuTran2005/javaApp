@@ -21,7 +21,7 @@
                 </ImageView>
             </VBox>
             <VBox layoutX="21.0" layoutY="165.0" prefHeight="400.0" prefWidth="208.0" styleClass="menu_container" AnchorPane.leftAnchor="21.0" AnchorPane.rightAnchor="20.600000000000023" AnchorPane.topAnchor="165.0">
-                <Button fx:id="dashboard_btn" mnemonicParsing="false" prefHeight="50.0" prefWidth="188.0" text="Dashboard">
+                <Button fx:id="dashboard_btn" mnemonicParsing="false" prefHeight="50.0" prefWidth="188.0" text="Thống kê">
                     <graphic>
                         <ImageView fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
                             <image>
@@ -33,7 +33,7 @@
                   <Insets bottom="10.0" />
                </VBox.margin>
                 </Button>
-                <Button fx:id="courseManagement_btn" mnemonicParsing="false" prefHeight="50.0" prefWidth="198.0" text="Course Management">
+                <Button fx:id="courseManagement_btn" mnemonicParsing="false" prefHeight="50.0" prefWidth="198.0" text="Khóa học">
                     <graphic>
                         <ImageView fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
                             <image>
@@ -45,7 +45,7 @@
                   <Insets bottom="10.0" />
                </VBox.margin>
                 </Button>
-                <Button fx:id="transaction_btn" mnemonicParsing="false" prefHeight="51.0" prefWidth="186.0" text="Transactions">
+                <Button fx:id="transaction_btn" mnemonicParsing="false" prefHeight="51.0" prefWidth="186.0" text="Giao dịch">
                     <graphic>
                         <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
                             <image>
@@ -58,11 +58,20 @@
                </VBox.margin>
                 </Button>
                 <Line endX="120.0" />
-                <Button fx:id="accounts_btn" mnemonicParsing="false" prefHeight="51.0" prefWidth="186.0" styleClass="alt_menu_btn" text="Accounts">
+            <Button fx:id="accounts_btn" mnemonicParsing="false" prefHeight="51.0" prefWidth="186.0" styleClass="alt_menu_btn" text="Tài Khoản">
+               <graphic>
+                  <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../../Images/account.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+            </Button>
+                <Button fx:id="logs_btn" mnemonicParsing="false" prefHeight="51.0" prefWidth="186.0" styleClass="alt_menu_btn" text="Nhật ký">
                     <graphic>
                         <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
                             <image>
-                                <Image url="@../../Images/account.png" />
+                                <Image url="@../../Images/log-file.png" />
                             </image>
                         </ImageView>
                     </graphic>
@@ -70,7 +79,7 @@
                   <Insets bottom="10.0" top="10.0" />
                </VBox.margin>
                 </Button>
-                <Button fx:id="logout_btn" mnemonicParsing="false" prefHeight="50.0" prefWidth="189.0" styleClass="alt_menu_btn" text="Logout">
+                <Button fx:id="logout_btn" mnemonicParsing="false" prefHeight="50.0" prefWidth="189.0" styleClass="alt_menu_btn" text="Đăng xuất">
                     <graphic>
                         <ImageView fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
                             <image>

@@ -1,67 +1,67 @@
 package com.example.coursemanagement.Models;
 
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.FloatProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleFloatProperty;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Student {
-    private int studentId;
-    private String studentName;
-    private String studentEmail;
-    private String studentPhone;
-    private BigDecimal accountBalance;
+public class Student extends User {
     private List<String> enrolledCourses; // Thay đổi từ String thành List<String>
+    private String classes;
+    private int enrollment_year;
+    public float gpa;
     private BooleanProperty selected;
+    private FloatProperty progress = new SimpleFloatProperty(0);
 
     // Constructor, getters, setters
 
     public Student() {
+        super();
         this.enrolledCourses = new ArrayList<>();  // Khởi tạo danh sách khóa học
         this.selected = new SimpleBooleanProperty(false);  // Mặc định checkbox chưa được chọn
     }
 
-    public Student(int studentId, String studentName, String studentEmail, String studentPhone, List<String> enrolledCourses) {
-        this.studentId = studentId;
-        this.studentName = studentName;
-        this.studentEmail = studentEmail;
-        this.studentPhone = studentPhone;
+    public Student(int userId, String fullname, String userEmail, String userPhoneNumber, List<String> enrolledCourses) {
+        this.userId = userId;
+        this.fullname = fullname;
+        this.userEmail = userEmail;
+        this.userPhoneNumber = userPhoneNumber;
         this.enrolledCourses = enrolledCourses; // Khởi tạo danh sách khóa học
         this.selected = new SimpleBooleanProperty(false);  // Mặc định checkbox chưa được chọn
     }
 
-    public int getStudentId() {
-        return studentId;
+    public Student(int userId, String userEmail, String fullname, int roleId, String userPhoneNumber, String createDate, String classes, int enrollment_year, float gpa) {
+        super(userId, userEmail, fullname, roleId, userPhoneNumber, createDate);
+        this.classes = classes;
+        this.enrollment_year = enrollment_year;
+        this.gpa = gpa;
     }
 
-    public void setStudentId(int studentId) {
-        this.studentId = studentId;
+    public String getClasses() {
+        return classes;
     }
 
-    public String getStudentName() {
-        return studentName;
+    public void setClasses(String classes) {
+        this.classes = classes;
     }
 
-    public void setStudentName(String studentName) {
-        this.studentName = studentName;
+    public int getEnrollment_year() {
+        return enrollment_year;
     }
 
-    public String getStudentEmail() {
-        return studentEmail;
+    public void setEnrollment_year(int enrollment_year) {
+        this.enrollment_year = enrollment_year;
     }
 
-    public void setStudentEmail(String studentEmail) {
-        this.studentEmail = studentEmail;
+    public float getGpa() {
+        return gpa;
     }
 
-    public String getStudentPhone() {
-        return studentPhone;
-    }
-
-    public void setStudentPhone(String studentPhone) {
-        this.studentPhone = studentPhone;
+    public void setGpa(float gpa) {
+        this.gpa = gpa;
     }
 
     public List<String> getEnrolledCourses() {
@@ -71,9 +71,6 @@ public class Student {
     public void setEnrolledCourses(List<String> enrolledCourses) {
         this.enrolledCourses = enrolledCourses;
     }
-
-    public BigDecimal getStudentBalance() { return accountBalance; }
-    public void setStudentBalance(BigDecimal accountBalance) { this.accountBalance = accountBalance; }
 
     // Thêm một khóa học vào danh sách
     public void addCourse(String course) {
@@ -91,6 +88,31 @@ public class Student {
     public void setSelected(boolean selected) {
         this.selected.set(selected);
     }
+    public float getProgress() {
+        return progress.get();
+    }
 
+    public void setProgress(float progress) {
+        this.progress.set(progress);
+    }
 
+    public FloatProperty progressProperty() {
+        return progress;
+    }
+
+    public Object getStudentName() {
+        return null;
+    }
+
+    public Object getStudentEmail() {
+        return null;
+    }
+
+    public Object getStudentBalance() {
+        return null;
+    }
+
+    public Object getStudentPhone() {
+        return null;
+    }
 }

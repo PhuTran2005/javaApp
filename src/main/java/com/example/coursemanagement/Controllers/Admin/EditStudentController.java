@@ -2,12 +2,10 @@ package com.example.coursemanagement.Controllers.Admin;
 
 import com.example.coursemanagement.Models.Student;
 import com.example.coursemanagement.Repository.StudentRepository;
-import com.example.coursemanagement.Utils.DatabaseConfig;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 
-import java.sql.Connection;
 import java.util.List;
 
 public class EditStudentController {
@@ -28,9 +26,7 @@ public class EditStudentController {
     private VBox coursesContainer;
 
     public EditStudentController() {
-        // Lấy Connection từ DatabaseConfig rồi truyền vào repository
-        Connection conn = DatabaseConfig.getConnection();
-        this.studentRepository = new StudentRepository(conn);
+        studentRepository = new StudentRepository();
     }
 
     // Set selected student to be edited
@@ -42,10 +38,10 @@ public class EditStudentController {
         System.out.println("Setting student in EditStudentController: " + student);
 
         // Hiển thị thông tin sinh viên
-        idField.setText(String.valueOf(student.getStudentId()));
-        nameField.setText(student.getStudentName());
-        emailField.setText(student.getStudentEmail());
-        phoneField.setText(student.getStudentPhone());
+        idField.setText(String.valueOf(student.getUserId()));
+        nameField.setText(student.getFullname());
+        emailField.setText(student.getUserEmail());
+        phoneField.setText(student.getUserPhoneNumber());
 
         // Hiển thị danh sách khóa học đã đăng ký
         loadCourses();

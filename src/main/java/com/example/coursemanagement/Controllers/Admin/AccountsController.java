@@ -52,7 +52,7 @@ public class AccountsController {
 
         studentTable.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
             if (newSelection != null) {
-                System.out.println("Selected student: " + newSelection.getStudentName());
+                System.out.println("Selected student: " + newSelection.getFullname());
             } else {
                 System.out.println("No student selected");
             }
@@ -62,7 +62,7 @@ public class AccountsController {
             if (event.getClickCount() == 1) {
                 Student selectedStudent = studentTable.getSelectionModel().getSelectedItem();
                 if (selectedStudent != null) {
-                    System.out.println("Student selected: " + selectedStudent.getStudentName());
+                    System.out.println("Student selected: " + selectedStudent.getFullname());
                 }
             }
         });
@@ -112,10 +112,10 @@ public class AccountsController {
             studentTable.refresh();
         });
 
-        colId.setCellValueFactory(new PropertyValueFactory<>("studentId"));
-        colName.setCellValueFactory(new PropertyValueFactory<>("studentName"));
-        colEmail.setCellValueFactory(new PropertyValueFactory<>("studentEmail"));
-        colPhone.setCellValueFactory(new PropertyValueFactory<>("studentPhone"));
+        colId.setCellValueFactory(new PropertyValueFactory<>("userId"));
+        colName.setCellValueFactory(new PropertyValueFactory<>("fullname"));
+        colEmail.setCellValueFactory(new PropertyValueFactory<>("userEmail"));
+        colPhone.setCellValueFactory(new PropertyValueFactory<>("userPhoneNumber"));
         colCourses.setCellValueFactory(cellData -> new javafx.beans.property.SimpleStringProperty(
                 String.join("\n", cellData.getValue().getEnrolledCourses())
         ));
@@ -173,7 +173,7 @@ public class AccountsController {
         }
 
         List<Student> filtered = allStudents.stream()
-                .filter(s -> s.getStudentName().toLowerCase().contains(keyword))
+                .filter(s -> s.getFullname().toLowerCase().contains(keyword))
                 .collect(Collectors.toList());
 
         studentTable.getItems().setAll(filtered);

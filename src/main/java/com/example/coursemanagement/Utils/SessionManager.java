@@ -20,8 +20,6 @@ public class SessionManager {
     public void setCartSize() {
         if (currentUser != null) {
             this.cartSize = cartService.getCartSize(currentUser.getUserId());
-
-
         }
     }
 
@@ -65,7 +63,8 @@ public class SessionManager {
     public User getUser() {
         return currentUser;
     }
+
     public int getCurrentStudentId() {
-        return currentUser != null ? currentUser.getUserId() : -1;
+        return 1;
     }
 }

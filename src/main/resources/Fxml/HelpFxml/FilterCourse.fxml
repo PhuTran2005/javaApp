@@ -22,6 +22,12 @@
                 <Insets bottom="10.0" />
             </VBox.margin>
         </HBox>
+      <HBox prefHeight="9.0" prefWidth="499.0" spacing="10" styleClass="input-group">
+         <children>
+            <Label styleClass="input-label" text="Giáo viên" />
+            <ChoiceBox fx:id="instructorField" prefHeight="0.0" prefWidth="200.0" styleClass="selected-field" />
+         </children>
+      </HBox>
         <HBox spacing="10" styleClass="input-group">
             <Label styleClass="input-label" text="Giá tiền min:" />
             <TextField fx:id="minPriceField" prefWidth="250.0" promptText="Nhập giá min của khóa học" styleClass="input-field" />
@@ -42,7 +48,7 @@
                 <Button fx:id="cancelButton" mnemonicParsing="false" onAction="#handleCancel" prefHeight="16.0" prefWidth="76.0" styleClass="action-button" text="Hủy" />
 
                 <!-- Nút Lưu -->
-                <Button  onAction="#handleFilter" prefHeight="27.0" prefWidth="72.0" styleClass="action-button" text="Lọc" />
+                <Button onAction="#handleFilter" prefHeight="27.0" prefWidth="72.0" styleClass="action-button" text="Lọc" />
             </children>
         </HBox>
 

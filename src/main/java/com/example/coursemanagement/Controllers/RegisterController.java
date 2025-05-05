@@ -141,6 +141,7 @@ public class RegisterController implements Initializable {
             shake(registerForm);
 
             showMessage("Mật khẩu phải có ít nhất " + GlobalVariable.MIN_PASSWORD_LENGTH + " ký tự!", "RED", 400);
+            return;
         }
 
 

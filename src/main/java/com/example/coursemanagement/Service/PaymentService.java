@@ -45,7 +45,6 @@ import com.google.zxing.qrcode.QRCodeWriter;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-
 public class PaymentService {
     private Alerts alerts = new Alerts();
     private static LogService logService = new LogService();
@@ -55,7 +54,7 @@ public class PaymentService {
 
     // Đường dẫn kết nối database
     private static final String DB_URL = "jdbc:sqlserver://localhost:1433;databaseName=IT_Course_Management;encrypt=true;trustServerCertificate=true";
-//    private static final String DB_URL = "jdbc:sqlserver://localhost:1433;databaseName=IT_Course_Management;integratedSecurity=true;encrypt=true;trustServerCertificate=true";
+    //    private static final String DB_URL = "jdbc:sqlserver://localhost:1433;databaseName=IT_Course_Management;integratedSecurity=true;encrypt=true;trustServerCertificate=true";
     private static final String DB_USER = "sa";
     private static final String DB_PASSWORD = "1234567890";
 
@@ -213,44 +212,435 @@ public class PaymentService {
         return null;
     }
 
-        private void displayQRCodeImage(String fileName) {
-        logInfo("🔍 Đang kiểm tra sự tồn tại của file QR: " + fileName);
 
-        File qrFile = new File(fileName);
-        if (!qrFile.exists()) {
-            logWarn("⚠️ File QR không tồn tại: " + fileName + ". Bỏ qua hiển thị.");
-            return;
-        }
 
-        long fileSize = qrFile.length();
-        logInfo("📁 Dung lượng file: " + fileSize + " bytes");
+    private static void shwPaymentDialog(int userId, String accountNumber, String bankCode,
+                                         String memo, int amount, String userName, String transactionCode,
+                                         CompletableFuture<Boolean> paymentResult) {
+//        String memo="abcD";
 
         try {
-            Thread.sleep(100); // Mô phỏng loading
-            logInfo("🖼️ [HIỂN THỊ QR]: " + fileName);
-            for (int i = 0; i < 5; i++) {
-                System.out.print("█");
-                Thread.sleep(50);
-            }
-            System.out.println(" ✅");
-        } catch (InterruptedException e) {
-            logError("Lỗi khi mô phỏng hiển thị ảnh QR: " + e.getMessage());
+            // Tạo hình ảnh QR
+            int qrSize = 250;
+            // Tạo dữ liệu QR
+            createQRCode(accountNumber, bankCode, memo, amount, qrSize);
+
+
+            BufferedImage qrImage =  ImageIO.read(new File("qr/qrcode_"+memo+".png"));
+
+
+            // Tạo dialog hiển thị QR và thông tin thanh toán
+            JDialog paymentDialog = new JDialog((JFrame) null, "Thanh toán khóa học", true);
+            paymentDialog.setSize(500, 650);
+            paymentDialog.setLayout(new BorderLayout());
+            paymentDialog.setLocationRelativeTo(null);
+            paymentDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+
+            // Panel chứa QR
+            JPanel qrPanel = new JPanel(new BorderLayout());
+            qrPanel.setBackground(Color.WHITE);
+            qrPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 10, 20));
+
+            // Tiêu đề
+            JLabel titleLabel = new JLabel("Quét mã để thanh toán", JLabel.CENTER);
+            titleLabel.setFont(new Font("Arial", Font.BOLD, 20));
+            qrPanel.add(titleLabel, BorderLayout.NORTH);
+
+            // QR code
+            JLabel qrLabel = new JLabel(new ImageIcon(qrImage));
+            qrLabel.setHorizontalAlignment(JLabel.CENTER);
+            qrPanel.add(qrLabel, BorderLayout.CENTER);
+
+            // Thông tin thanh toán
+            JPanel infoPanel = new JPanel();
+            infoPanel.setLayout(new BorderLayout());
+            infoPanel.setBorder(BorderFactory.createEmptyBorder(10, 20, 20, 20));
+            infoPanel.setBackground(Color.WHITE);
+
+            JPanel detailsPanel = new JPanel();
+            detailsPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
+            detailsPanel.setBackground(Color.WHITE);
+
+            // Khởi tạo font
+            Font labelFont = new Font("Arial", Font.BOLD, 14);
+            Font valueFont = new Font("Arial", Font.PLAIN, 14);
+            int height = 25;
+
+            // Row 1: Mã giao dịch
+            JPanel row1 = createInfoRow("Mã giao dịch:", transactionCode, labelFont, valueFont, height);
+
+            // Row 2: Khóa học
+//            JPanel row2 = createInfoRow("Khóa học:", courseInfo, labelFont, valueFont, height);
+
+            // Row 3: Học viên
+            JPanel row3 = createInfoRow("Học viên:", userName, labelFont, valueFont, height);
+
+            // Row 4: Số tiền
+            JPanel row4 = createInfoRow("Số tiền:", formatCurrency(amount) + " VNĐ", labelFont, valueFont, height);
+
+            // Row 5: Ngân hàng
+            JPanel row5 = createInfoRow("Ngân hàng:", bankCode, labelFont, valueFont, height);
+
+            // Row 6: Số tài khoản
+            JPanel row6 = createInfoRow("Số tài khoản:", accountNumber, labelFont, valueFont, height);
+
+            // Row 7: Nội dung CK
+            JPanel row7 = createInfoRow("Nội dung CK:", memo, labelFont, valueFont, height);
+
+            // Thêm các row vào panel
+            JPanel infoRows = new JPanel();
+            infoRows.setLayout(new BorderLayout());
+            infoRows.setBackground(Color.WHITE);
+
+            JPanel topRows = new JPanel();
+            topRows.setLayout(new BorderLayout());
+            topRows.setBackground(Color.WHITE);
+            topRows.add(row1, BorderLayout.NORTH);
+
+            JPanel row1_2 = new JPanel();
+            row1_2.setLayout(new BorderLayout());
+            row1_2.setBackground(Color.WHITE);
+//            row1_2.add(row2, BorderLayout.NORTH);
+            row1_2.add(row3, BorderLayout.CENTER);
+
+            topRows.add(row1_2, BorderLayout.CENTER);
+
+            JPanel middleRows = new JPanel();
+            middleRows.setLayout(new BorderLayout());
+            middleRows.setBackground(Color.WHITE);
+            middleRows.add(row4, BorderLayout.NORTH);
+
+            JPanel row5_6 = new JPanel();
+            row5_6.setLayout(new BorderLayout());
+            row5_6.setBackground(Color.WHITE);
+            row5_6.add(row5, BorderLayout.NORTH);
+            row5_6.add(row6, BorderLayout.CENTER);
+
+            middleRows.add(row5_6, BorderLayout.CENTER);
+
+            infoRows.add(topRows, BorderLayout.NORTH);
+            infoRows.add(middleRows, BorderLayout.CENTER);
+            infoRows.add(row7, BorderLayout.SOUTH);
+
+            infoPanel.add(infoRows, BorderLayout.NORTH);
+
+            // Progress bar và trạng thái
+            JPanel statusPanel = new JPanel();
+            statusPanel.setLayout(new BorderLayout());
+            statusPanel.setBackground(Color.WHITE);
+            statusPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
+
+            JLabel statusLabel = new JLabel("Đang chờ thanh toán...", JLabel.CENTER);
+            statusLabel.setFont(new Font("Arial", Font.BOLD, 16));
+            statusLabel.setForeground(new Color(0, 102, 204));
+
+            JProgressBar progressBar = new JProgressBar();
+            progressBar.setIndeterminate(true);
+            progressBar.setPreferredSize(new Dimension(400, 15));
+
+            statusPanel.add(statusLabel, BorderLayout.NORTH);
+            statusPanel.add(progressBar, BorderLayout.CENTER);
+
+            infoPanel.add(statusPanel, BorderLayout.CENTER);
+
+            // Nút hủy
+            JPanel buttonPanel = new JPanel();
+            buttonPanel.setBackground(Color.WHITE);
+
+            JButton cancelButton = new JButton("Hủy thanh toán");
+            cancelButton.setFont(new Font("Arial", Font.BOLD, 14));
+            cancelButton.setBackground(new Color(220, 53, 69));
+            cancelButton.setForeground(Color.WHITE);
+            buttonPanel.add(cancelButton);
+
+            infoPanel.add(buttonPanel, BorderLayout.SOUTH);
+
+            // Thêm các panel vào dialog
+            paymentDialog.add(qrPanel, BorderLayout.NORTH);
+            paymentDialog.add(infoPanel, BorderLayout.CENTER);
+            Thread checkerThread = new Thread(() -> {
+                boolean found = false;
+                int maxRetry = 20; // chạy tối đa 20 lần = 100s
+                int retry = 0;
+
+                while (!found && retry < maxRetry) {
+                    found = kiemTraLichSuGiaoDich(memo, amount);
+
+                    if (found) {
+                        SwingUtilities.invokeLater(() -> {
+                            statusLabel.setText("Thanh toán thành công");
+                            statusLabel.setForeground(new Color(40, 167, 69));
+                            progressBar.setIndeterminate(false);
+                            progressBar.setValue(100);
+
+                            JOptionPane.showMessageDialog(paymentDialog,
+                                    "Thanh toán thành công! Số tiền " + formatCurrency(amount) + " VNĐ đã được ghi nhận.",
+                                    "Thanh toán thành công",
+                                    JOptionPane.INFORMATION_MESSAGE);
+
+                            paymentDialog.dispose();
+                        });
+                        paymentResult.complete(true);
+                        break;
+                    } else {
+                        try {
+                            Thread.sleep(5000); // chờ 5s
+                        } catch (InterruptedException e) {
+                            break;
+                        }
+                        retry++;
+                    }
+                }
+
+                if (!found) {
+                    paymentResult.complete(false); // Sau khi thử max lần vẫn fail
+                }
+            });
+            checkerThread.start();
+
+            // Nút huỷ
+            cancelButton.addActionListener(e -> {
+                checkerThread.interrupt(); // Dừng vòng lặp kiểm tra
+                paymentResult.complete(false);
+                paymentDialog.dispose();
+            });
+
+            // Khi đóng cửa sổ
+            paymentDialog.addWindowListener(new java.awt.event.WindowAdapter() {
+                @Override
+                public void windowClosing(java.awt.event.WindowEvent windowEvent) {
+                    checkerThread.interrupt();
+                    paymentResult.complete(false);
+                }
+            });
+
+            // Hiển thị dialog
+            SwingUtilities.invokeLater(() -> {
+                paymentDialog.setVisible(true);
+            });
+
+        } catch (IOException e) {
+            System.err.println("Lỗi khi tạo mã QR: " + e.getMessage());
+            e.printStackTrace();
+            paymentResult.completeExceptionally(e);
         }
-
-        logInfo("✅ File QR đã được xử lý thành công.");
     }
 
-    private void logError(String s) {
-    }
+    private static void showPayentDialog(int userId, String accountNumber, String bankCode,
+                                         String memo, int amount, String userName, String transactionCode,
+                                         CompletableFuture<Boolean> paymentResult) {
+//        String memo="abcD";
 
-    private void logInfo(String s) {
-        
-    }
+        try {
+            // Tạo hình ảnh QR
+            int qrSize = 250;
+            // Tạo dữ liệu QR
+            createQRCode(accountNumber, bankCode, memo, amount, qrSize);
 
+
+            BufferedImage qrImage =  ImageIO.read(new File("qr/qrcode_"+memo+".png"));
+
+
+            // Tạo dialog hiển thị QR và thông tin thanh toán
+            JDialog paymentDialog = new JDialog((JFrame) null, "Thanh toán khóa học", true);
+            paymentDialog.setSize(500, 650);
+            paymentDialog.setLayout(new BorderLayout());
+            paymentDialog.setLocationRelativeTo(null);
+            paymentDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+
+            // Panel chứa QR
+            JPanel qrPanel = new JPanel(new BorderLayout());
+            qrPanel.setBackground(Color.WHITE);
+            qrPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 10, 20));
+
+            // Tiêu đề
+            JLabel titleLabel = new JLabel("Quét mã để thanh toán", JLabel.CENTER);
+            titleLabel.setFont(new Font("Arial", Font.BOLD, 20));
+            qrPanel.add(titleLabel, BorderLayout.NORTH);
+
+            // QR code
+            JLabel qrLabel = new JLabel(new ImageIcon(qrImage));
+            qrLabel.setHorizontalAlignment(JLabel.CENTER);
+            qrPanel.add(qrLabel, BorderLayout.CENTER);
+
+            // Thông tin thanh toán
+            JPanel infoPanel = new JPanel();
+            infoPanel.setLayout(new BorderLayout());
+            infoPanel.setBorder(BorderFactory.createEmptyBorder(10, 20, 20, 20));
+            infoPanel.setBackground(Color.WHITE);
+
+            JPanel detailsPanel = new JPanel();
+            detailsPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
+            detailsPanel.setBackground(Color.WHITE);
+
+            // Khởi tạo font
+            Font labelFont = new Font("Arial", Font.BOLD, 14);
+            Font valueFont = new Font("Arial", Font.PLAIN, 14);
+            int height = 25;
+
+            // Row 1: Mã giao dịch
+            JPanel row1 = createInfoRow("Mã giao dịch:", transactionCode, labelFont, valueFont, height);
+
+            // Row 2: Khóa học
+//            JPanel row2 = createInfoRow("Khóa học:", courseInfo, labelFont, valueFont, height);
+
+            // Row 3: Học viên
+            JPanel row3 = createInfoRow("Học viên:", userName, labelFont, valueFont, height);
+
+            // Row 4: Số tiền
+            JPanel row4 = createInfoRow("Số tiền:", formatCurrency(amount) + " VNĐ", labelFont, valueFont, height);
+
+            // Row 5: Ngân hàng
+            JPanel row5 = createInfoRow("Ngân hàng:", bankCode, labelFont, valueFont, height);
+
+            // Row 6: Số tài khoản
+            JPanel row6 = createInfoRow("Số tài khoản:", accountNumber, labelFont, valueFont, height);
+
+            // Row 7: Nội dung CK
+            JPanel row7 = createInfoRow("Nội dung CK:", memo, labelFont, valueFont, height);
+
+            // Thêm các row vào panel
+            JPanel infoRows = new JPanel();
+            infoRows.setLayout(new BorderLayout());
+            infoRows.setBackground(Color.WHITE);
+
+            JPanel topRows = new JPanel();
+            topRows.setLayout(new BorderLayout());
+            topRows.setBackground(Color.WHITE);
+            topRows.add(row1, BorderLayout.NORTH);
+
+            JPanel row1_2 = new JPanel();
+            row1_2.setLayout(new BorderLayout());
+            row1_2.setBackground(Color.WHITE);
+//            row1_2.add(row2, BorderLayout.NORTH);
+            row1_2.add(row3, BorderLayout.CENTER);
+
+            topRows.add(row1_2, BorderLayout.CENTER);
+
+            JPanel middleRows = new JPanel();
+            middleRows.setLayout(new BorderLayout());
+            middleRows.setBackground(Color.WHITE);
+            middleRows.add(row4, BorderLayout.NORTH);
+
+            JPanel row5_6 = new JPanel();
+            row5_6.setLayout(new BorderLayout());
+            row5_6.setBackground(Color.WHITE);
+            row5_6.add(row5, BorderLayout.NORTH);
+            row5_6.add(row6, BorderLayout.CENTER);
+
+            middleRows.add(row5_6, BorderLayout.CENTER);
+
+            infoRows.add(topRows, BorderLayout.NORTH);
+            infoRows.add(middleRows, BorderLayout.CENTER);
+            infoRows.add(row7, BorderLayout.SOUTH);
+
+            infoPanel.add(infoRows, BorderLayout.NORTH);
+
+            // Progress bar và trạng thái
+            JPanel statusPanel = new JPanel();
+            statusPanel.setLayout(new BorderLayout());
+            statusPanel.setBackground(Color.WHITE);
+            statusPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
+
+            JLabel statusLabel = new JLabel("Đang chờ thanh toán...", JLabel.CENTER);
+            statusLabel.setFont(new Font("Arial", Font.BOLD, 16));
+            statusLabel.setForeground(new Color(0, 102, 204));
+
+            JProgressBar progressBar = new JProgressBar();
+            progressBar.setIndeterminate(true);
+            progressBar.setPreferredSize(new Dimension(400, 15));
+
+            statusPanel.add(statusLabel, BorderLayout.NORTH);
+            statusPanel.add(progressBar, BorderLayout.CENTER);
+
+            infoPanel.add(statusPanel, BorderLayout.CENTER);
+
+            // Nút hủy
+            JPanel buttonPanel = new JPanel();
+            buttonPanel.setBackground(Color.WHITE);
+
+            JButton cancelButton = new JButton("Hủy thanh toán");
+            cancelButton.setFont(new Font("Arial", Font.BOLD, 14));
+            cancelButton.setBackground(new Color(220, 53, 69));
+            cancelButton.setForeground(Color.WHITE);
+            buttonPanel.add(cancelButton);
+
+            infoPanel.add(buttonPanel, BorderLayout.SOUTH);
+
+            // Thêm các panel vào dialog
+            paymentDialog.add(qrPanel, BorderLayout.NORTH);
+            paymentDialog.add(infoPanel, BorderLayout.CENTER);
+            Thread checkerThread = new Thread(() -> {
+                boolean found = false;
+                int maxRetry = 20; // chạy tối đa 20 lần = 100s
+                int retry = 0;
+
+                while (!found && retry < maxRetry) {
+                    found = kiemTraLichSuGiaoDich(memo, amount);
+
+                    if (found) {
+                        SwingUtilities.invokeLater(() -> {
+                            statusLabel.setText("Thanh toán thành công");
+                            statusLabel.setForeground(new Color(40, 167, 69));
+                            progressBar.setIndeterminate(false);
+                            progressBar.setValue(100);
+
+                            JOptionPane.showMessageDialog(paymentDialog,
+                                    "Thanh toán thành công! Số tiền " + formatCurrency(amount) + " VNĐ đã được ghi nhận.",
+                                    "Thanh toán thành công",
+                                    JOptionPane.INFORMATION_MESSAGE);
+
+                            paymentDialog.dispose();
+                        });
+                        paymentResult.complete(true);
+                        break;
+                    } else {
+                        try {
+                            Thread.sleep(5000); // chờ 5s
+                        } catch (InterruptedException e) {
+                            break;
+                        }
+                        retry++;
+                    }
+                }
+
+                if (!found) {
+                    paymentResult.complete(false); // Sau khi thử max lần vẫn fail
+                }
+            });
+            checkerThread.start();
+
+            // Nút huỷ
+            cancelButton.addActionListener(e -> {
+                checkerThread.interrupt(); // Dừng vòng lặp kiểm tra
+                paymentResult.complete(false);
+                paymentDialog.dispose();
+            });
+
+            // Khi đóng cửa sổ
+            paymentDialog.addWindowListener(new java.awt.event.WindowAdapter() {
+                @Override
+                public void windowClosing(java.awt.event.WindowEvent windowEvent) {
+                    checkerThread.interrupt();
+                    paymentResult.complete(false);
+                }
+            });
+
+            // Hiển thị dialog
+            SwingUtilities.invokeLater(() -> {
+                paymentDialog.setVisible(true);
+            });
+
+        } catch (IOException e) {
+            System.err.println("Lỗi khi tạo mã QR: " + e.getMessage());
+            e.printStackTrace();
+            paymentResult.completeExceptionally(e);
+        }
+    }
 
     private void logWarn(String message) {    }
 
-        /**
+    /**
      * Khởi tạo quá trình thanh toán đầy đủ và trả về CompletableFuture
      * để người gọi có thể xử lý kết quả thanh toán
      */
@@ -288,6 +678,642 @@ public class PaymentService {
         }
 
         return paymentResult;
+    }
+
+    private static void showPaymentDilog(int userId, String accountNumber, String bankCode,
+                                         String memo, int amount, String userName, String transactionCode,
+                                         CompletableFuture<Boolean> paymentResult) {
+//        String memo="abcD";
+
+        try {
+            // Tạo hình ảnh QR
+            int qrSize = 250;
+            // Tạo dữ liệu QR
+            createQRCode(accountNumber, bankCode, memo, amount, qrSize);
+
+
+            BufferedImage qrImage =  ImageIO.read(new File("qr/qrcode_"+memo+".png"));
+
+
+            // Tạo dialog hiển thị QR và thông tin thanh toán
+            JDialog paymentDialog = new JDialog((JFrame) null, "Thanh toán khóa học", true);
+            paymentDialog.setSize(500, 650);
+            paymentDialog.setLayout(new BorderLayout());
+            paymentDialog.setLocationRelativeTo(null);
+            paymentDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+
+            // Panel chứa QR
+            JPanel qrPanel = new JPanel(new BorderLayout());
+            qrPanel.setBackground(Color.WHITE);
+            qrPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 10, 20));
+
+            // Tiêu đề
+            JLabel titleLabel = new JLabel("Quét mã để thanh toán", JLabel.CENTER);
+            titleLabel.setFont(new Font("Arial", Font.BOLD, 20));
+            qrPanel.add(titleLabel, BorderLayout.NORTH);
+
+            // QR code
+            JLabel qrLabel = new JLabel(new ImageIcon(qrImage));
+            qrLabel.setHorizontalAlignment(JLabel.CENTER);
+            qrPanel.add(qrLabel, BorderLayout.CENTER);
+
+            // Thông tin thanh toán
+            JPanel infoPanel = new JPanel();
+            infoPanel.setLayout(new BorderLayout());
+            infoPanel.setBorder(BorderFactory.createEmptyBorder(10, 20, 20, 20));
+            infoPanel.setBackground(Color.WHITE);
+
+            JPanel detailsPanel = new JPanel();
+            detailsPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
+            detailsPanel.setBackground(Color.WHITE);
+
+            // Khởi tạo font
+            Font labelFont = new Font("Arial", Font.BOLD, 14);
+            Font valueFont = new Font("Arial", Font.PLAIN, 14);
+            int height = 25;
+
+            // Row 1: Mã giao dịch
+            JPanel row1 = createInfoRow("Mã giao dịch:", transactionCode, labelFont, valueFont, height);
+
+            // Row 2: Khóa học
+//            JPanel row2 = createInfoRow("Khóa học:", courseInfo, labelFont, valueFont, height);
+
+            // Row 3: Học viên
+            JPanel row3 = createInfoRow("Học viên:", userName, labelFont, valueFont, height);
+
+            // Row 4: Số tiền
+            JPanel row4 = createInfoRow("Số tiền:", formatCurrency(amount) + " VNĐ", labelFont, valueFont, height);
+
+            // Row 5: Ngân hàng
+            JPanel row5 = createInfoRow("Ngân hàng:", bankCode, labelFont, valueFont, height);
+
+            // Row 6: Số tài khoản
+            JPanel row6 = createInfoRow("Số tài khoản:", accountNumber, labelFont, valueFont, height);
+
+            // Row 7: Nội dung CK
+            JPanel row7 = createInfoRow("Nội dung CK:", memo, labelFont, valueFont, height);
+
+            // Thêm các row vào panel
+            JPanel infoRows = new JPanel();
+            infoRows.setLayout(new BorderLayout());
+            infoRows.setBackground(Color.WHITE);
+
+            JPanel topRows = new JPanel();
+            topRows.setLayout(new BorderLayout());
+            topRows.setBackground(Color.WHITE);
+            topRows.add(row1, BorderLayout.NORTH);
+
+            JPanel row1_2 = new JPanel();
+            row1_2.setLayout(new BorderLayout());
+            row1_2.setBackground(Color.WHITE);
+//            row1_2.add(row2, BorderLayout.NORTH);
+            row1_2.add(row3, BorderLayout.CENTER);
+
+            topRows.add(row1_2, BorderLayout.CENTER);
+
+            JPanel middleRows = new JPanel();
+            middleRows.setLayout(new BorderLayout());
+            middleRows.setBackground(Color.WHITE);
+            middleRows.add(row4, BorderLayout.NORTH);
+
+            JPanel row5_6 = new JPanel();
+            row5_6.setLayout(new BorderLayout());
+            row5_6.setBackground(Color.WHITE);
+            row5_6.add(row5, BorderLayout.NORTH);
+            row5_6.add(row6, BorderLayout.CENTER);
+
+            middleRows.add(row5_6, BorderLayout.CENTER);
+
+            infoRows.add(topRows, BorderLayout.NORTH);
+            infoRows.add(middleRows, BorderLayout.CENTER);
+            infoRows.add(row7, BorderLayout.SOUTH);
+
+            infoPanel.add(infoRows, BorderLayout.NORTH);
+
+            // Progress bar và trạng thái
+            JPanel statusPanel = new JPanel();
+            statusPanel.setLayout(new BorderLayout());
+            statusPanel.setBackground(Color.WHITE);
+            statusPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
+
+            JLabel statusLabel = new JLabel("Đang chờ thanh toán...", JLabel.CENTER);
+            statusLabel.setFont(new Font("Arial", Font.BOLD, 16));
+            statusLabel.setForeground(new Color(0, 102, 204));
+
+            JProgressBar progressBar = new JProgressBar();
+            progressBar.setIndeterminate(true);
+            progressBar.setPreferredSize(new Dimension(400, 15));
+
+            statusPanel.add(statusLabel, BorderLayout.NORTH);
+            statusPanel.add(progressBar, BorderLayout.CENTER);
+
+            infoPanel.add(statusPanel, BorderLayout.CENTER);
+
+            // Nút hủy
+            JPanel buttonPanel = new JPanel();
+            buttonPanel.setBackground(Color.WHITE);
+
+            JButton cancelButton = new JButton("Hủy thanh toán");
+            cancelButton.setFont(new Font("Arial", Font.BOLD, 14));
+            cancelButton.setBackground(new Color(220, 53, 69));
+            cancelButton.setForeground(Color.WHITE);
+            buttonPanel.add(cancelButton);
+
+            infoPanel.add(buttonPanel, BorderLayout.SOUTH);
+
+            // Thêm các panel vào dialog
+            paymentDialog.add(qrPanel, BorderLayout.NORTH);
+            paymentDialog.add(infoPanel, BorderLayout.CENTER);
+            Thread checkerThread = new Thread(() -> {
+                boolean found = false;
+                int maxRetry = 20; // chạy tối đa 20 lần = 100s
+                int retry = 0;
+
+                while (!found && retry < maxRetry) {
+                    found = kiemTraLichSuGiaoDich(memo, amount);
+
+                    if (found) {
+                        SwingUtilities.invokeLater(() -> {
+                            statusLabel.setText("Thanh toán thành công");
+                            statusLabel.setForeground(new Color(40, 167, 69));
+                            progressBar.setIndeterminate(false);
+                            progressBar.setValue(100);
+
+                            JOptionPane.showMessageDialog(paymentDialog,
+                                    "Thanh toán thành công! Số tiền " + formatCurrency(amount) + " VNĐ đã được ghi nhận.",
+                                    "Thanh toán thành công",
+                                    JOptionPane.INFORMATION_MESSAGE);
+
+                            paymentDialog.dispose();
+                        });
+                        paymentResult.complete(true);
+                        break;
+                    } else {
+                        try {
+                            Thread.sleep(5000); // chờ 5s
+                        } catch (InterruptedException e) {
+                            break;
+                        }
+                        retry++;
+                    }
+                }
+
+                if (!found) {
+                    paymentResult.complete(false); // Sau khi thử max lần vẫn fail
+                }
+            });
+            checkerThread.start();
+
+            // Nút huỷ
+            cancelButton.addActionListener(e -> {
+                checkerThread.interrupt(); // Dừng vòng lặp kiểm tra
+                paymentResult.complete(false);
+                paymentDialog.dispose();
+            });
+
+            // Khi đóng cửa sổ
+            paymentDialog.addWindowListener(new java.awt.event.WindowAdapter() {
+                @Override
+                public void windowClosing(java.awt.event.WindowEvent windowEvent) {
+                    checkerThread.interrupt();
+                    paymentResult.complete(false);
+                }
+            });
+
+            // Hiển thị dialog
+            SwingUtilities.invokeLater(() -> {
+                paymentDialog.setVisible(true);
+            });
+
+        } catch (IOException e) {
+            System.err.println("Lỗi khi tạo mã QR: " + e.getMessage());
+            e.printStackTrace();
+            paymentResult.completeExceptionally(e);
+        }
+    }
+
+    private static void showPymentDialog(int userId, String accountNumber, String bankCode,
+                                         String memo, int amount, String userName, String transactionCode,
+                                         CompletableFuture<Boolean> paymentResult) {
+//        String memo="abcD";
+
+        try {
+            // Tạo hình ảnh QR
+            int qrSize = 250;
+            // Tạo dữ liệu QR
+            createQRCode(accountNumber, bankCode, memo, amount, qrSize);
+
+
+            BufferedImage qrImage =  ImageIO.read(new File("qr/qrcode_"+memo+".png"));
+
+
+            // Tạo dialog hiển thị QR và thông tin thanh toán
+            JDialog paymentDialog = new JDialog((JFrame) null, "Thanh toán khóa học", true);
+            paymentDialog.setSize(500, 650);
+            paymentDialog.setLayout(new BorderLayout());
+            paymentDialog.setLocationRelativeTo(null);
+            paymentDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+
+            // Panel chứa QR
+            JPanel qrPanel = new JPanel(new BorderLayout());
+            qrPanel.setBackground(Color.WHITE);
+            qrPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 10, 20));
+
+            // Tiêu đề
+            JLabel titleLabel = new JLabel("Quét mã để thanh toán", JLabel.CENTER);
+            titleLabel.setFont(new Font("Arial", Font.BOLD, 20));
+            qrPanel.add(titleLabel, BorderLayout.NORTH);
+
+            // QR code
+            JLabel qrLabel = new JLabel(new ImageIcon(qrImage));
+            qrLabel.setHorizontalAlignment(JLabel.CENTER);
+            qrPanel.add(qrLabel, BorderLayout.CENTER);
+
+            // Thông tin thanh toán
+            JPanel infoPanel = new JPanel();
+            infoPanel.setLayout(new BorderLayout());
+            infoPanel.setBorder(BorderFactory.createEmptyBorder(10, 20, 20, 20));
+            infoPanel.setBackground(Color.WHITE);
+
+            JPanel detailsPanel = new JPanel();
+            detailsPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
+            detailsPanel.setBackground(Color.WHITE);
+
+            // Khởi tạo font
+            Font labelFont = new Font("Arial", Font.BOLD, 14);
+            Font valueFont = new Font("Arial", Font.PLAIN, 14);
+            int height = 25;
+
+            // Row 1: Mã giao dịch
+            JPanel row1 = createInfoRow("Mã giao dịch:", transactionCode, labelFont, valueFont, height);
+
+            // Row 2: Khóa học
+//            JPanel row2 = createInfoRow("Khóa học:", courseInfo, labelFont, valueFont, height);
+
+            // Row 3: Học viên
+            JPanel row3 = createInfoRow("Học viên:", userName, labelFont, valueFont, height);
+
+            // Row 4: Số tiền
+            JPanel row4 = createInfoRow("Số tiền:", formatCurrency(amount) + " VNĐ", labelFont, valueFont, height);
+
+            // Row 5: Ngân hàng
+            JPanel row5 = createInfoRow("Ngân hàng:", bankCode, labelFont, valueFont, height);
+
+            // Row 6: Số tài khoản
+            JPanel row6 = createInfoRow("Số tài khoản:", accountNumber, labelFont, valueFont, height);
+
+            // Row 7: Nội dung CK
+            JPanel row7 = createInfoRow("Nội dung CK:", memo, labelFont, valueFont, height);
+
+            // Thêm các row vào panel
+            JPanel infoRows = new JPanel();
+            infoRows.setLayout(new BorderLayout());
+            infoRows.setBackground(Color.WHITE);
+
+            JPanel topRows = new JPanel();
+            topRows.setLayout(new BorderLayout());
+            topRows.setBackground(Color.WHITE);
+            topRows.add(row1, BorderLayout.NORTH);
+
+            JPanel row1_2 = new JPanel();
+            row1_2.setLayout(new BorderLayout());
+            row1_2.setBackground(Color.WHITE);
+//            row1_2.add(row2, BorderLayout.NORTH);
+            row1_2.add(row3, BorderLayout.CENTER);
+
+            topRows.add(row1_2, BorderLayout.CENTER);
+
+            JPanel middleRows = new JPanel();
+            middleRows.setLayout(new BorderLayout());
+            middleRows.setBackground(Color.WHITE);
+            middleRows.add(row4, BorderLayout.NORTH);
+
+            JPanel row5_6 = new JPanel();
+            row5_6.setLayout(new BorderLayout());
+            row5_6.setBackground(Color.WHITE);
+            row5_6.add(row5, BorderLayout.NORTH);
+            row5_6.add(row6, BorderLayout.CENTER);
+
+            middleRows.add(row5_6, BorderLayout.CENTER);
+
+            infoRows.add(topRows, BorderLayout.NORTH);
+            infoRows.add(middleRows, BorderLayout.CENTER);
+            infoRows.add(row7, BorderLayout.SOUTH);
+
+            infoPanel.add(infoRows, BorderLayout.NORTH);
+
+            // Progress bar và trạng thái
+            JPanel statusPanel = new JPanel();
+            statusPanel.setLayout(new BorderLayout());
+            statusPanel.setBackground(Color.WHITE);
+            statusPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
+
+            JLabel statusLabel = new JLabel("Đang chờ thanh toán...", JLabel.CENTER);
+            statusLabel.setFont(new Font("Arial", Font.BOLD, 16));
+            statusLabel.setForeground(new Color(0, 102, 204));
+
+            JProgressBar progressBar = new JProgressBar();
+            progressBar.setIndeterminate(true);
+            progressBar.setPreferredSize(new Dimension(400, 15));
+
+            statusPanel.add(statusLabel, BorderLayout.NORTH);
+            statusPanel.add(progressBar, BorderLayout.CENTER);
+
+            infoPanel.add(statusPanel, BorderLayout.CENTER);
+
+            // Nút hủy
+            JPanel buttonPanel = new JPanel();
+            buttonPanel.setBackground(Color.WHITE);
+
+            JButton cancelButton = new JButton("Hủy thanh toán");
+            cancelButton.setFont(new Font("Arial", Font.BOLD, 14));
+            cancelButton.setBackground(new Color(220, 53, 69));
+            cancelButton.setForeground(Color.WHITE);
+            buttonPanel.add(cancelButton);
+
+            infoPanel.add(buttonPanel, BorderLayout.SOUTH);
+
+            // Thêm các panel vào dialog
+            paymentDialog.add(qrPanel, BorderLayout.NORTH);
+            paymentDialog.add(infoPanel, BorderLayout.CENTER);
+            Thread checkerThread = new Thread(() -> {
+                boolean found = false;
+                int maxRetry = 20; // chạy tối đa 20 lần = 100s
+                int retry = 0;
+
+                while (!found && retry < maxRetry) {
+                    found = kiemTraLichSuGiaoDich(memo, amount);
+
+                    if (found) {
+                        SwingUtilities.invokeLater(() -> {
+                            statusLabel.setText("Thanh toán thành công");
+                            statusLabel.setForeground(new Color(40, 167, 69));
+                            progressBar.setIndeterminate(false);
+                            progressBar.setValue(100);
+
+                            JOptionPane.showMessageDialog(paymentDialog,
+                                    "Thanh toán thành công! Số tiền " + formatCurrency(amount) + " VNĐ đã được ghi nhận.",
+                                    "Thanh toán thành công",
+                                    JOptionPane.INFORMATION_MESSAGE);
+
+                            paymentDialog.dispose();
+                        });
+                        paymentResult.complete(true);
+                        break;
+                    } else {
+                        try {
+                            Thread.sleep(5000); // chờ 5s
+                        } catch (InterruptedException e) {
+                            break;
+                        }
+                        retry++;
+                    }
+                }
+
+                if (!found) {
+                    paymentResult.complete(false); // Sau khi thử max lần vẫn fail
+                }
+            });
+            checkerThread.start();
+
+            // Nút huỷ
+            cancelButton.addActionListener(e -> {
+                checkerThread.interrupt(); // Dừng vòng lặp kiểm tra
+                paymentResult.complete(false);
+                paymentDialog.dispose();
+            });
+
+            // Khi đóng cửa sổ
+            paymentDialog.addWindowListener(new java.awt.event.WindowAdapter() {
+                @Override
+                public void windowClosing(java.awt.event.WindowEvent windowEvent) {
+                    checkerThread.interrupt();
+                    paymentResult.complete(false);
+                }
+            });
+
+            // Hiển thị dialog
+            SwingUtilities.invokeLater(() -> {
+                paymentDialog.setVisible(true);
+            });
+
+        } catch (IOException e) {
+            System.err.println("Lỗi khi tạo mã QR: " + e.getMessage());
+            e.printStackTrace();
+            paymentResult.completeExceptionally(e);
+        }
+    }
+
+    private static void showPaymentialog(int userId, String accountNumber, String bankCode,
+                                         String memo, int amount, String userName, String transactionCode,
+                                         CompletableFuture<Boolean> paymentResult) {
+//        String memo="abcD";
+
+        try {
+            // Tạo hình ảnh QR
+            int qrSize = 250;
+            // Tạo dữ liệu QR
+            createQRCode(accountNumber, bankCode, memo, amount, qrSize);
+
+
+            BufferedImage qrImage =  ImageIO.read(new File("qr/qrcode_"+memo+".png"));
+
+
+            // Tạo dialog hiển thị QR và thông tin thanh toán
+            JDialog paymentDialog = new JDialog((JFrame) null, "Thanh toán khóa học", true);
+            paymentDialog.setSize(500, 650);
+            paymentDialog.setLayout(new BorderLayout());
+            paymentDialog.setLocationRelativeTo(null);
+            paymentDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+
+            // Panel chứa QR
+            JPanel qrPanel = new JPanel(new BorderLayout());
+            qrPanel.setBackground(Color.WHITE);
+            qrPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 10, 20));
+
+            // Tiêu đề
+            JLabel titleLabel = new JLabel("Quét mã để thanh toán", JLabel.CENTER);
+            titleLabel.setFont(new Font("Arial", Font.BOLD, 20));
+            qrPanel.add(titleLabel, BorderLayout.NORTH);
+
+            // QR code
+            JLabel qrLabel = new JLabel(new ImageIcon(qrImage));
+            qrLabel.setHorizontalAlignment(JLabel.CENTER);
+            qrPanel.add(qrLabel, BorderLayout.CENTER);
+
+            // Thông tin thanh toán
+            JPanel infoPanel = new JPanel();
+            infoPanel.setLayout(new BorderLayout());
+            infoPanel.setBorder(BorderFactory.createEmptyBorder(10, 20, 20, 20));
+            infoPanel.setBackground(Color.WHITE);
+
+            JPanel detailsPanel = new JPanel();
+            detailsPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
+            detailsPanel.setBackground(Color.WHITE);
+
+            // Khởi tạo font
+            Font labelFont = new Font("Arial", Font.BOLD, 14);
+            Font valueFont = new Font("Arial", Font.PLAIN, 14);
+            int height = 25;
+
+            // Row 1: Mã giao dịch
+            JPanel row1 = createInfoRow("Mã giao dịch:", transactionCode, labelFont, valueFont, height);
+
+            // Row 2: Khóa học
+//            JPanel row2 = createInfoRow("Khóa học:", courseInfo, labelFont, valueFont, height);
+
+            // Row 3: Học viên
+            JPanel row3 = createInfoRow("Học viên:", userName, labelFont, valueFont, height);
+
+            // Row 4: Số tiền
+            JPanel row4 = createInfoRow("Số tiền:", formatCurrency(amount) + " VNĐ", labelFont, valueFont, height);
+
+            // Row 5: Ngân hàng
+            JPanel row5 = createInfoRow("Ngân hàng:", bankCode, labelFont, valueFont, height);
+
+            // Row 6: Số tài khoản
+            JPanel row6 = createInfoRow("Số tài khoản:", accountNumber, labelFont, valueFont, height);
+
+            // Row 7: Nội dung CK
+            JPanel row7 = createInfoRow("Nội dung CK:", memo, labelFont, valueFont, height);
+
+            // Thêm các row vào panel
+            JPanel infoRows = new JPanel();
+            infoRows.setLayout(new BorderLayout());
+            infoRows.setBackground(Color.WHITE);
+
+            JPanel topRows = new JPanel();
+            topRows.setLayout(new BorderLayout());
+            topRows.setBackground(Color.WHITE);
+            topRows.add(row1, BorderLayout.NORTH);
+
+            JPanel row1_2 = new JPanel();
+            row1_2.setLayout(new BorderLayout());
+            row1_2.setBackground(Color.WHITE);
+//            row1_2.add(row2, BorderLayout.NORTH);
+            row1_2.add(row3, BorderLayout.CENTER);
+
+            topRows.add(row1_2, BorderLayout.CENTER);
+
+            JPanel middleRows = new JPanel();
+            middleRows.setLayout(new BorderLayout());
+            middleRows.setBackground(Color.WHITE);
+            middleRows.add(row4, BorderLayout.NORTH);
+
+            JPanel row5_6 = new JPanel();
+            row5_6.setLayout(new BorderLayout());
+            row5_6.setBackground(Color.WHITE);
+            row5_6.add(row5, BorderLayout.NORTH);
+            row5_6.add(row6, BorderLayout.CENTER);
+
+            middleRows.add(row5_6, BorderLayout.CENTER);
+
+            infoRows.add(topRows, BorderLayout.NORTH);
+            infoRows.add(middleRows, BorderLayout.CENTER);
+            infoRows.add(row7, BorderLayout.SOUTH);
+
+            infoPanel.add(infoRows, BorderLayout.NORTH);
+
+            // Progress bar và trạng thái
+            JPanel statusPanel = new JPanel();
+            statusPanel.setLayout(new BorderLayout());
+            statusPanel.setBackground(Color.WHITE);
+            statusPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
+
+            JLabel statusLabel = new JLabel("Đang chờ thanh toán...", JLabel.CENTER);
+            statusLabel.setFont(new Font("Arial", Font.BOLD, 16));
+            statusLabel.setForeground(new Color(0, 102, 204));
+
+            JProgressBar progressBar = new JProgressBar();
+            progressBar.setIndeterminate(true);
+            progressBar.setPreferredSize(new Dimension(400, 15));
+
+            statusPanel.add(statusLabel, BorderLayout.NORTH);
+            statusPanel.add(progressBar, BorderLayout.CENTER);
+
+            infoPanel.add(statusPanel, BorderLayout.CENTER);
+
+            // Nút hủy
+            JPanel buttonPanel = new JPanel();
+            buttonPanel.setBackground(Color.WHITE);
+
+            JButton cancelButton = new JButton("Hủy thanh toán");
+            cancelButton.setFont(new Font("Arial", Font.BOLD, 14));
+            cancelButton.setBackground(new Color(220, 53, 69));
+            cancelButton.setForeground(Color.WHITE);
+            buttonPanel.add(cancelButton);
+
+            infoPanel.add(buttonPanel, BorderLayout.SOUTH);
+
+            // Thêm các panel vào dialog
+            paymentDialog.add(qrPanel, BorderLayout.NORTH);
+            paymentDialog.add(infoPanel, BorderLayout.CENTER);
+            Thread checkerThread = new Thread(() -> {
+                boolean found = false;
+                int maxRetry = 20; // chạy tối đa 20 lần = 100s
+                int retry = 0;
+
+                while (!found && retry < maxRetry) {
+                    found = kiemTraLichSuGiaoDich(memo, amount);
+
+                    if (found) {
+                        SwingUtilities.invokeLater(() -> {
+                            statusLabel.setText("Thanh toán thành công");
+                            statusLabel.setForeground(new Color(40, 167, 69));
+                            progressBar.setIndeterminate(false);
+                            progressBar.setValue(100);
+
+                            JOptionPane.showMessageDialog(paymentDialog,
+                                    "Thanh toán thành công! Số tiền " + formatCurrency(amount) + " VNĐ đã được ghi nhận.",
+                                    "Thanh toán thành công",
+                                    JOptionPane.INFORMATION_MESSAGE);
+
+                            paymentDialog.dispose();
+                        });
+                        paymentResult.complete(true);
+                        break;
+                    } else {
+                        try {
+                            Thread.sleep(5000); // chờ 5s
+                        } catch (InterruptedException e) {
+                            break;
+                        }
+                        retry++;
+                    }
+                }
+
+                if (!found) {
+                    paymentResult.complete(false); // Sau khi thử max lần vẫn fail
+                }
+            });
+            checkerThread.start();
+
+            // Nút huỷ
+            cancelButton.addActionListener(e -> {
+                checkerThread.interrupt(); // Dừng vòng lặp kiểm tra
+                paymentResult.complete(false);
+                paymentDialog.dispose();
+            });
+
+            // Khi đóng cửa sổ
+            paymentDialog.addWindowListener(new java.awt.event.WindowAdapter() {
+                @Override
+                public void windowClosing(java.awt.event.WindowEvent windowEvent) {
+                    checkerThread.interrupt();
+                    paymentResult.complete(false);
+                }
+            });
+
+            // Hiển thị dialog
+            SwingUtilities.invokeLater(() -> {
+                paymentDialog.setVisible(true);
+            });
+
+        } catch (IOException e) {
+            System.err.println("Lỗi khi tạo mã QR: " + e.getMessage());
+            e.printStackTrace();
+            paymentResult.completeExceptionally(e);
+        }
     }
 
     /**
@@ -348,12 +1374,48 @@ public class PaymentService {
     /**
      * Phương thức tiện ích để xử lý thanh toán khóa học
      *
-     * @param userId ID của người dùng
-     *               //     * @param courseId ID của khóa học
+     * @param userId   ID của người dùng
+    //     * @param courseId ID của khóa học
      * @return true nếu thanh toán thành công, false nếu thất bại
      */
-    public static boolean processPaymentForCourse(int userId, int amount, List<CourseDetailDTO> list, boolean isCart) {
-        return false;
+    public static boolean processPaymentForCourse(int userId,  int amount, List<CourseDetailDTO> list, boolean isCart) {
+        try {
+            // Lấy thông tin khóa học từ database
+
+
+            // Thực hiện thanh toán và đợi kết quả
+            CompletableFuture<Boolean> paymentFuture = PaymentService.startPaymentProcess(userId, amount);
+
+            // Đợi kết quả thanh toán (blocking call)
+            boolean paymentSuccess = paymentFuture.get(); // lưu ý: đợi kết quả
+
+            if (paymentSuccess) {
+                logService.createLog(SessionManager.getInstance().getUser().getUserId(), "Học viên " + SessionManager.getInstance().getUser().getFullname() + " đã mua khóa học");
+                // Xử lý khi thanh toán thành công
+                // Xử lý logic thanh toán thành công
+//                handleSuccessfulPayment(userId, amount, courseInfo);
+                purchaseCourseService.setTotal(amount);
+                int orderId = purchaseCourseService.purchaseCoursesFromCart(userId, list);
+                if (orderId != -1) {
+                    insertPayment(orderId, amount);
+                    if (isCart) {
+
+                        CartService cartService = new CartService();
+                        cartService.deleteAllCartItem(SessionManager.getInstance().getUser().getUserId());
+                        SessionManager.getInstance().setCartSize();
+                        ClientMenuController.getInstance().refreshCartSize();
+                    }
+                    System.out.println("add thanh cong");
+                } else {
+                    System.out.println("add that bai");
+                }
+            }
+
+            return paymentSuccess;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     /**

@@ -37,14 +37,14 @@ public class DatabaseConfig {
 
 
     private static final String URL = prop.getProperty("url");
-//    private static final String USER = prop.getProperty("username");
-//    private static final String PASSWORD = prop.getProperty("password");
+    private static final String USER = prop.getProperty("username");
+    private static final String PASSWORD = prop.getProperty("password");
 
 
     public static Connection getConnection() {
         Connection conn = null;
         try {
-            conn = DriverManager.getConnection(URL);
+            conn = DriverManager.getConnection(URL,USER,PASSWORD);
             System.out.println("✅ Kết nối SQL Server thành công!");
         } catch (SQLException e) {
             System.out.println("❌ Lỗi kết nối: " + e.getMessage());

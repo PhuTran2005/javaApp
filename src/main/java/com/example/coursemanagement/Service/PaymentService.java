@@ -53,13 +53,13 @@ public class PaymentService {
     private static PurchaseCourseService purchaseCourseService = new PurchaseCourseService();
 
     // Đường dẫn kết nối database
-<<<<<<< HEAD
+
     //private static final String DB_URL = "jdbc:sqlserver://localhost:1433;databaseName=IT_Course_Management;encrypt=true;trustServerCertificate=true";
     private static final String DB_URL = "jdbc:sqlserver://localhost:1433;databaseName=IT_Course_Management;integratedSecurity=true;encrypt=true;trustServerCertificate=true";
-=======
-    private static final String DB_URL = "jdbc:sqlserver://localhost:1433;databaseName=IT_Course_Management;encrypt=true;trustServerCertificate=true";
+
+    //private static final String DB_URL = "jdbc:sqlserver://localhost:1433;databaseName=IT_Course_Management;encrypt=true;trustServerCertificate=true";
     //    private static final String DB_URL = "jdbc:sqlserver://localhost:1433;databaseName=IT_Course_Management;integratedSecurity=true;encrypt=true;trustServerCertificate=true";
->>>>>>> ff856dd00141793a1cfe961755446195423d1443
+
     private static final String DB_USER = "sa";
     private static final String DB_PASSWORD = "1234567890";
 
@@ -193,26 +193,6 @@ public class PaymentService {
     }
 
 
-    static BufferedImage generateQRCodeImage(String text, int width, int height, String fileName) throws WriterException, IOException {
-        QRCodeWriter qrCodeWriter = new QRCodeWriter();
-        BitMatrix bitMatrix = qrCodeWriter.encode(text, BarcodeFormat.QR_CODE, width, height);
-
-        // Đường dẫn tuyệt đối đến thư mục lưu mã QR
-        String qrDirectory = "qr";
-        Path directoryPath = FileSystems.getDefault().getPath(qrDirectory);
-
-        // Tạo thư mục nếu chưa tồn tại
-        Files.createDirectories(directoryPath);
-
-        // Đường dẫn đầy đủ cho file mã QR
-        Path filePath = directoryPath.resolve(fileName);
-
-        System.out.println("Đường dẫn lưu mã QR: " + filePath.toAbsolutePath());
-        MatrixToImageWriter.writeToPath(bitMatrix, "PNG", filePath);
-
-        // Trả về BufferedImage để hiển thị
-        return MatrixToImageWriter.toBufferedImage(bitMatrix);
-    }
     public static byte[] getQRCodeBytes(String accountNumber, String bankCode, int amount, String memo) {
         return null;
     }
@@ -1395,27 +1375,6 @@ public class PaymentService {
         return qrData.toString();
     }
 
-    /**
-     * Tính CRC16 theo chuẩn VietQR
-     */
-    private static String calculateCRC16(String data) {
-        int crc = 0xFFFF;
-        int polynomial = 0x1021;
-
-        for (int i = 0; i < data.length(); i++) {
-            crc ^= (data.charAt(i) << 8);
-            for (int j = 0; j < 8; j++) {
-                if ((crc & 0x8000) != 0) {
-                    crc = (crc << 1) ^ polynomial;
-                } else {
-                    crc <<= 1;
-                }
-                crc &= 0xFFFF;
-            }
-        }
-
-        return String.format("%04X", crc);
-    }
 
     /**
      * Tạo hình ảnh QR và lưu vào file, trả về BufferedImage

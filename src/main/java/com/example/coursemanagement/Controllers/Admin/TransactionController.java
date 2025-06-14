@@ -2,6 +2,8 @@ package com.example.coursemanagement.Controllers.Admin;
 
 import com.example.coursemanagement.Models.Payment;
 import com.example.coursemanagement.Repository.PaymentRepository;
+import com.example.coursemanagement.Utils.Alerts;
+import com.example.coursemanagement.Utils.ExcelExporter;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -13,10 +15,12 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
+import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 
+import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.URL;
@@ -82,6 +86,7 @@ public class TransactionController implements Initializable {
 
     private final PaymentRepository paymentRepository = new PaymentRepository();
     private ObservableList<Payment> paymentData = FXCollections.observableArrayList();
+    private final Alerts alerts = new Alerts(); // Tạo repository
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -351,10 +356,10 @@ public class TransactionController implements Initializable {
                 boolean success = paymentRepository.updatePaymentStatus(payment.getPaymentId(), newStatus);
                 if (success) {
                     loadData(); // Reload data to reflect changes
-
                     // Log this update action
-
+                    System.out.println("Updated payment status for Payment ID: " + payment.getPaymentId() + " to " + newStatus);
                 } else {
+                    showAlert(Alert.AlertType.ERROR, "Update Failed", "Failed to update payment status.");
                 }
             }
         });
@@ -389,13 +394,14 @@ public class TransactionController implements Initializable {
     }
 
     /**
-     * Export current displayed payments to CSV file
+     * Export current displayed payments to Excel file
      */
     @FXML
-    private void handleExportAction() {
+    private void handleExportToExcelAction() {
         try {
             List<Payment> paymentsToExport;
 
+            // Get all data based on current filters
             if (currentSearchTerm.isEmpty() && currentStatusFilter.equals("All")) {
                 paymentsToExport = paymentRepository.getAllPayments();
             } else if (!currentSearchTerm.isEmpty() && currentStatusFilter.equals("All")) {
@@ -406,8 +412,37 @@ public class TransactionController implements Initializable {
                 paymentsToExport = paymentRepository.filterAndSearchAllPayments(currentSearchTerm, currentStatusFilter);
             }
 
+            if (paymentsToExport.isEmpty()) {
+                showAlert(Alert.AlertType.INFORMATION, "No Data", "There are no payment records to export.");
+                return;
+            }
 
+            // Create file chooser for saving the Excel file
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("Save Excel File");
+            fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Excel Files", "*.xlsx"));
+            fileChooser.setInitialFileName("Payment_Transactions_" +
+                    LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss")) + ".xlsx");
+
+            // Show save dialog
+            File file = fileChooser.showSaveDialog(transactionTableView.getScene().getWindow());
+
+            if (file != null) {
+                // Use the ExcelExporter utility to export the data
+                boolean success = ExcelExporter.exportPaymentsToExcel(paymentsToExport, file.getAbsolutePath());
+
+                if (success) {
+                    showAlert(Alert.AlertType.INFORMATION, "Export Successful",
+                            "Successfully exported " + paymentsToExport.size() + " payment records to Excel.");
+
+                    // Log the export action
+                    System.out.println("Exported " + paymentsToExport.size() + " payment records to: " + file.getAbsolutePath());
+                } else {
+                    showAlert(Alert.AlertType.ERROR, "Export Failed", "Failed to export payment records to Excel.");
+                }
+            }
         } catch (Exception e) {
+            showAlert(Alert.AlertType.ERROR, "Export Error", "An error occurred while exporting: " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -417,6 +452,17 @@ public class TransactionController implements Initializable {
      */
     @FXML
     private void handlePrintAction() {
+        // Printing functionality implementation...
+    }
 
+    /**
+     * Helper method to show alerts
+     */
+    private void showAlert(Alert.AlertType alertType, String title, String content) {
+        Alert alert = new Alert(alertType);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(content);
+        alert.showAndWait();
     }
 }

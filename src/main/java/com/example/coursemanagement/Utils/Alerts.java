@@ -9,6 +9,22 @@ import javafx.stage.Stage;
 import java.util.Optional;
 
 public class Alerts {
+    public static void showInfoAlert(String title, String content) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION, content, ButtonType.OK);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+
+        ImageView imageView = new ImageView(new Image(Alerts.class.getResource("/Images/info.png").toExternalForm()));
+        imageView.setFitHeight(50);
+        imageView.setFitWidth(50);
+        alert.setGraphic(imageView);
+
+        alert.getDialogPane().getStylesheets().add(Alerts.class.getResource("/Styles/Alerts.css").toExternalForm());
+        alert.getDialogPane().getStyleClass().add("custom-alert");
+
+        alert.showAndWait();
+    }
+
     public void showSuccessAlert(String content) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION, content, ButtonType.OK);
         alert.setTitle("Thông Báo");

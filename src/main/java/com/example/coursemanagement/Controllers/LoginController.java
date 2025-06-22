@@ -6,6 +6,7 @@ import com.example.coursemanagement.Utils.Alerts;
 import com.example.coursemanagement.Models.Model;
 import com.example.coursemanagement.Models.User;
 import com.example.coursemanagement.Utils.SessionManager;
+import com.example.coursemanagement.Views.ViewFactory;
 import javafx.animation.TranslateTransition;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -31,6 +32,7 @@ import javafx.util.Duration;
 import javafx.animation.RotateTransition;
 import javafx.scene.image.ImageView;
 import javafx.util.Duration;
+
 
 public class LoginController implements Initializable {
     @FXML
@@ -163,6 +165,24 @@ public class LoginController implements Initializable {
             Stage stage = (Stage) ((javafx.scene.Node) event.getSource()).getScene().getWindow();
             stage.setScene(new Scene(root));
             stage.setTitle("REGISTER");
+            stage.show();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    private void switchToForgetPassword(ActionEvent event) {
+        try {
+            // Tải giao diện quên mật khẩu từ file FXML
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/Fxml/ForgetPassword.fxml"));
+            Parent root = loader.load();
+
+            // Lấy stage hiện tại và thay đổi scene
+            Stage stage = (Stage) ((javafx.scene.Node) event.getSource()).getScene().getWindow();
+            stage.setScene(new Scene(root));
+            stage.setTitle("QUÊN MẬT KHẨU");
             stage.show();
 
         } catch (IOException e) {

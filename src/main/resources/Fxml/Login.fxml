@@ -76,11 +76,30 @@
                      </VBox.margin>
                         </Button>
 
-                        <!-- Link đăng ký -->
-                        <Hyperlink fx:id="linkRegister" onAction="#switchToRegister" prefHeight="50.0" prefWidth="218.0" text="Chưa có tài khoản? Đăng ký ngay">
-                     <font>
-                        <Font size="14.0" />
-                     </font></Hyperlink>
+                        <VBox alignment="CENTER" spacing="5">
+                            <children>
+                                <Hyperlink fx:id="linkRegister"
+                                           onAction="#switchToRegister"
+                                           prefHeight="30.0" prefWidth="218.0"
+                                           text="Chưa có tài khoản? Đăng ký ngay">
+                                    <font>
+                                        <Font size="14.0" />
+                                    </font>
+                                </Hyperlink>
+
+                                <Hyperlink fx:id="linkForgetPassword"
+                                           onAction="#switchToForgetPassword"
+                                           prefHeight="30.0" prefWidth="218.0"
+                                           text="Quên mật khẩu? Đổi mật khẩu đi">
+                                    <font>
+                                        <Font size="14.0" />
+                                    </font>
+                                </Hyperlink>
+                            </children>
+                        </VBox>
+
+
+
                     </children>
                 </VBox>
 

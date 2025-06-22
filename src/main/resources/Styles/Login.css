@@ -159,3 +159,19 @@ logo login
     -fx-border-color: #18CFC4;
     -fx-font-size: 14px;
 }
+
+.send-code-button {
+    -fx-background-color: #18CFC4;
+    -fx-text-fill: white;
+    -fx-font-size: 12px;
+    -fx-background-radius: 5px;
+    -fx-cursor: hand;
+    -fx-scale-x: 1;
+    -fx-scale-y: 1;
+    -fx-transition: all 0.2s ease-in-out;
+}
+
+.send-code-button:hover {
+    -fx-scale-x: 1.1;
+    -fx-scale-y: 1.1;
+}

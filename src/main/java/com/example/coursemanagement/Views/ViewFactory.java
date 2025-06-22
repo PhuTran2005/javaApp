@@ -235,5 +235,11 @@ public class ViewFactory {
         stage.close();
     }
 
+    public void showForgetPasswordWindow() {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/Fxml/ForgetPassword.fxml"));
+        createStage(loader, "QUÊN MẬT KHẨU");
+    }
+
+
 
 }

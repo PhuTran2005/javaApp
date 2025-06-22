@@ -17,7 +17,8 @@ module com.example.coursemanagement {
     requires java.net.http;
     requires org.json;      // Yêu cầu module org.json cho JSONObject, JSONArray
     requires com.google.zxing; // Thêm để hỗ trợ ZXing core
-    requires com.google.zxing.javase; // Thêm để hỗ trợ ZXing javase
+    requires com.google.zxing.javase;
+    requires jakarta.mail; // Thêm để hỗ trợ ZXing javase
 
 
     opens com.example.coursemanagement to javafx.fxml;

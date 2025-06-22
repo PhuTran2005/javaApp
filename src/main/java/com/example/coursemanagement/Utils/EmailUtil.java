@@ -11,7 +11,7 @@ import jakarta.mail.internet.*;
 public class EmailUtil {
     public static void sendEmail(String toEmail, String subject, String messageText) throws MessagingException {
         final String fromEmail = "6451071080@st.utc2.edu.vn";
-        final String password = "tfsd ndon wwha jiyi"; // dùng app password của Google
+        final String password = "pass"; // dùng app password của Google
 
         Properties props = new Properties();
         props.put("mail.smtp.auth", "true");

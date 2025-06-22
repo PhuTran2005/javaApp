@@ -127,4 +127,35 @@ public class AssignmentRepository {
         return assignments;
     }
 
+    public List<Assignment> getAssignmentsByCourseId(int courseId) {
+        String sql = """
+        SELECT assignment_id, title, description, due_date, file_name, file_path, course_id
+        FROM Assignments
+        WHERE course_id = ?
+        ORDER BY due_date ASC
+    """;
+
+        List<Assignment> list = new ArrayList<>();
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, courseId);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                Assignment a = new Assignment();
+                a.setId(rs.getInt("assignment_id"));
+                a.setTitle(rs.getString("title"));
+                a.setDescription(rs.getString("description"));
+                a.setDueDate(rs.getTimestamp("due_date").toLocalDateTime());
+                a.setFileName(rs.getString("file_name"));
+                a.setFilePath(rs.getString("file_path"));
+                a.setCourseId(rs.getInt("course_id"));
+                list.add(a);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+
 }

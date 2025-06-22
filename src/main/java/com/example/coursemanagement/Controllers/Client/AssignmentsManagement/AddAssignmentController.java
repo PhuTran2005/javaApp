@@ -14,6 +14,7 @@ import javafx.stage.Stage;
 import java.io.File;
 import java.sql.Date;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -66,33 +67,53 @@ public class AddAssignmentController {
         String description = assignmentDescription.getText();
         String courseName = courseComboBox.getValue();
 
+        // Kiểm tra dữ liệu nhập vào
         if (title.isEmpty() || description.isEmpty() || courseName == null || dueDate.getValue() == null) {
             showAlert("Vui lòng nhập đầy đủ thông tin.");
             return;
         }
 
-        Date dueDateValue = Date.valueOf(dueDate.getValue());
+        // ✅ Kiểm tra hạn nộp không nằm trong quá khứ
+        LocalDate selectedDate = dueDate.getValue();
+        LocalDate today = LocalDate.now();
+
+        if (selectedDate.isBefore(today)) {
+            showAlert("Hạn nộp không được là ngày trong quá khứ.");
+            return;
+        }
+
+        // Chuyển sang kiểu java.sql.Date để lưu DB
+        Date dueDateValue = Date.valueOf(selectedDate);
 
         try {
             int courseId = assignmentService.getCourseIdByName(courseName);
 
-            // Lấy tên file và đường dẫn file nếu có file được chọn
+            // Lấy tên file và đường dẫn nếu đã chọn file
             String fileName = null;
             String filePath = null;
             if (selectedFile != null) {
-                fileName = selectedFile.getName(); // Lấy tên file
-                filePath = selectedFile.getAbsolutePath();  // Lưu đường dẫn đầy đủ của file
+                fileName = selectedFile.getName();
+                filePath = selectedFile.getAbsolutePath();
             }
 
-            // Thêm bài tập vào cơ sở dữ liệu
-            assignmentService.addAssignment(title, description, SessionManager.getInstance().getUser().getUserId(), courseId, dueDateValue, fileName, filePath);
-            logService.createLog(SessionManager.getInstance().getUser().getUserId(), "Giáo viên " + SessionManager.getInstance().getUser().getFullname() + " đã thêm bài tập mới");
-            // Gọi callback để reload biểu đồ ở màn chính
+            // Thêm vào DB
+            assignmentService.addAssignment(
+                    title, description,
+                    SessionManager.getInstance().getUser().getUserId(),
+                    courseId, dueDateValue,
+                    fileName, filePath
+            );
+
+            logService.createLog(
+                    SessionManager.getInstance().getUser().getUserId(),
+                    "Giáo viên " + SessionManager.getInstance().getUser().getFullname() + " đã thêm bài tập mới"
+            );
+
             if (onAssignmentAdded != null) {
                 onAssignmentAdded.run();
             }
 
-            // Đóng cửa sổ sau khi lưu
+            // Đóng cửa sổ
             Stage stage = (Stage) saveAssignmentButton.getScene().getWindow();
             stage.close();
 

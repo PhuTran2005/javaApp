@@ -27,6 +27,11 @@ public class AssignmentService {
         return assignmentRepository.getAllAssignmentsByInstructorId(instructorId);
     }
 
+    public List<Assignment> getAssignmentsByCourseId(int courseId) {
+        return assignmentRepository.getAssignmentsByCourseId(courseId);
+    }
+
+
     // Thêm bài tập mới
     public void addAssignment(String title, String description,int teacherId, int courseId, Date dueDate, String fileName, String filePath) throws SQLException {
         String sql = "INSERT INTO assignments (title, description, course_id, due_date, file_name, file_path,teacher_id) VALUES (?, ?, ?, ?, ?, ?,?)";

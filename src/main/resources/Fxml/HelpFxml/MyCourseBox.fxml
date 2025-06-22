@@ -6,11 +6,12 @@
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
 <AnchorPane fx:id="courseBox" prefHeight="500.0" prefWidth="500.0" styleClass="course-box" stylesheets="@../../Styles/CourseBox.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.coursemanagement.Controllers.Client.CourseClientController.MyCourseBoxController">
-    <VBox alignment="CENTER" layoutX="7.2" layoutY="7.2" maxHeight="284.0" prefHeight="284.0" prefWidth="366.0" styleClass="course-thumbnail" AnchorPane.bottomAnchor="126.0" AnchorPane.leftAnchor="6.0" AnchorPane.rightAnchor="8.0" AnchorPane.topAnchor="6.0">
+    <VBox alignment="CENTER" layoutX="8.0" layoutY="8.0" maxHeight="284.0" prefHeight="273.0" prefWidth="364.0" styleClass="course-thumbnail" AnchorPane.bottomAnchor="128.0" AnchorPane.leftAnchor="7.0" AnchorPane.rightAnchor="9.0" AnchorPane.topAnchor="7.0">
 
         <ImageView fx:id="courseThumbnail" fitHeight="200.0" fitWidth="260.0" preserveRatio="true" smooth="true" styleClass="course-thumbnail-img">
             <image>
@@ -19,27 +20,58 @@
         </ImageView>
     </VBox>
 
-    <VBox layoutX="9.600000000000001" layoutY="275.0" maxHeight="125.0" prefHeight="112.0" prefWidth="241.0" style="-fx-padding: 10px;" styleClass="course-thumbnail-exp" AnchorPane.bottomAnchor="9.0" AnchorPane.leftAnchor="9.0" AnchorPane.rightAnchor="130.0" AnchorPane.topAnchor="280.0">
-        <Label fx:id="courseName" prefHeight="20.0" prefWidth="300.0" styleClass="course-name" text="Book" />
+    <VBox layoutX="12.0" layoutY="283.2" maxHeight="131.0" prefHeight="115.0" prefWidth="238.0" style="-fx-padding: 10px;" styleClass="course-thumbnail-exp" AnchorPane.bottomAnchor="11.0" AnchorPane.leftAnchor="11.0" AnchorPane.rightAnchor="131.0" AnchorPane.topAnchor="282.0">
+      <HBox prefHeight="33.0" prefWidth="217.0">
+         <children>
+              <Label fx:id="courseName" prefHeight="44.0" prefWidth="154.0" styleClass="course-name" text="Book">
+               <HBox.margin>
+                  <Insets />
+               </HBox.margin>
+            </Label>
+              <Button mnemonicParsing="false" onAction="#handleView" prefHeight="31.0" prefWidth="58.0" styleClass="image-button" text="Xem">
+               <font>
+                  <Font name="System Bold" size="16.0" />
+               </font>
+               <HBox.margin>
+                  <Insets />
+               </HBox.margin>
+              </Button>
+         </children>
+      </HBox>
         <Label fx:id="courseInstructorName" prefHeight="37.0" prefWidth="244.0" styleClass="course-instructor-name" text="Tran Van Phu" />
         <Label fx:id="coursePrice" prefHeight="20.0" prefWidth="300.0" styleClass="course-price" text="120000" />
     </VBox>
-    <VBox layoutX="291.0" layoutY="277.6" maxHeight="398.0" prefHeight="112.0" prefWidth="114.0" style="-fx-alignment: center;" styleClass="course-thumbnail-exp" AnchorPane.bottomAnchor="7.0" AnchorPane.rightAnchor="11.0" AnchorPane.topAnchor="280.0">
-        <Button mnemonicParsing="false" onAction="#handleView" prefHeight="40.0" prefWidth="60.0" styleClass="image-button" text="Xem">
+    <VBox layoutX="291.0" layoutY="283.2" maxHeight="398.0" prefHeight="114.0" prefWidth="116.0" style="-fx-alignment: center;" styleClass="course-thumbnail-exp" AnchorPane.bottomAnchor="14.0" AnchorPane.rightAnchor="12.0" AnchorPane.topAnchor="282.0">
+        <Button fx:id="Study_btn" mnemonicParsing="false"  prefHeight="38.0" prefWidth="96.0" styleClass="image-button" text="Bài Giảng">
             <VBox.margin>
-                <Insets bottom="5.0" top="10.0" />
+                <Insets bottom="10.0" right="7.0" />
             </VBox.margin>
          <font>
-            <Font size="18.0" />
+            <Font name="System Bold" size="17.0" />
          </font>
+         <padding>
+            <Insets right="5.0" />
+         </padding>
         </Button>
-        <Button fx:id="Study_btn" mnemonicParsing="false" onAction="#handleStudy" prefHeight="40.0" prefWidth="60.0" styleClass="image-button" text="Học">
-            <VBox.margin>
-                <Insets bottom="10.0" top="5.0" />
-            </VBox.margin>
-         <font>
-            <Font size="18.0" />
-         </font>
-        </Button>
+        <HBox alignment="CENTER" spacing="5">
+            <Button fx:id="Study_btn1" mnemonicParsing="false" onAction="#handleAssignment" prefHeight="38.0" prefWidth="82.0" styleClass="image-button" text="Bài Tập">
+                <font>
+                    <Font name="System Bold" size="17.0" />
+                </font>
+                <VBox.margin>
+                    <Insets top="8.0" />
+                </VBox.margin>
+            </Button>
+
+                        <Label fx:id="assignmentCountLabel" prefHeight="23.0" prefWidth="16.0" style="-fx-text-fill: red; -fx-font-weight: bold;" text="0">
+            <padding>
+               <Insets bottom="23.0" />
+            </padding>
+            <HBox.margin>
+               <Insets />
+            </HBox.margin>
+         </Label>
+        </HBox>
+
     </VBox>
 </AnchorPane>

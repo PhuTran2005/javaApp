@@ -51,10 +51,8 @@ public class ViewAssignmentController {
             downloadLink.setDisable(true);
         }
 
-        // Kiểm tra hạn nộp
         boolean isOverdue = assignment.getDueDate() != null && assignment.getDueDate().isBefore(java.time.LocalDateTime.now());
 
-        // Lấy thông tin bài nộp
         Submission submission = submissionService.getSubmission(studentId, assignment.getId());
         if (submission != null) {
             submissionStatus.setText("Đã nộp vào: " + submission.getSubmittedAt());
@@ -66,33 +64,43 @@ public class ViewAssignmentController {
             if (isOverdue) {
                 submissionStatus.setText(submissionStatus.getText() + " (Đã quá hạn)");
                 submissionStatus.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");
-                updateButton.setVisible(false);  // Không được cập nhật
-                cancelButton.setVisible(false);  // Không được hủy
-            } else {
-                submissionStatus.setStyle("");   // Trạng thái bình thường
-                updateButton.setVisible(true);
-                cancelButton.setVisible(true);   // Cho phép hủy
-            }
 
-            submitButton.setVisible(false); // Vì đã nộp
+                submitButton.setVisible(false);
+                updateButton.setVisible(false);
+                cancelButton.setVisible(false);
+                chooseFileButton.setDisable(true);  // ❌ Không chọn file
+            } else {
+                submissionStatus.setStyle("");
+                submitButton.setVisible(false);
+                updateButton.setVisible(true);
+                cancelButton.setVisible(true);
+                chooseFileButton.setDisable(false); // ✅ Cho chọn file
+            }
         } else {
             if (isOverdue) {
                 submissionStatus.setText("❌ Quá hạn nộp bài");
                 submissionStatus.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");
+
+                selectedFileName.setText("Chưa chọn file");
+
                 submitButton.setVisible(false);
                 updateButton.setVisible(false);
                 cancelButton.setVisible(false);
+                chooseFileButton.setDisable(true); // ❌ Không chọn file
             } else {
                 submissionStatus.setText("Chưa nộp");
                 submissionStatus.setStyle("");
+
                 selectedFileName.setText("Chưa chọn file");
 
                 submitButton.setVisible(true);
                 updateButton.setVisible(false);
-                cancelButton.setVisible(false); // Không có gì để hủy
+                cancelButton.setVisible(false);
+                chooseFileButton.setDisable(false); // ✅ Cho chọn file
             }
         }
     }
+
 
     @FXML
     private void handleChooseFile() {

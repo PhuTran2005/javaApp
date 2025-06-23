@@ -1,10 +1,13 @@
 package com.example.coursemanagement.Controllers.Admin.CourseController;
 
+import com.example.coursemanagement.Controllers.Client.AssignmentController;
 import com.example.coursemanagement.Dto.CourseDetailDTO;
 import com.example.coursemanagement.Models.Course;
+import com.example.coursemanagement.Models.Model;
 import com.example.coursemanagement.Service.CourseService;
 import com.example.coursemanagement.Utils.Alerts;
 import com.example.coursemanagement.Utils.SessionManager;
+import javafx.animation.FadeTransition;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -15,8 +18,10 @@ import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.BorderPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 import java.io.IOException;
 import java.net.URL;
@@ -41,6 +46,9 @@ public class CourseBoxController {
     public Button recover_btn;
     @FXML
     public Button delete_btn;
+    @FXML
+    public Button Assignment_btn;
+
     private CourseDetailDTO currCourse;
     private final Alerts alerts = new Alerts(); // Tạo repository
     private final CourseService courseService = new CourseService(); // Tạo repository
@@ -164,4 +172,30 @@ public class CourseBoxController {
             alerts.showSuccessAlert("Khôi phục khóa học thành công");
         }
     }
+
+    @FXML
+    private void handleAssignment() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/Fxml/Client/Assignment/AssignmentMain.fxml"));
+            Parent root = loader.load();
+
+            AssignmentController controller = loader.getController();
+            controller.setCourseId(currCourse.getCourse().getCourseId());
+            controller.setCourseName(currCourse.getCourse().getCourseName());
+            controller.initializeAssignments();
+
+            // Thay đổi center của BorderPane
+            ((BorderPane) Model.getInstance().getViewFactory().getClientRoot()).setCenter(root);
+            FadeTransition ft = new FadeTransition(Duration.millis(300), root);
+            ft.setFromValue(0);
+            ft.setToValue(1);
+            ft.play();
+
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
 }

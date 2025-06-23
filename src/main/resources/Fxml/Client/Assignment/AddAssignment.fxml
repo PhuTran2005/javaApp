@@ -3,7 +3,6 @@
 <?import java.lang.String?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TextArea?>
@@ -21,12 +20,27 @@
         </padding>
 
         <!-- Tiêu đề -->
-        <Label style="-fx-font-size: 18px; -fx-font-weight: bold;" text="Thêm Bài Tập" />
+        <Label prefHeight="43.0" prefWidth="539.0" style="-fx-font-size: 25px; -fx-font-weight: bold;" text="Thêm Bài Tập" textFill="#ffcf00">
+         <font>
+            <Font name="System Bold" size="22.0" />
+         </font>
+         <VBox.margin>
+            <Insets />
+         </VBox.margin>
+         <padding>
+            <Insets left="200.0" />
+         </padding></Label>
 
         <!-- Chọn khóa học -->
         <HBox prefHeight="40.0" prefWidth="539.0" spacing="10.0">
-            <Label minWidth="100" prefHeight="39.0" prefWidth="100.0" text="Chọn khóa học:" />
-            <ComboBox fx:id="courseComboBox" prefHeight="37.0" prefWidth="430.0" promptText="Chọn khóa học" HBox.hgrow="ALWAYS" />
+            <Label minWidth="100" prefHeight="39.0" prefWidth="100.0" text="Khóa học:">
+            <font>
+               <Font name="System Bold" size="15.0" />
+            </font></Label>
+            <Label fx:id="courseLabel" prefHeight="37.0" prefWidth="430.0" text=" Khóa học" textFill="#ff0d93" HBox.hgrow="ALWAYS">
+            <font>
+               <Font name="System Bold" size="18.0" />
+            </font></Label>
         </HBox>
 
         <!-- Tên bài tập -->

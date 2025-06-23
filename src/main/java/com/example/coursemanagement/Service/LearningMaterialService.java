@@ -53,4 +53,14 @@ public class LearningMaterialService {
             return false;
         }
     }
+
+    public boolean increaseViewCount(int materialId) {
+        try (Connection conn = DatabaseConfig.getConnection()) {
+            return new LearningMaterialRepository().increaseViewCount(conn, materialId);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
 }

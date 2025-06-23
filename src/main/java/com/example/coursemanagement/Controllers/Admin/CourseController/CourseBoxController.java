@@ -49,6 +49,8 @@ public class CourseBoxController {
     public Button delete_btn;
     @FXML
     public Button Assignment_btn;
+    @FXML
+    public Button learning;
 
     private CourseDetailDTO currCourse;
     private final Alerts alerts = new Alerts(); // Tạo repository
@@ -75,6 +77,15 @@ public class CourseBoxController {
             if (delete_btn != null) {
                 delete_btn.setVisible(false);
                 delete_btn.setManaged(false);
+            }
+        }
+        if (SessionManager.getInstance().getUser().getRoleId() == 1){
+            if (Assignment_btn != null) {
+                Assignment_btn.setVisible(false);
+                Assignment_btn.setManaged(false);
+            } if (learning !=null) {
+                learning.setVisible(false);
+                learning.setManaged(false);
             }
         }
         this.currCourse = course;

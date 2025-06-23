@@ -136,8 +136,8 @@ public class ClientMenuController implements Initializable {
     //handle on/off button
     private void toggleInstructorBoxes(boolean show) {
         if (assignment_btn != null) {
-            assignment_btn.setVisible(show);
-            assignment_btn.setManaged(show);
+            assignment_btn.setVisible(false);
+            assignment_btn.setManaged(false);
         }
         if (student_btn != null) {
             student_btn.setVisible(show);

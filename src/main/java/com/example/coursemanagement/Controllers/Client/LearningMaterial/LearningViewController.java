@@ -6,6 +6,7 @@ import com.example.coursemanagement.Models.LearningMaterial;
 import com.example.coursemanagement.Models.Model;
 import com.example.coursemanagement.Repository.LearningMaterialRepository;
 import com.example.coursemanagement.Utils.DatabaseConfig;
+import com.example.coursemanagement.Utils.SessionManager;
 import javafx.animation.FadeTransition;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -40,6 +41,7 @@ public class LearningViewController {
         return currentCourseId;
     }
 
+
     public int getCurrentUserId() {
         return currentUserId;
     }
@@ -52,6 +54,12 @@ public class LearningViewController {
     public void initialize() {
         addButton.setOnAction(e -> openAddMaterialForm());
         backButton.setOnAction(event -> handleBack());
+
+        // 🔒 Ẩn nút "Thêm" nếu là STUDENT
+        if (SessionManager.getInstance().getUser().getRoleId() == 3) {
+            addButton.setVisible(false);
+            addButton.setManaged(false); // Ẩn cả về layout (không chiếm chỗ)
+        }
     }
 
     public void setCourse(int courseId, int userId, String courseName) {
@@ -105,14 +113,24 @@ public class LearningViewController {
         }
     }
 
+    @FXML
     private void handleBack() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/Fxml/Admin/CourseManagement.fxml"));
-            Parent myCourseView = loader.load();
+            String fxmlPath;
 
-            ((BorderPane) Model.getInstance().getViewFactory().getClientRoot()).setCenter(myCourseView);
+            if (SessionManager.getInstance().getUser().getRoleId() == 2) {
+                fxmlPath = "/Fxml/Admin/CourseManagement.fxml"; // Màn instructor/admin
+            } else {
+                fxmlPath = "/Fxml/Client/MyCourse.fxml"; // Màn hình của sinh viên
+            }
+
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
+            Parent view = loader.load();
+
+            ((BorderPane) Model.getInstance().getViewFactory().getClientRoot()).setCenter(view);
+
             // Hiệu ứng mờ khi chuyển
-            FadeTransition ft = new FadeTransition(Duration.millis(300), myCourseView);
+            FadeTransition ft = new FadeTransition(Duration.millis(400), view);
             ft.setFromValue(0);
             ft.setToValue(1);
             ft.play();
@@ -121,5 +139,6 @@ public class LearningViewController {
             e.printStackTrace();
         }
     }
+
 
 }

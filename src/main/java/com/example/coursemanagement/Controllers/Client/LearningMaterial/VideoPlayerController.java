@@ -1,6 +1,9 @@
 package com.example.coursemanagement.Controllers.Client.LearningMaterial;
 
 import com.example.coursemanagement.Models.Model;
+import com.example.coursemanagement.Repository.LearningMaterialRepository;
+import com.example.coursemanagement.Utils.DatabaseConfig;
+import com.example.coursemanagement.Utils.SessionManager;
 import javafx.animation.FadeTransition;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -14,6 +17,7 @@ import javafx.util.Duration;
 import javafx.scene.control.Label;
 
 import java.io.IOException;
+import java.sql.Connection;
 
 public class VideoPlayerController {
 
@@ -33,6 +37,10 @@ public class VideoPlayerController {
     private int currentCourseId;
     private int currentUserId;
     private String courseName;
+    private int materialId;
+    public void setMaterialId(int id) {
+        this.materialId = id;
+    }
 
 
     public void setCourseInfo(int courseId, int userId, String courseName) {
@@ -70,23 +78,35 @@ public class VideoPlayerController {
     public void loadVideo(String videoUrl) {
         WebEngine engine = webView.getEngine();
 
+        // Tăng view nếu là STUDENT
+        if (SessionManager.getInstance().isStudent()) {
+            try (Connection conn = DatabaseConfig.getConnection()) {
+                new LearningMaterialRepository().increaseViewCount(conn, materialId);
+                System.out.println("✅ View count +1 for materialId = " + materialId);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        // Tiếp tục load video bình thường
         if (videoUrl.contains("youtube.com") || videoUrl.contains("youtu.be")) {
             String videoId = extractYouTubeId(videoUrl);
             String embed = """
-                <html>
-                  <body style="margin:0">
-                    <iframe width="100%%" height="100%%" 
-                            src="https://www.youtube.com/embed/%s" 
-                            frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
-                  </body>
-                </html>
-                """.formatted(videoId);
+            <html>
+              <body style="margin:0">
+                <iframe width="100%%" height="100%%" 
+                        src="https://www.youtube.com/embed/%s" 
+                        frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+              </body>
+            </html>
+            """.formatted(videoId);
 
             engine.loadContent(embed);
         } else {
-            engine.load(videoUrl); // Cho các link nhúng khác như Google Drive
+            engine.load(videoUrl); // Cho Google Drive hoặc link MP4
         }
     }
+
 
     private String extractYouTubeId(String url) {
         String id = null;

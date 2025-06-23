@@ -100,5 +100,18 @@ public class LearningMaterialRepository {
         }
     }
 
+    public boolean increaseViewCount(Connection conn, int materialId) {
+        String sql = "UPDATE LearningMaterials SET views = views + 1 WHERE material_id = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, materialId);
+            return stmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+
+
 }
 

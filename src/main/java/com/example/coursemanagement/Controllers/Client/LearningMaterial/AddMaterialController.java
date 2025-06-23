@@ -91,18 +91,21 @@ Alerts alerts = new Alerts();
     private void handleSave() {
         String title = titleField.getText() != null ? titleField.getText().trim() : "";
         String description = descriptionField.getText() != null ? descriptionField.getText().trim() : "";
-        String videoPath;
+
+        String videoPath = null;
         if (videoFileNameField.getText() != null && !videoFileNameField.getText().trim().isEmpty()) {
             videoPath = videoFileNameField.getText().trim();
-            selectedVideoFilePath = videoPath;  // cập nhật path mới nếu người dùng nhập
-        } else {
-            videoPath = selectedVideoFilePath;  // dùng lại path cũ
+            selectedVideoFilePath = videoPath;  // Cập nhật nếu người dùng vừa chọn
+        } else if (selectedVideoFilePath != null && !selectedVideoFilePath.isEmpty()) {
+            videoPath = selectedVideoFilePath;
         }
 
         String documentPath = selectedDocumentFile != null ? selectedDocumentFile.getAbsolutePath() : selectedDocumentFilePath;
         String documentName = selectedDocumentFile != null ? selectedDocumentFile.getName() : (editingMaterial != null ? editingMaterial.getDocumentName() : null);
 
-        if (title.isEmpty() || (videoPath.isEmpty() && documentPath == null)) {
+        // Kiểm tra điều kiện bắt buộc
+        if (title.isEmpty() ||
+                ((videoPath == null || videoPath.isEmpty()) && (documentPath == null || documentPath.isEmpty()))) {
             showAlert(Alert.AlertType.ERROR, "Bạn phải nhập tiêu đề và ít nhất 1 nội dung: video hoặc tài liệu.");
             return;
         }
@@ -113,7 +116,7 @@ Alerts alerts = new Alerts();
                 editingMaterial.setTitle(title);
                 editingMaterial.setDescription(description);
                 editingMaterial.setVideoPath(videoPath);
-                editingMaterial.setVideoName(!videoPath.isEmpty() ? "Video bài giảng" : null);
+                editingMaterial.setVideoName((videoPath != null && !videoPath.isEmpty()) ? "Video bài giảng" : null);
                 editingMaterial.setDocumentPath(documentPath);
                 editingMaterial.setDocumentName(documentName);
 
@@ -124,7 +127,7 @@ Alerts alerts = new Alerts();
                 material.setTitle(title);
                 material.setDescription(description);
                 material.setVideoPath(videoPath);
-                material.setVideoName(!videoPath.isEmpty() ? "Video bài giảng" : null);
+                material.setVideoName((videoPath != null && !videoPath.isEmpty()) ? "Video bài giảng" : null);
                 material.setDocumentPath(documentPath);
                 material.setDocumentName(documentName);
                 material.setUploadedBy(uploadedByUserId);
@@ -134,10 +137,10 @@ Alerts alerts = new Alerts();
             }
 
             if (success) {
-                alerts.showSuccessAlert("Cập nhật bài giảng thành công! Thêm bài giảng thành công!");
+                alerts.showSuccessAlert("Thêm/Cập nhật bài giảng thành công!");
 
                 if (onMaterialAdded != null) {
-                    onMaterialAdded.run(); // <- Gọi để reload lại danh sách
+                    onMaterialAdded.run();
                 }
 
                 closeWindow();
@@ -145,7 +148,7 @@ Alerts alerts = new Alerts();
 
         } catch (Exception e) {
             e.printStackTrace();
-            alerts.showErrorAlert( "Lỗi: " + e.getMessage());
+            alerts.showErrorAlert("Lỗi: " + e.getMessage());
         }
     }
 

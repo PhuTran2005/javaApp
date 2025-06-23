@@ -5,6 +5,7 @@ import com.example.coursemanagement.Models.Model;
 import com.example.coursemanagement.Repository.LearningMaterialRepository;
 import com.example.coursemanagement.Service.LearningMaterialService;
 import com.example.coursemanagement.Utils.Alerts;
+import com.example.coursemanagement.Utils.SessionManager;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -74,30 +75,49 @@ public class LearningMaterialCardController {
             documentSection.setVisible(false);
             documentSection.setManaged(false);
         }
+        // Ẩn nút update/delete nếu không phải giảng viên
+        if ((SessionManager.getInstance().getUser().getRoleId() == 3)) {
+            deleteButton.setVisible(false);
+            deleteButton.setManaged(false);
+            updateButton.setVisible(false);
+            updateButton.setManaged(false);
+        }
     }
 
     private void openInWebView(String videoUrl) {
         try {
+            // 🔼 Chỉ tăng view nếu là student
+            if (SessionManager.getInstance().getUser().getRoleId() == 3) {
+                LearningMaterialService service = new LearningMaterialService();
+                boolean increased = service.increaseViewCount(material.getMaterialId());
+                if (increased) {
+                    material.setViews(material.getViews() + 1); // Cập nhật local
+                }
+            }
+
+            // Load giao diện VideoPlayer
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/Fxml/Client/Intructor_Learing/VideoPlayer.fxml"));
             Parent videoView = loader.load();
 
             VideoPlayerController controller = loader.getController();
+            controller.setMaterialId(material.getMaterialId());
             controller.loadVideo(videoUrl);
-            // ✅ Truyền thêm thông tin bài giảng
+
+            // Truyền thông tin bài giảng (cập nhật số views mới nếu vừa tăng)
             controller.setVideoInfo(
                     material.getTitle(),
                     material.getDescription(),
                     material.getViews()
             );
 
-            // ✅ Truyền thông tin khóa học cho controller để quay lại được LearningView
+            // Truyền thông tin khóa học
             controller.setCourseInfo(
                     material.getCourseId(),
                     material.getUploadedBy(),
                     material.getCourseName() != null ? material.getCourseName() : "Tên khóa học"
             );
 
-            // ✅ Gắn parentPane để back lại
+            // Gắn giao diện vào màn hình chính
             BorderPane root = (BorderPane) Model.getInstance().getViewFactory().getClientRoot();
             controller.setParentPane(root);
             root.setCenter(videoView);
@@ -107,6 +127,7 @@ public class LearningMaterialCardController {
             new Alerts().showErrorAlert("Không thể mở video.");
         }
     }
+
 
 
 

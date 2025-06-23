@@ -2,6 +2,7 @@ package com.example.coursemanagement.Controllers;
 
 import com.example.coursemanagement.Repository.UserRepository;
 import com.example.coursemanagement.Service.CartService;
+import com.example.coursemanagement.Service.LogService;
 import com.example.coursemanagement.Utils.Alerts;
 import com.example.coursemanagement.Models.Model;
 import com.example.coursemanagement.Models.User;
@@ -40,6 +41,7 @@ public class LoginController implements Initializable {
     public ImageView logo13;
     public AnchorPane loginForm;
     private Alerts alerts = new Alerts();
+    private static LogService logService = new LogService();
 
     @FXML
 
@@ -108,6 +110,9 @@ public class LoginController implements Initializable {
             SessionManager.getInstance().setUser(response); // Cập nhật user mới
             if (response.getRoleId() == 3) {
                 SessionManager.getInstance().setCartSize();
+            }
+            if (response.getRoleId() != 1) {
+                logService.createLog(SessionManager.getInstance().getUser().getUserId(), "Đăng nhập vào app");
             }
             alerts.showSuccessAlert("Đăng nhập thành công!");
             Stage stage = (Stage) messageLabel.getScene().getWindow();

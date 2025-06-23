@@ -290,8 +290,7 @@ public class AddCourseController {
                 alerts.showSuccessAlert("Thêm khóa học thành công!");
                 if (SessionManager.getInstance().getUser().getRoleId() == 2) {
                     logService.createLog(SessionManager.getInstance().getUser().getUserId(),
-                            "Giáo viên " + SessionManager.getInstance().getUser().getFullname() +
-                                    " đã thêm khóa học mới: " + course.getCourseName());
+                                    "Đã thêm khóa học mới: " + course.getCourseName());
                 }
                 courseAdded = true;
                 handleCancel();

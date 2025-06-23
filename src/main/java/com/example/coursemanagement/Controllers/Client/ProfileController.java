@@ -6,6 +6,7 @@ import com.example.coursemanagement.Models.User;
 import com.example.coursemanagement.Repository.InstructorRepository;
 import com.example.coursemanagement.Repository.StudentRepository;
 import com.example.coursemanagement.Repository.UserRepository;
+import com.example.coursemanagement.Service.LogService;
 import com.example.coursemanagement.Service.UserService;
 import com.example.coursemanagement.Utils.Alerts;
 import com.example.coursemanagement.Utils.GlobalVariable;
@@ -70,6 +71,7 @@ public class ProfileController {
     private final UserRepository userRepository = new UserRepository(); // Tạo repository
     private final InstructorRepository instructorRepository = new InstructorRepository(); // Tạo repository
     private final StudentRepository studentRepository = new StudentRepository(); // Tạo repository
+    private static LogService logService = new LogService();
 
     @FXML
     public void initialize() {
@@ -222,6 +224,7 @@ public class ProfileController {
 
         if (isUpdated) {
             alerts.showSuccessAlert("Cập nhật thành công!");
+            logService.createLog(SessionManager.getInstance().getUser().getUserId(), "Cập nhật thông tin cá nhân");
             loadUserData(roleId);
         } else {
             alerts.showErrorAlert("Cập nhật thất bại!");
@@ -265,6 +268,7 @@ public class ProfileController {
         if (userRepository.updatePasswordUser(myProfile.getUserEmail(), newPasswordField.getText())) {
 
             alerts.showSuccessAlert("Thay đổi mật khẩu thành công");
+            logService.createLog(SessionManager.getInstance().getUser().getUserId(), "Đã thay đổi mật khẩu");
             handleCancel();
         } else {
             alerts.showErrorAlert("Thay đổi mật khẩu không thành công");

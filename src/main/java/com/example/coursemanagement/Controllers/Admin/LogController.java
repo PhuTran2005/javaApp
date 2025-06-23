@@ -18,7 +18,10 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 public class LogController implements Initializable {
-
+    @FXML
+    public TableColumn<Log, String> emailColumn;
+    @FXML
+    public TableColumn<Log, String> roleColumn;
     @FXML
     private TableView<Log> logTableView;
 
@@ -59,10 +62,10 @@ public class LogController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
         // Initialize table columns
         logIdColumn.setCellValueFactory(new PropertyValueFactory<>("logId"));
-        userIdColumn.setCellValueFactory(new PropertyValueFactory<>("userId"));
+        emailColumn.setCellValueFactory(new PropertyValueFactory<>("email"));
         actionColumn.setCellValueFactory(new PropertyValueFactory<>("action"));
         timeColumn.setCellValueFactory(new PropertyValueFactory<>("actionTime"));
-
+        roleColumn.setCellValueFactory(new PropertyValueFactory<>("role"));
         // Format the date time column
         timeColumn.setCellFactory(column -> {
             return new TableCell<Log, LocalDateTime>() {

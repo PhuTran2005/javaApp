@@ -36,7 +36,7 @@ public class EditCourseController {
     private static final int MIN_DESCRIPTION_LENGTH = 10;
     private static final int MAX_DESCRIPTION_LENGTH = 1000;
     private static final double MIN_PRICE = 0.00;
-    private static final double MAX_PRICE = 9999999.99 ;
+    private static final double MAX_PRICE = 9999999.99;
     private static final int MIN_COURSE_DURATION_DAYS = 1;
     private static final int MAX_COURSE_DURATION_DAYS = 365;
     private static final long MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
@@ -169,6 +169,7 @@ public class EditCourseController {
 
     /**
      * Validate image file
+     *
      * @param file File to validate
      * @return Error message if invalid, null if valid
      */
@@ -201,6 +202,7 @@ public class EditCourseController {
 
     /**
      * Sanitize file name to prevent security issues
+     *
      * @param fileName Original file name
      * @return Sanitized file name
      */
@@ -306,6 +308,7 @@ public class EditCourseController {
 
     /**
      * Load thumbnail image with error handling
+     *
      * @param thumbnailPath Path to thumbnail image
      */
     private void loadThumbnailImage(String thumbnailPath) {
@@ -364,8 +367,7 @@ public class EditCourseController {
                 // Log the action
                 if (SessionManager.getInstance().getUser().getRoleId() == 2) {
                     logService.createLog(SessionManager.getInstance().getUser().getUserId(),
-                            "Giáo viên " + SessionManager.getInstance().getUser().getFullname() +
-                                    " đã chỉnh sửa khóa học: " + course.getCourseName());
+                            "Đã chỉnh sửa khóa học: " + course.getCourseName());
                 }
 
                 // Update instructor relationship
@@ -389,6 +391,7 @@ public class EditCourseController {
 
     /**
      * Comprehensive validation for all fields with edit-specific logic
+     *
      * @return List of validation error messages
      */
     private List<String> validateAllFields() {
@@ -505,6 +508,7 @@ public class EditCourseController {
 
     /**
      * Parse and validate price with proper precision
+     *
      * @param priceText Price as string
      * @return Parsed price
      * @throws NumberFormatException if invalid

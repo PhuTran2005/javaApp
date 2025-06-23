@@ -7,6 +7,33 @@ public class Log {
     private Integer userId;
     private String action;
     private LocalDateTime actionTime;
+    private String email;
+    private String role;
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
+
+    public Log(int logId, Integer userId, String action, LocalDateTime actionTime, String email, String role) {
+        this.logId = logId;
+        this.userId = userId;
+        this.action = action;
+        this.actionTime = actionTime;
+        this.email = email;
+        this.role = role;
+    }
 
     public Log() {
     }

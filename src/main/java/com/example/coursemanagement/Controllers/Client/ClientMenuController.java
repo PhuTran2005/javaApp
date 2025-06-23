@@ -1,6 +1,7 @@
 package com.example.coursemanagement.Controllers.Client;
 
 import com.example.coursemanagement.Service.CartService;
+import com.example.coursemanagement.Service.LogService;
 import com.example.coursemanagement.Utils.Alerts;
 import com.example.coursemanagement.Models.Model;
 import com.example.coursemanagement.Utils.SessionManager;
@@ -44,6 +45,7 @@ public class ClientMenuController implements Initializable {
     public Button profile_btn;
     @FXML
     public Button report_btn;
+    private static LogService logService = new LogService();
 
     private static ClientMenuController instance;
 
@@ -233,6 +235,7 @@ public class ClientMenuController implements Initializable {
             Stage stage = (Stage) logout_btn.getScene().getWindow();
             Model.getInstance().getViewFactory().closeStage(stage);
             Model.getInstance().getViewFactory().showLoginWindow();
+            logService.createLog(SessionManager.getInstance().getUser().getUserId(), "Đăng xuất");
         }
     }
 

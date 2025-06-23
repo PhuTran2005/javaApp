@@ -1,6 +1,7 @@
 package com.example.coursemanagement.Controllers.Admin.CourseController;
 
 import com.example.coursemanagement.Controllers.Client.AssignmentController;
+import com.example.coursemanagement.Controllers.Client.LearningMaterial.LearningViewController;
 import com.example.coursemanagement.Dto.CourseDetailDTO;
 import com.example.coursemanagement.Models.Course;
 import com.example.coursemanagement.Models.Model;
@@ -49,8 +50,7 @@ public class CourseBoxController {
     @FXML
     public Button Assignment_btn;
     @FXML
-
-    public Button learning_btn;
+    public Button learning;
 
     private CourseDetailDTO currCourse;
     private final Alerts alerts = new Alerts(); // Tạo repository
@@ -78,16 +78,15 @@ public class CourseBoxController {
                 delete_btn.setVisible(false);
                 delete_btn.setManaged(false);
             }
-
         }
-        else {
+        if (SessionManager.getInstance().getUser().getRoleId() == 1) {
             if (Assignment_btn != null) {
                 Assignment_btn.setVisible(false);
                 Assignment_btn.setManaged(false);
             }
-            if (learning_btn != null) {
-                learning_btn.setVisible(false);
-                learning_btn.setManaged(false);
+            if (learning != null) {
+                learning.setVisible(false);
+                learning.setManaged(false);
             }
         }
         this.currCourse = course;
@@ -205,6 +204,35 @@ public class CourseBoxController {
             ft.setToValue(1);
             ft.play();
 
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    private void handleLearning() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/Fxml/Client/Intructor_Learing/LearningView.fxml"));
+            Parent root = loader.load();
+
+            // Lấy controller và truyền courseId + userId
+            LearningViewController controller = loader.getController();
+            controller.setCourse(
+                    currCourse.getCourse().getCourseId(),
+                    SessionManager.getInstance().getUser().getUserId(),
+                    currCourse.getCourse().getCourseName() // ← thêm tên khóa học
+            );
+
+
+            // Load vào center của giao diện chính
+            ((BorderPane) Model.getInstance().getViewFactory().getClientRoot()).setCenter(root);
+
+            // Tạo hiệu ứng mượt
+            FadeTransition ft = new FadeTransition(Duration.millis(300), root);
+            ft.setFromValue(0);
+            ft.setToValue(1);
+            ft.play();
 
         } catch (IOException e) {
             e.printStackTrace();

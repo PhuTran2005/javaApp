@@ -14,7 +14,7 @@ import java.util.List;
 public class UserRepository {
 
     // Đăng ký tài khoản
-    public boolean registerUser(String email, String password, int roleId, String fullname) {
+    public int registerUser(String email, String password, int roleId, String fullname) {
         String query = "INSERT INTO Users (email, password_hash, role_id, full_name) VALUES (?, ?, ?, ?)";
 
         Connection conn = null;
@@ -32,7 +32,7 @@ public class UserRepository {
 
                 if (stmt.executeUpdate() == 0) {
                     conn.rollback();
-                    return false;
+                    return -1;
                 }
 
                 try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
@@ -48,11 +48,11 @@ public class UserRepository {
 
                         if (!insertSuccess) {
                             conn.rollback();
-                            return false;
+                            return -1;
                         }
 
                         conn.commit(); // Thành công toàn bộ
-                        return true;
+                        return userId;
                     }
                 }
             }
@@ -72,8 +72,10 @@ public class UserRepository {
                 e.printStackTrace();
             }
         }
-        return false;
+
+        return -1;
     }
+
 
     public boolean insertInstructor(int userId, Connection conn) throws SQLException {
         String query = "INSERT INTO Instructors (instructor_id) VALUES (?)";

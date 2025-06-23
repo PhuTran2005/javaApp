@@ -1,7 +1,9 @@
 package com.example.coursemanagement.Controllers.Admin;
 
+import com.example.coursemanagement.Service.LogService;
 import com.example.coursemanagement.Utils.Alerts;
 import com.example.coursemanagement.Models.Model;
+import com.example.coursemanagement.Utils.SessionManager;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -81,8 +83,9 @@ public class AdminMenuController implements Initializable {
 
         Model.getInstance().getViewFactory().getAdminSelectedMenuItemProperty().set(path);
     }
+
     @FXML
-    private void onLogsMenu(String path){
+    private void onLogsMenu(String path) {
         setActiveButton(logs_btn);
         Model.getInstance().getViewFactory().getAdminSelectedMenuItemProperty().set(path);
     }
@@ -99,11 +102,12 @@ public class AdminMenuController implements Initializable {
             Stage stage = (Stage) logout_btn.getScene().getWindow();
             Model.getInstance().getViewFactory().closeStage(stage);
             Model.getInstance().getViewFactory().showLoginWindow();
+
         }
     }
 
     private void setActiveButton(Button activeButton) {
-        Button[] buttons = {dashboard_btn,logs_btn, courseManagement_btn, transaction_btn, accounts_btn, report_btn};
+        Button[] buttons = {dashboard_btn, logs_btn, courseManagement_btn, transaction_btn, accounts_btn, report_btn};
         for (Button btn : buttons) {
             btn.getStyleClass().remove("active");
         }

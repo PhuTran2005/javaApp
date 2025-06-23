@@ -3,7 +3,9 @@ package com.example.coursemanagement.Utils;
 import com.example.coursemanagement.Models.Payment;
 import com.example.coursemanagement.Models.Student;
 
+import com.example.coursemanagement.Models.User;
 import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.FileOutputStream;
@@ -182,4 +184,32 @@ public class ExcelExporter {
             return false;
         }
     }
+    public static void exportUserListToExcel(List<User> users, String filePath) {
+        try (XSSFWorkbook workbook = new XSSFWorkbook()) {
+            XSSFSheet sheet = workbook.createSheet("User List");
+
+            Row headerRow = sheet.createRow(0);
+            headerRow.createCell(0).setCellValue("ID");
+            headerRow.createCell(1).setCellValue("Họ tên");
+            headerRow.createCell(2).setCellValue("Email");
+            headerRow.createCell(3).setCellValue("SĐT");
+
+            int rowNum = 1;
+            for (User user : users) {
+                Row row = sheet.createRow(rowNum++);
+                row.createCell(0).setCellValue(user.getUserId());
+                row.createCell(1).setCellValue(user.getFullname());
+                row.createCell(2).setCellValue(user.getUserEmail());
+                row.createCell(3).setCellValue(user.getUserPhoneNumber());
+            }
+
+            try (FileOutputStream fos = new FileOutputStream(filePath)) {
+                workbook.write(fos);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 }

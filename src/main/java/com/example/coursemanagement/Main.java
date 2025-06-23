@@ -10,3 +10,4 @@ public class Main extends Application {
         Model.getInstance().getViewFactory().showLoginWindow();
     }
 }
+

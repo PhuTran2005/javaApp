@@ -1,10 +1,12 @@
 package com.example.coursemanagement.Controllers.Admin;
 
 import com.example.coursemanagement.Models.Student;
+import com.example.coursemanagement.Models.User;
 import com.example.coursemanagement.Service.StudentService;
-
 import com.example.coursemanagement.Utils.Alerts;
 import com.example.coursemanagement.Utils.ExcelExporter;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -13,75 +15,65 @@ import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
-
 import javafx.event.ActionEvent;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.scene.Parent;
 
-
-
 import java.io.File;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.example.coursemanagement.Utils.DatabaseConfig.getConnection;
+
 public class AccountsController {
 
-    @FXML private TableView<Student> studentTable;
-    @FXML private TableColumn<Student, Boolean> colSelect;
-    @FXML private TableColumn<Student, Integer> colId;
-    @FXML private TableColumn<Student, String> colName, colEmail, colPhone, colCourses;
+//    @FXML private Label studentTab;
+//    @FXML private Label instructorTab;
+    @FXML private TableView<User> studentTable;
+    @FXML private TableColumn<User, Boolean> colSelect;
+    @FXML private TableColumn<User, Integer> colId;
+    @FXML private TableColumn<User, String> colName, colEmail, colPhone, colCourses;
     @FXML private TextField searchField;
     @FXML private ImageView searchImageView;
     @FXML private Button filterButton;
     @FXML private Button editButton;
     @FXML private ImageView exportImageView;
+    @FXML private Button studentRoleBtn;
+    @FXML private Button instructorRoleBtn;
 
-    private List<Student> allStudents;
+    private final ObservableList<User> userList = FXCollections.observableArrayList();
     private final Alerts alerts = new Alerts();
-    private final StudentService studentService = new StudentService();
+    private String currentRole = "student";
 
     @FXML
     public void initialize() {
         setupExportButtonEffects();
         setupTableColumns();
-        loadStudentData();
         setupSearchEvents();
+        setupTabSwitching();
 
-        studentTable.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
-            if (newSelection != null) {
-                System.out.println("Selected student: " + newSelection.getFullname());
-            } else {
-                System.out.println("No student selected");
-            }
+        loadUsersByRole("student");
+    }
+
+    private void setupTabSwitching() {
+        studentRoleBtn.setOnAction(event -> {
+            currentRole = "STUDENT";
+            loadUsersByRole(currentRole);
         });
 
-        studentTable.setOnMouseClicked(event -> {
-            if (event.getClickCount() == 1) {
-                Student selectedStudent = studentTable.getSelectionModel().getSelectedItem();
-                if (selectedStudent != null) {
-                    System.out.println("Student selected: " + selectedStudent.getFullname());
-                }
-            }
+        instructorRoleBtn.setOnAction(event -> {
+            currentRole = "INSTRUCTOR";
+            loadUsersByRole(currentRole);
         });
     }
 
-    public void loadStudentData() {
-        // Lấy danh sách sinh viên từ StudentService
-        allStudents = studentService.getAllStudents();
-        studentTable.getItems().setAll(allStudents);
-
-        // Đồng bộ checkbox "Select All"
-        CheckBox selectAllCheckBox = (CheckBox) colSelect.getGraphic();
-        for (Student student : allStudents) {
-            student.selectedProperty().addListener((obs, oldVal, newVal) -> {
-                boolean allSelected = studentTable.getItems().stream().allMatch(Student::isSelected);
-                selectAllCheckBox.setSelected(allSelected);
-            });
-        }
-    }
 
     private void setupExportButtonEffects() {
         exportImageView.setOnMouseEntered(e -> {
@@ -98,7 +90,7 @@ public class AccountsController {
         studentTable.setEditable(true);
         colSelect.setEditable(true);
 
-        colSelect.setCellValueFactory(cellData -> cellData.getValue().selectedProperty());
+        colSelect.setCellValueFactory(param -> param.getValue().selectedProperty());
         colSelect.setCellFactory(CheckBoxTableCell.forTableColumn(colSelect));
         colSelect.setSortable(false);
 
@@ -106,8 +98,8 @@ public class AccountsController {
         colSelect.setGraphic(selectAllCheckBox);
         selectAllCheckBox.setOnAction(e -> {
             boolean selected = selectAllCheckBox.isSelected();
-            for (Student student : studentTable.getItems()) {
-                student.setSelected(selected);
+            for (User user : studentTable.getItems()) {
+                user.setSelected(selected);
             }
             studentTable.refresh();
         });
@@ -116,16 +108,7 @@ public class AccountsController {
         colName.setCellValueFactory(new PropertyValueFactory<>("fullname"));
         colEmail.setCellValueFactory(new PropertyValueFactory<>("userEmail"));
         colPhone.setCellValueFactory(new PropertyValueFactory<>("userPhoneNumber"));
-        colCourses.setCellValueFactory(cellData -> new javafx.beans.property.SimpleStringProperty(
-                String.join("\n", cellData.getValue().getEnrolledCourses())
-        ));
-        colCourses.setCellFactory(column -> new TableCell<>() {
-            @Override
-            protected void updateItem(String item, boolean empty) {
-                super.updateItem(item, empty);
-                setText(empty || item == null ? null : item);
-            }
-        });
+        colCourses.setCellValueFactory(new PropertyValueFactory<>("roleName"));
 
         setCenterAlignment(colId);
         setCenterAlignment(colName);
@@ -134,9 +117,9 @@ public class AccountsController {
         setCenterAlignment(colCourses);
     }
 
-    private <T> void setCenterAlignment(TableColumn<Student, T> column) {
+    private <T> void setCenterAlignment(TableColumn<User, T> column) {
         column.setCellFactory(tc -> {
-            TableCell<Student, T> cell = new TableCell<>() {
+            TableCell<User, T> cell = new TableCell<>() {
                 @Override
                 protected void updateItem(T item, boolean empty) {
                     super.updateItem(item, empty);
@@ -146,37 +129,6 @@ public class AccountsController {
             cell.setStyle("-fx-alignment: CENTER;");
             return cell;
         });
-    }
-
-    @FXML
-    private void onExportExcelClicked(MouseEvent event) {
-        List<Student> students = studentTable.getItems();
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Lưu danh sách sinh viên");
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Excel Files", "*.xlsx"));
-        fileChooser.setInitialFileName("student_list.xlsx");
-
-        File file = fileChooser.showSaveDialog(new Stage());
-        if (file != null) {
-            ExcelExporter.exportStudentListToExcel(students, file.getAbsolutePath());
-            alerts.showSuccessAlert("Xuất file Excel thành công!");
-        }
-    }
-
-    @FXML
-    private void onSearchClicked(MouseEvent event) {
-        String keyword = searchField.getText().toLowerCase().trim();
-
-        if (keyword.isEmpty()) {
-            studentTable.getItems().setAll(allStudents);
-            return;
-        }
-
-        List<Student> filtered = allStudents.stream()
-                .filter(s -> s.getFullname().toLowerCase().contains(keyword))
-                .collect(Collectors.toList());
-
-        studentTable.getItems().setAll(filtered);
     }
 
     private void setupSearchEvents() {
@@ -192,58 +144,98 @@ public class AccountsController {
     }
 
     @FXML
-    private void onFilterClicked(ActionEvent event) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/Fxml/Admin/FilterCoursesDialog.fxml"));
-            Parent root = loader.load();
+    private void onSearchClicked(MouseEvent event) {
+        String keyword = searchField.getText().toLowerCase().trim();
 
-            FilterCoursesController filterController = loader.getController();
-            filterController.setAvailableCourses(studentService.getAllCourses());
+        if (keyword.isEmpty()) {
+            studentTable.setItems(userList);
+            return;
+        }
 
-            Stage stage = new Stage();
-            stage.setTitle("Filter list by course");
-            stage.setScene(new Scene(root));
-            stage.initModality(Modality.APPLICATION_MODAL);
-            stage.showAndWait();
+        ObservableList<User> filtered = FXCollections.observableArrayList(
+                userList.stream()
+                        .filter(s -> s.getFullname().toLowerCase().contains(keyword))
+                        .collect(Collectors.toList())
+        );
 
-            List<String> selectedCourses = filterController.getSelectedCourses();
-            if (selectedCourses != null && !selectedCourses.isEmpty()) {
-                List<Student> filtered = allStudents.stream()
-                        .filter(student -> student.getEnrolledCourses().containsAll(selectedCourses))
-                        .collect(Collectors.toList());
-                studentTable.getItems().setAll(filtered);
-            } else {
-                studentTable.getItems().setAll(allStudents);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+        studentTable.setItems(filtered);
+    }
+
+    @FXML
+    private void onExportExcelClicked(MouseEvent event) {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Luu danh sach nguoi dung");
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Excel Files", "*.xlsx"));
+        fileChooser.setInitialFileName(currentRole + "_list.xlsx");
+
+        File file = fileChooser.showSaveDialog(new Stage());
+        if (file != null) {
+            ExcelExporter.exportUserListToExcel(new ArrayList<>(studentTable.getItems()), file.getAbsolutePath());
+            alerts.showSuccessAlert("Xuat file thanh cong!");
         }
     }
 
     @FXML
-    private void onEditClicked(ActionEvent event) {
-        Student selectedStudent = studentTable.getSelectionModel().getSelectedItem();
-
-        if (selectedStudent != null) {
-            try {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/Fxml/Admin/EditStudentDialog.fxml"));
-                Parent root = loader.load();
-
-                EditStudentController editController = loader.getController();
-                editController.setStudent(selectedStudent);
-
-                Stage stage = new Stage();
-                stage.setTitle("Course Updates");
-                stage.setScene(new Scene(root));
-                stage.initModality(Modality.APPLICATION_MODAL);
-                stage.showAndWait();
-
-                loadStudentData(); // Tải lại dữ liệu sau khi chỉnh sửa
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        } else {
-            alerts.showErrorAlert("Vui lòng chọn sinh viên để chỉnh sửa.");
+    private void onFilterClicked(ActionEvent event) {
+        if (!currentRole.equals("student")) {
+            alerts.showErrorAlert("Filter chi ap dung cho sinh vien.");
+            return;
         }
+        // Chưa làm chức năng filter theo course
+        alerts.showInfoAlert("Thông báo", "Filter chi ap dung cho sinh vien.");
+
+    }
+
+    @FXML
+    private void onEditClicked(ActionEvent event) {
+        if (!currentRole.equals("student")) {
+            alerts.showErrorAlert("Chi chinh sua duoc sinh vien.");
+            return;
+        }
+        alerts.showInfoAlert("Thông báo", "Chua cai dat chuc nang chinh sua.");
+
+    }
+
+    private void loadUsersByRole(String roleName) {
+        userList.clear();
+        String sql = "SELECT u.user_id, u.email, u.full_name, u.phonenumber, u.create_date, r.role_name AS roleName "
+                + "FROM Users u "
+                + "JOIN Roles r ON u.role_id = r.role_id "
+                + "WHERE r.role_name = ?";
+
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, roleName);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                userList.add(new User(
+                        rs.getInt("user_id"),
+                        rs.getString("email"),
+                        rs.getString("full_name"),
+                        roleName,                        // vì constructor nhận roleName
+                        rs.getString("phonenumber"),     // ✅ đây là cột đúng
+                        rs.getString("create_date")
+                ));
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        studentTable.setItems(userList);
+    }
+
+    @FXML
+    private void handleStudentTab(ActionEvent event) {
+        currentRole = "STUDENT";
+        loadUsersByRole(currentRole);
+    }
+
+    @FXML
+    private void handleInstructorTab(ActionEvent event) {
+        currentRole = "INSTRUCTOR";
+        loadUsersByRole(currentRole);
     }
 }

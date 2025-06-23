@@ -2,15 +2,20 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.paint.Color?>
+<?import javafx.scene.paint.LinearGradient?>
+<?import javafx.scene.paint.Stop?>
 <?import javafx.scene.text.Font?>
 
 <AnchorPane prefHeight="750.0" prefWidth="850.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.coursemanagement.Controllers.Client.AssignmentController">
 
+
    <children>
-      <Button fx:id="addAssignment" layoutX="740.0" layoutY="14.0" onAction="#openAddAssignmentForm" style="-fx-background-color: #FFFE69;" styleClass="shadow" stylesheets="@../../../Styles/Accounts.css" text="Thêm bài tập">
+      <Button fx:id="addAssignment" layoutX="712.0" layoutY="14.0" onAction="#openAddAssignmentForm" prefHeight="27.0" prefWidth="126.0" style="-fx-background-color: #FFFE69;" styleClass="shadow" stylesheets="@../../../Styles/Accounts.css" text="➕ THÊM BÀI TẬP">
          <font>
             <Font name="System Bold" size="13.0" />
          </font></Button>
@@ -21,8 +26,32 @@
                <Insets bottom="20" left="20" right="20" top="20" />
             </padding>
          </FlowPane>
-
       </ScrollPane>
+      <Label layoutX="237.0" layoutY="2.0" prefHeight="50.0" prefWidth="404.0" text="DANH SÁCH BÀI TẬP ">
+         <font>
+            <Font name="System Bold" size="33.0" />
+         </font>
+         <textFill>
+            <LinearGradient endX="0.9962121067625104" endY="0.1780302596814705" startX="0.984848484848485" startY="0.7462121320493295">
+               <stops>
+                  <Stop>
+                     <color>
+                        <Color red="0.949999988079071" green="0.5500355362892151" blue="0.11400000005960464" />
+                     </color>
+                  </Stop>
+                  <Stop offset="1.0">
+                     <color>
+                        <Color red="1.0" green="1.0" blue="1.0" />
+                     </color>
+                  </Stop>
+               </stops>
+            </LinearGradient>
+         </textFill>
+      </Label>
+      <Button fx:id="backButton" layoutX="11.0" layoutY="10.0" onAction="#handleBack" prefHeight="27.0" prefWidth="90.0" style="-fx-background-color: #13A0E1;" text="← Quay lại" textFill="WHITE">
+         <font>
+            <Font name="System Bold" size="14.0" />
+         </font></Button>
 
    </children>
 </AnchorPane>

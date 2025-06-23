@@ -5,6 +5,7 @@ import com.example.coursemanagement.Utils.SessionManager;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
+import javafx.scene.Node;
 import javafx.scene.layout.BorderPane;
 
 import java.io.IOException;
@@ -65,5 +66,8 @@ public class ClientController implements Initializable {
 
         });
 
+    }
+    public void setCenterContent(Node node) {
+        client_parent.setCenter(node);
     }
 }

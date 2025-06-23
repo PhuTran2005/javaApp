@@ -14,6 +14,7 @@ import javafx.stage.Stage;
 import java.io.File;
 import java.sql.Date;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,7 +22,8 @@ import java.util.stream.Collectors;
 public class AddAssignmentController {
     private final LogService logService = new LogService();
     @FXML
-    private ComboBox<String> courseComboBox;
+    private Label courseLabel;
+    private String selectedCourseName;
 
     @FXML
     private TextField assignmentTitle;
@@ -49,6 +51,26 @@ public class AddAssignmentController {
     private Runnable onAssignmentAdded; // Callback
     private File selectedFile;
 
+    private int selectedCourseId = -1;
+
+    public void setSelectedCourse(int courseId, String courseName) {
+        this.selectedCourseId = courseId;
+        this.selectedCourseName = courseName;
+
+        // Hiển thị trực tiếp
+        if (courseLabel != null) {
+            courseLabel.setText(selectedCourseName);
+        }
+    }
+
+    @FXML
+    public void initialize() {
+        // Sau khi FXML load xong, nếu selectedCourseName đã được set trước đó thì hiển thị
+        if (selectedCourseName != null) {
+            courseLabel.setText(selectedCourseName);
+        }
+    }
+
     public AddAssignmentController() {
 
         this.assignmentService = new AssignmentService(DatabaseConfig.getConnection());
@@ -59,40 +81,60 @@ public class AddAssignmentController {
         this.onAssignmentAdded = onAssignmentAdded;
     }
 
-    // Xử lý khi nhấn lưu bài tập
     @FXML
     private void handleSaveAssignment() {
         String title = assignmentTitle.getText();
         String description = assignmentDescription.getText();
-        String courseName = courseComboBox.getValue();
 
-        if (title.isEmpty() || description.isEmpty() || courseName == null || dueDate.getValue() == null) {
+        // ✅ Dùng luôn courseId được truyền từ setSelectedCourse()
+        int courseId = selectedCourseId;
+
+        // Kiểm tra dữ liệu nhập vào
+        if (title.isEmpty() || description.isEmpty() || dueDate.getValue() == null) {
             showAlert("Vui lòng nhập đầy đủ thông tin.");
             return;
         }
 
-        Date dueDateValue = Date.valueOf(dueDate.getValue());
+        // ✅ Kiểm tra hạn nộp không nằm trong quá khứ
+        LocalDate selectedDate = dueDate.getValue();
+        LocalDate today = LocalDate.now();
+
+        if (selectedDate.isBefore(today)) {
+            showAlert("Hạn nộp không được là ngày trong quá khứ.");
+            return;
+        }
+
+        Date dueDateValue = Date.valueOf(selectedDate);
 
         try {
-            int courseId = assignmentService.getCourseIdByName(courseName);
+            // ✅ Không cần getCourseIdByName nữa
 
-            // Lấy tên file và đường dẫn file nếu có file được chọn
+            // Lấy tên file và đường dẫn nếu đã chọn file
             String fileName = null;
             String filePath = null;
             if (selectedFile != null) {
-                fileName = selectedFile.getName(); // Lấy tên file
-                filePath = selectedFile.getAbsolutePath();  // Lưu đường dẫn đầy đủ của file
+                fileName = selectedFile.getName();
+                filePath = selectedFile.getAbsolutePath();
             }
 
-            // Thêm bài tập vào cơ sở dữ liệu
-            assignmentService.addAssignment(title, description, SessionManager.getInstance().getUser().getUserId(), courseId, dueDateValue, fileName, filePath);
-            logService.createLog(SessionManager.getInstance().getUser().getUserId(), "Giáo viên " + SessionManager.getInstance().getUser().getFullname() + " đã thêm bài tập mới");
-            // Gọi callback để reload biểu đồ ở màn chính
+            // Thêm vào DB
+            assignmentService.addAssignment(
+                    title, description,
+                    SessionManager.getInstance().getUser().getUserId(),
+                    courseId, dueDateValue,
+                    fileName, filePath
+            );
+
+            logService.createLog(
+                    SessionManager.getInstance().getUser().getUserId(),
+                    "Giáo viên " + SessionManager.getInstance().getUser().getFullname() + " đã thêm bài tập mới"
+            );
+
             if (onAssignmentAdded != null) {
                 onAssignmentAdded.run();
             }
 
-            // Đóng cửa sổ sau khi lưu
+            // Đóng cửa sổ
             Stage stage = (Stage) saveAssignmentButton.getScene().getWindow();
             stage.close();
 
@@ -113,7 +155,7 @@ public class AddAssignmentController {
     @FXML
     private void handleUploadFile() {
         FileChooser fileChooser = new FileChooser();
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Text Files", "*.txt"));
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("All Files", "*.*"));
         File file = fileChooser.showOpenDialog(null);
 
         if (file != null) {
@@ -125,34 +167,6 @@ public class AddAssignmentController {
     }
 
 
-    // Hiển thị danh sách khóa học cho ComboBox
-    public void initialize() {
-        try {
-            // Lấy ID giảng viên hiện tại (giả định bạn có cách lấy ID giảng viên hiện tại)
-            int currentInstructorId = SessionManager.getInstance().getUser().getUserId();
-
-            // Lấy danh sách khóa học của giảng viên hiện tại
-            List<CourseDetailDTO> courses = coursesRepository.getCoursesByInstructor(currentInstructorId);
-
-            // Kiểm tra xem danh sách khóa học có rỗng không
-            if (courses.isEmpty()) {
-                System.out.println("Giảng viên chưa dạy khóa học nào.");
-                return;
-            }
-
-            // Chuyển đổi danh sách CourseDetailDTO thành tên khóa học để hiển thị trong ComboBox
-            List<String> courseNames = courses.stream()
-                    .map(courseDetailDTO -> courseDetailDTO.getCourse().getCourseName())  // Lấy tên khóa học từ đối tượng Course
-                    .collect(Collectors.toList());
-
-            // Đưa danh sách tên khóa học vào ComboBox
-            courseComboBox.getItems().clear();  // Xóa tất cả item cũ (nếu có)
-            courseComboBox.getItems().addAll(courseNames);  // Thêm khóa học của giảng viên hiện tại
-        } catch (Exception e) {
-            e.printStackTrace();
-            showAlert("Lỗi khi lấy danh sách khóa học.");
-        }
-    }
 
 
     private void showAlert(String message) {

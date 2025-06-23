@@ -3,7 +3,6 @@
 <?import java.lang.String?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TextArea?>
@@ -21,12 +20,24 @@
         </padding>
 
         <!-- Tiêu đề -->
-        <Label style="-fx-font-size: 18px; -fx-font-weight: bold;" text="Cập nhật bài tập" />
+        <Label style="-fx-font-size: 25px; -fx-font-weight: bold;" text="CẬP NHẬT BÀI TẬP " textFill="#00f42d">
+         <font>
+            <Font name="System Bold Italic" size="24.0" />
+         </font>
+         <VBox.margin>
+            <Insets left="180.0" />
+         </VBox.margin></Label>
 
         <!-- Chọn khóa học -->
         <HBox prefHeight="40.0" prefWidth="539.0" spacing="10.0">
-            <Label minWidth="100" prefHeight="39.0" prefWidth="100.0" text="Chọn khóa học:" />
-            <ComboBox fx:id="courseComboBox" prefHeight="37.0" prefWidth="430.0" promptText="Chọn khóa học" HBox.hgrow="ALWAYS" />
+            <Label minWidth="100" prefHeight="39.0" prefWidth="100.0" text="Khóa học:">
+            <font>
+               <Font name="System Bold" size="17.0" />
+            </font></Label>
+            <Label fx:id="courseNameLabel" prefHeight="37.0" prefWidth="430.0" text="Chọn khóa học" textAlignment="CENTER" textFill="#f20000" HBox.hgrow="ALWAYS">
+            <font>
+               <Font name="System Bold" size="22.0" />
+            </font></Label>
         </HBox>
 
         <!-- Tên bài tập -->
@@ -56,7 +67,7 @@
 
         <!-- Nút hành động -->
         <HBox alignment="CENTER" prefHeight="74.0" prefWidth="539.0" spacing="10.0">
-            <Button fx:id="updateAssignmentButton"  style="-fx-background-color: #22A4F1;" text="Cập nhật" textFill="WHITE">
+            <Button fx:id="updateAssignmentButton" style="-fx-background-color: #22A4F1;" text="Cập nhật" textFill="WHITE">
             <font>
                <Font name="System Bold" size="12.0" />
             </font></Button>

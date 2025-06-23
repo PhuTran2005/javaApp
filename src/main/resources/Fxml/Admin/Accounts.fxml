@@ -20,6 +20,7 @@
             <!-- Thanh công cụ -->
             <AnchorPane prefHeight="130.0" prefWidth="900.0" styleClass="white-bg" stylesheets="@../../Styles/admin_dashboard.css">
                <children>
+
                   <Button fx:id="editButton" layoutX="685.0" layoutY="116.0" text="Edit" textFill="WHITE" onAction="#onEditClicked" prefHeight="31.0" prefWidth="66.0" style="-fx-background-color: #007bff;" styleClass="shadow">
                      <font><Font name="System Bold" size="13.0" /></font>
                      <graphic>

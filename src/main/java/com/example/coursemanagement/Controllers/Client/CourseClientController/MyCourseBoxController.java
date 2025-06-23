@@ -1,16 +1,18 @@
 package com.example.coursemanagement.Controllers.Client.CourseClientController;
 
-import com.example.coursemanagement.Controllers.Admin.CourseController.AddCourseController;
 import com.example.coursemanagement.Controllers.Admin.CourseController.ViewCourseController;
-import com.example.coursemanagement.Controllers.Client.ClientMenuController;
+import com.example.coursemanagement.Controllers.Client.AssignmentsManagement.AssignmentListController;
+import com.example.coursemanagement.Controllers.Client.ClientController;
 import com.example.coursemanagement.Controllers.Client.MyCourseController;
-import com.example.coursemanagement.Controllers.PaymentDetailController;
+import com.example.coursemanagement.Models.Model;
 import com.example.coursemanagement.Dto.CourseDetailDTO;
 import com.example.coursemanagement.Models.Course;
 import com.example.coursemanagement.Service.CartService;
 import com.example.coursemanagement.Service.CourseService;
+import com.example.coursemanagement.Service.SubmissionService;
 import com.example.coursemanagement.Utils.Alerts;
 import com.example.coursemanagement.Utils.SessionManager;
+import javafx.animation.FadeTransition;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -22,49 +24,42 @@ import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.BorderPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.Collections;
 import java.util.ResourceBundle;
 
-
 public class MyCourseBoxController implements Initializable {
-    @FXML
-    public AnchorPane courseBox;
-    @FXML
-
-    public Label courseName;
-    @FXML
-
-    public Label courseInstructorName;
-    @FXML
-
-    public Label coursePrice;
-    @FXML
-
-    public ImageView courseThumbnail;
+    @FXML public AnchorPane courseBox;
+    @FXML public Label courseName;
+    @FXML public Label courseInstructorName;
+    @FXML public Label coursePrice;
+    @FXML public ImageView courseThumbnail;
+    @FXML public Label assignmentCountLabel;
+    @FXML public Button Study_btn1;
 
     private CourseDetailDTO currCourse;
-    private final Alerts alerts = new Alerts(); // Tạo repository
-    private final CourseService courseService = new CourseService(); // Tạo repository
-    private final CartService cartService = new CartService(); // Tạo repository
     private MyCourseController myCourseController;
+    private final Alerts alerts = new Alerts();
+    private final CourseService courseService = new CourseService();
+    private final CartService cartService = new CartService();
+    private final SubmissionService submissionService = new SubmissionService();
 
-    public void setMyCourseController(MyCourseController myCourseController) {
-        this.myCourseController = myCourseController;
+    @Override
+    public void initialize(URL url, ResourceBundle resourceBundle) {
+        // No-op
     }
 
-    //load data
     public void setData(CourseDetailDTO course) {
         this.currCourse = course;
         courseName.setText(course.getCourse().getCourseName());
         courseInstructorName.setText("GV: " + course.getInstructor().getFullname());
         coursePrice.setText("Giá: " + course.getCourse().getCoursePrice() + " VND");
 
-        // Load ảnh
         String thumbnailPath = "/" + course.getCourse().getCourseThumbnail();
         try {
             Image image = new Image(getClass().getResource(thumbnailPath).toExternalForm());
@@ -79,9 +74,22 @@ public class MyCourseBoxController implements Initializable {
             }
         }
 
+        int studentId = SessionManager.getInstance().getUser().getUserId();
+        int courseId = course.getCourse().getCourseId();
+        int unsubmittedCount = submissionService.getUnsubmittedCount(courseId, studentId);
+
+        if (unsubmittedCount > 0) {
+            assignmentCountLabel.setText("(" + unsubmittedCount + ")");
+            assignmentCountLabel.setVisible(true);
+        } else {
+            assignmentCountLabel.setVisible(false);
+        }
     }
 
-    //Xử lý View
+    public void setMyCourseController(MyCourseController controller) {
+        this.myCourseController = controller;
+    }
+
     @FXML
     private void handleView() {
         try {
@@ -94,22 +102,32 @@ public class MyCourseBoxController implements Initializable {
             stage.setScene(new Scene(root));
             stage.initModality(Modality.APPLICATION_MODAL);
             stage.showAndWait();
-
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
+    @FXML
+    public void handleStudy(ActionEvent event) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/Fxml/Client/Assignment/StudentListAssignment.fxml"));
+            Parent assignmentListView = loader.load();
 
+            AssignmentListController controller = loader.getController();
+            controller.initialize(currCourse.getCourse().getCourseId());
 
-    //Xử lý mua
-
-    @Override
-    public void initialize(URL url, ResourceBundle resourceBundle) {
-
+            ((BorderPane) Model.getInstance().getViewFactory().getClientRoot()).setCenter(assignmentListView);
+            FadeTransition ft = new FadeTransition(Duration.millis(400), assignmentListView);
+            ft.setFromValue(0);
+            ft.setToValue(1);
+            ft.play();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
-    public void handleStudy(ActionEvent event) {
-
+    @FXML
+    public void handleAssignment(ActionEvent event) {
+        handleStudy(event);
     }
 }

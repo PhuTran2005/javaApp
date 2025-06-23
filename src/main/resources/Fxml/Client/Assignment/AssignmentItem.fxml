@@ -16,7 +16,7 @@
     <VBox spacing="10" style="-fx-border-color: #ccc; -fx-border-radius: 10; -fx-background-radius: 10; -fx-padding: 15; -fx-background-color: #f9f9f9;" stylesheets="@../../../Styles/Accounts.css" AnchorPane.bottomAnchor="10" AnchorPane.leftAnchor="10" AnchorPane.rightAnchor="10" AnchorPane.topAnchor="10">
 
         <!-- Tiêu đề -->
-        <Label fx:id="assignmentTitle" prefHeight="27.0" prefWidth="684.0" style="-fx-font-weight: bold; -fx-font-size: 18;" text="📄 Tên bài: Assignment 1" textFill="#3161ff">
+        <Label fx:id="assignmentTitle" prefHeight="36.0" prefWidth="684.0" style="-fx-font-weight: bold; -fx-font-size: 18;" text="📄 Tên bài: Assignment 1" textFill="#3161ff">
          <font>
             <Font name="System Bold" size="12.0" />
          </font></Label>
@@ -27,7 +27,7 @@
             <padding>
                <Insets top="3.0" />
             </padding></Label>
-            <Hyperlink fx:id="downloadLink" text="🔽 Tải file bài tập" />
+            <Hyperlink fx:id="downloadLink" prefHeight="22.0" prefWidth="111.0" style="-fx-border-color: #60B8F6;" styleClass="gridPane-white" text="🔽 Tải file bài tập" />
         </HBox>
 
         <!-- Mô tả -->

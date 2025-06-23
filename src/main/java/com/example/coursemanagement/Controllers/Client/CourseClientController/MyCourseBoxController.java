@@ -12,6 +12,7 @@ import com.example.coursemanagement.Service.CourseService;
 import com.example.coursemanagement.Service.SubmissionService;
 import com.example.coursemanagement.Utils.Alerts;
 import com.example.coursemanagement.Utils.SessionManager;
+import javafx.animation.FadeTransition;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -26,6 +27,8 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.util.Duration;
+
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -114,6 +117,10 @@ public class MyCourseBoxController implements Initializable {
             controller.initialize(currCourse.getCourse().getCourseId());
 
             ((BorderPane) Model.getInstance().getViewFactory().getClientRoot()).setCenter(assignmentListView);
+            FadeTransition ft = new FadeTransition(Duration.millis(400), assignmentListView);
+            ft.setFromValue(0);
+            ft.setToValue(1);
+            ft.play();
         } catch (IOException e) {
             e.printStackTrace();
         }

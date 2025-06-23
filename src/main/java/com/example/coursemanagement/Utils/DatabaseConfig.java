@@ -22,41 +22,28 @@ import java.util.List;
 import java.util.Properties;
 
 public class DatabaseConfig {
-    private static final Properties prop = new Properties();
+    private static final String URL = "jdbc:sqlserver://localhost:1433;databaseName=IT_Course_Management;encrypt=true;trustServerCertificate=true";
 
-    static {
-        try (InputStream input = DatabaseConfig.class.getClassLoader().getResourceAsStream("db.properties")) {
-            if (input == null) {
-                throw new IOException("Không tìm thấy file config.properties trong resources");
+    private static final String USER = "thang1234";
+        private static final String PASSWORD = "123456";
+
+        public static Connection getConnection() {
+            try {
+                return DriverManager.getConnection(URL,USER,PASSWORD);
+            }catch (Exception e){
+                e.printStackTrace();
             }
-            prop.load(input);
-        } catch (IOException e) {
-            e.printStackTrace();
+            return null;
+
         }
-    }
 
-
-    private static final String URL = prop.getProperty("url");
-//    private static final String USER = prop.getProperty("username");
-//    private static final String PASSWORD = prop.getProperty("password");
-
-
-    public static Connection getConnection() {
-        Connection conn = null;
-        try {
-            conn = DriverManager.getConnection(URL);
-            System.out.println("✅ Kết nối SQL Server thành công!");
-        } catch (SQLException e) {
-            System.out.println("❌ Lỗi kết nối: " + e.getMessage());
+        public static void main(String[] args) {
+            try (Connection conn = getConnection()) {
+                System.out.println("Kết nối thành công!");
+            } catch (SQLException e) {
+                System.out.println("Kết nối thất bại!");
+                e.printStackTrace();
+            }
         }
-        return conn;
-    }
 
-    public static void test() {
-    getConnection();
     }
-
-    public static void main(String[] args) {
-        test();
-    }
-}

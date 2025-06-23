@@ -48,6 +48,12 @@ public class AssignmentCartController {
     private Assignment assignment;
 
     private Runnable onAssignmentDeleted;  // Callback sau khi xóa
+    private Runnable onAssignmentUpdated;
+
+    public void setOnAssignmentUpdated(Runnable callback) {
+        this.onAssignmentUpdated = callback;
+    }
+
 
     public AssignmentCartController() {
         this.assignmentService = new AssignmentService(DatabaseConfig.getConnection());
@@ -108,6 +114,14 @@ public class AssignmentCartController {
 
                 // Truyền dữ liệu bài tập cần cập nhật
                 updateController.setAssignmentData(assignment);
+
+                // ✨ Truyền callback để khi update xong thì reload lại card
+                updateController.setOnAssignmentUpdated(() -> {
+                    if (onAssignmentUpdated != null) {
+                        onAssignmentUpdated.run();  // Gọi reload danh sách ngoài
+                    }
+                });
+
                 // Mở cửa sổ mới
                 Stage stage = new Stage();
                 stage.setTitle("Cập nhật bài tập");
@@ -141,6 +155,11 @@ public class AssignmentCartController {
 
         assignmentChart.getData().clear();
 
+        if (total == 0) {
+            assignmentChart.getData().add(new PieChart.Data("Chưa có lượt nộp", 1));
+            return;
+        }
+
         int remaining = total - completed;
         double percentDone = total > 0 ? (completed * 100.0 / total) : 0;
         double percentRemain = 100.0 - percentDone;
@@ -150,6 +169,7 @@ public class AssignmentCartController {
 
         assignmentChart.getData().addAll(done, remain);
     }
+
 
     // Xử lý khi nhấn nút Xóa
     @FXML

@@ -24,7 +24,8 @@ import java.util.stream.Collectors;
 public class UpdateAssignmentController {
 
     @FXML
-    private ComboBox<String> courseComboBox;
+    private Label courseNameLabel;
+
 
     @FXML
     private TextField assignmentTitle;
@@ -50,6 +51,12 @@ public class UpdateAssignmentController {
     private CoursesRepository coursesRepository;
     private Assignment assignment;
     private File selectedFile;
+    private Runnable onAssignmentUpdated;
+
+    public void setOnAssignmentUpdated(Runnable onAssignmentUpdated) {
+        this.onAssignmentUpdated = onAssignmentUpdated;
+    }
+
 
     public UpdateAssignmentController() {
         this.assignmentService = new AssignmentService(DatabaseConfig.getConnection());
@@ -58,73 +65,69 @@ public class UpdateAssignmentController {
 
     public void setAssignmentData(Assignment assignment) {
         this.assignment = assignment;
-        // Điền thông tin bài tập vào giao diện
+
+        // Gán dữ liệu vào các trường giao diện
         assignmentTitle.setText(assignment.getTitle());
         assignmentDescription.setText(assignment.getDescription());
         if (assignment.getDueDate() != null) {
             dueDate.setValue(assignment.getDueDate().toLocalDate());
         }
 
-        // Hiển thị tên file, sử dụng file_name từ Assignment
-        fileNameLabel.setText(assignment.getFileName() != null ? assignment.getFileName() : "Chưa chọn file");
+        fileNameLabel.setText(
+                assignment.getFileName() != null ? assignment.getFileName() : "Chưa chọn file"
+        );
 
         try {
             int currentInstructorId = SessionManager.getInstance().getUser().getUserId();
 
             List<CourseDetailDTO> courses = coursesRepository.getCoursesByInstructor(currentInstructorId);
 
-            // Chuyển đổi danh sách CourseDetailDTO thành tên khóa học để hiển thị trong ComboBox
-            List<String> courseNames = courses.stream()
-                    .map(courseDetailDTO -> courseDetailDTO.getCourse().getCourseName())
-                    .collect(Collectors.toList());
-
-            courseComboBox.getItems().clear();
-            courseComboBox.getItems().addAll(courseNames);
-
+            // Tìm tên khóa học từ assignment.getCourseId()
             String currentCourseName = courses.stream()
                     .filter(course -> course.getCourse().getCourseId() == assignment.getCourseId())
                     .map(course -> course.getCourse().getCourseName())
                     .findFirst()
-                    .orElse("");
-            courseComboBox.setValue(currentCourseName);
+                    .orElse("Không rõ khóa học");
+
+            courseNameLabel.setText(currentCourseName);  // Gán vào Label thay vì ComboBox
 
         } catch (Exception e) {
             e.printStackTrace();
-            showAlert("Lỗi khi tải danh sách khóa học.");
+            showAlert("Lỗi khi tải tên khóa học.");
         }
-
-        System.out.println("DEBUG | Mô tả: " + assignment.getDescription());
-        System.out.println("DEBUG | Tên file: " + assignment.getFileName());
 
         updateAssignmentButton.setOnAction(e -> handleUpdateAssignment());
     }
+
 
     // Xử lý khi nhấn "Cập nhật"
     @FXML
     private void handleUpdateAssignment() {
         String title = assignmentTitle.getText();
         String description = assignmentDescription.getText();
-        String courseName = courseComboBox.getValue();
 
-        if (title.isEmpty() || description.isEmpty() || courseName == null || dueDate.getValue() == null) {
+        if (title.isEmpty() || description.isEmpty() || dueDate.getValue() == null) {
             showAlert("Vui lòng nhập đầy đủ thông tin.");
             return;
         }
 
-        LocalDateTime dueDateValue = dueDate.getValue().atTime(23, 59);  // Đặt giờ là 23:59
+        LocalDateTime dueDateValue = dueDate.getValue().atTime(23, 59);  // Giờ cố định
+
+        if (dueDateValue.isBefore(LocalDateTime.now())) {
+            showAlert("Hạn nộp không được ở quá khứ.");
+            return;
+        }
 
         try {
-            int courseId = assignmentService.getCourseIdByName(courseName);
-
-            // Cập nhật bài tập với các thông tin mới
+            // Cập nhật các trường hợp mới
             assignment.setTitle(title);
             assignment.setDescription(description);
-            assignment.setCourseId(courseId);
             assignment.setDueDate(dueDateValue);
+            // Không cần setCourseId lại nữa
 
-            // Nếu có tệp mới được chọn, cập nhật đường dẫn tệp
+            // Nếu có tệp mới được chọn
             if (selectedFile != null) {
-                assignment.setFilePath(selectedFile.getAbsolutePath()); // Lưu đường dẫn đầy đủ của file
+                assignment.setFilePath(selectedFile.getAbsolutePath());
                 assignment.setFileName(selectedFile.getName());
             } else if (fileNameLabel.getText() != null && !fileNameLabel.getText().equals("Chưa chọn file")) {
                 assignment.setFilePath(fileNameLabel.getText());
@@ -134,14 +137,20 @@ public class UpdateAssignmentController {
                 assignment.setFileName(null);
             }
 
-            // Cập nhật bài tập vào cơ sở dữ liệu
+            // Gọi cập nhật
             assignmentService.updateAssignment(assignment);
-            logService.createLog(SessionManager.getInstance().getUser().getUserId(), "Giáo viên " + SessionManager.getInstance().getUser().getFullname() + " đã cập nhật bài tập");
+            logService.createLog(
+                    SessionManager.getInstance().getUser().getUserId(),
+                    "Giáo viên " + SessionManager.getInstance().getUser().getFullname() + " đã cập nhật bài tập"
+            );
 
-            // Hiển thị thông báo thành công
             showAlert("Cập nhật bài tập thành công!");
+            if (onAssignmentUpdated != null) {
+                onAssignmentUpdated.run();  // Gọi lại hàm reload
+            }
 
-            // Đóng cửa sổ sau khi cập nhật
+
+            // Đóng cửa sổ
             Stage stage = (Stage) updateAssignmentButton.getScene().getWindow();
             stage.close();
 
@@ -150,6 +159,7 @@ public class UpdateAssignmentController {
             showAlert("Lỗi khi cập nhật bài tập. Vui lòng thử lại.");
         }
     }
+
 
     // Xử lý khi nhấn nút hủy
     @FXML

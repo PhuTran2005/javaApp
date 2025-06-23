@@ -24,6 +24,7 @@ module com.example.coursemanagement {
     opens com.example.coursemanagement to javafx.fxml;
     opens com.example.coursemanagement.Controllers to javafx.fxml;  // 👈
     opens com.example.coursemanagement.Controllers.Client to javafx.fxml;  // 👈
+    opens com.example.coursemanagement.Controllers.Component to javafx.fxml;  // 👈
 
     opens com.example.coursemanagement.Controllers.Admin to javafx.fxml;  // 👈
 
@@ -32,6 +33,8 @@ module com.example.coursemanagement {
     exports com.example.coursemanagement.Controllers;
     exports com.example.coursemanagement.Controllers.Admin;
     exports com.example.coursemanagement.Controllers.Client;
+    exports com.example.coursemanagement.Controllers.Component;
+
     exports com.example.coursemanagement.Models;
     exports com.example.coursemanagement.Views;
     exports com.example.coursemanagement.Utils;

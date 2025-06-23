@@ -3,6 +3,7 @@ package com.example.coursemanagement.Controllers.Client.CourseClientController;
 import com.example.coursemanagement.Controllers.Admin.CourseController.ViewCourseController;
 import com.example.coursemanagement.Controllers.Client.AssignmentsManagement.AssignmentListController;
 import com.example.coursemanagement.Controllers.Client.ClientController;
+import com.example.coursemanagement.Controllers.Client.LearningMaterial.LearningViewController;
 import com.example.coursemanagement.Controllers.Client.MyCourseController;
 import com.example.coursemanagement.Models.Model;
 import com.example.coursemanagement.Dto.CourseDetailDTO;
@@ -118,6 +119,29 @@ public class MyCourseBoxController implements Initializable {
 
             ((BorderPane) Model.getInstance().getViewFactory().getClientRoot()).setCenter(assignmentListView);
             FadeTransition ft = new FadeTransition(Duration.millis(400), assignmentListView);
+            ft.setFromValue(0);
+            ft.setToValue(1);
+            ft.play();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    public void handleLecture(ActionEvent event) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/Fxml/Client/Intructor_Learing/LearningView.fxml"));
+            Parent learningView = loader.load();
+
+            LearningViewController controller = loader.getController();
+            controller.setCourse(
+                    currCourse.getCourse().getCourseId(),
+                    Model.getInstance().getSessionManager().getUser().getUserId(),
+                    currCourse.getCourse().getCourseName()
+            );
+
+            ((BorderPane) Model.getInstance().getViewFactory().getClientRoot()).setCenter(learningView);
+            FadeTransition ft = new FadeTransition(Duration.millis(400), learningView);
             ft.setFromValue(0);
             ft.setToValue(1);
             ft.play();

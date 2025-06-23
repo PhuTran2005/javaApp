@@ -196,6 +196,28 @@ CREATE TABLE Logs (
     FOREIGN KEY (user_id) REFERENCES Users(user_id) ON DELETE SET NULL
 );
 
+--18.
+CREATE TABLE LearningMaterials (
+    material_id INT PRIMARY KEY IDENTITY(1,1),
+    course_id INT NOT NULL,
+    title NVARCHAR(255) NOT NULL,
+    description NVARCHAR(MAX),
+
+    -- Cho phép NULL nhưng phải kiểm tra logic phía Java/SQL trigger để tránh null cả 2
+    video_path NVARCHAR(500),        -- đường dẫn video (local hoặc online)
+    video_name NVARCHAR(255),
+
+    document_path NVARCHAR(500),     -- đường dẫn tài liệu
+    document_name NVARCHAR(255),
+
+    uploaded_by INT NOT NULL,        -- user_id của giảng viên
+    upload_date DATETIME DEFAULT GETDATE(),
+    views INT DEFAULT 0,             -- đếm số lượt xem
+
+    FOREIGN KEY (course_id) REFERENCES Courses(course_id),
+    FOREIGN KEY (uploaded_by) REFERENCES Users(user_id)
+);
+
 
 -- insert từng Procedure
 -- Stored Procedure để lấy danh sách khóa học có phân trang

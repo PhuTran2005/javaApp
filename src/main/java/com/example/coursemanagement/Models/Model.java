@@ -1,6 +1,8 @@
 package com.example.coursemanagement.Models;
 
 import com.example.coursemanagement.Views.ViewFactory;
+import com.example.coursemanagement.Utils.SessionManager;
+
 
 
 public class Model {
@@ -10,6 +12,7 @@ public class Model {
     private Model() {
         this.viewFactory = new ViewFactory();
     }
+    private final SessionManager sessionManager = SessionManager.getInstance();
 
     public static synchronized Model getInstance() {
 
@@ -22,4 +25,8 @@ public class Model {
     public ViewFactory getViewFactory() {
         return viewFactory;
     }
+    public SessionManager getSessionManager() {
+        return sessionManager;
+    }
+
 }

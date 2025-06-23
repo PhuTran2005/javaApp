@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Hyperlink?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane prefHeight="178.0" prefWidth="726.0" style="-fx-background-color: white; -fx-border-color: #ccc; -fx-border-radius: 12; -fx-background-radius: 12;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.coursemanagement.Controllers.Client.LearningMaterial.LearningMaterialCardController">
+    <children>
+        <VBox layoutX="3.2" layoutY="8.0" prefHeight="183.0" prefWidth="721.0" spacing="10" styleClass="white-bg" stylesheets="@../../../Styles/Accounts.css" AnchorPane.bottomAnchor="3.0" AnchorPane.leftAnchor="2.0" AnchorPane.rightAnchor="3.0" AnchorPane.topAnchor="7.0">
+            <padding>
+                <Insets bottom="5.0" left="15.0" right="15.0" top="15.0" />
+            </padding>
+
+            <Label fx:id="titleLabel" prefHeight="59.0" prefWidth="693.0" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #2a4d69;" text="TIÊU ĐỀ" textFill="#ef00a7">
+            <font>
+               <Font name="System Bold" size="14.0" />
+            </font>
+            <VBox.margin>
+               <Insets />
+            </VBox.margin></Label>
+            <Label fx:id="descriptionLabel" prefHeight="18.0" prefWidth="688.0" style="-fx-text-fill: #555;" text="MÔ TẢ" wrapText="true" />
+
+            <!-- VIDEO -->
+            <VBox fx:id="videoSection" spacing="5">
+                <HBox alignment="CENTER_LEFT" spacing="10">
+                    <Label fx:id="videoFileNameLabel" style="-fx-font-weight: bold;" />
+                    <Hyperlink fx:id="watchVideoLink" text="▶ Xem video" />
+                    <Label fx:id="viewsLabel" style="-fx-text-fill: gray; -fx-font-size: 12;" />
+                </HBox>
+            </VBox>
+
+            <!-- TÀI LIỆU -->
+            <VBox fx:id="documentSection" spacing="5">
+                <HBox alignment="CENTER_LEFT" spacing="10">
+                    <Label fx:id="docFileNameLabel" style="-fx-font-weight: bold;" />
+                    <Hyperlink fx:id="openDocumentLink" text="📄 Mở tài liệu" />
+                </HBox>
+            </VBox>
+
+            <!-- Nút hành động -->
+            <HBox alignment="CENTER_RIGHT" spacing="10">
+                <Button fx:id="deleteButton" onAction="#handleDelete" style="-fx-background-color: #FE2929;" text="Xóa" textFill="WHITE">
+               <font>
+                  <Font name="System Bold" size="12.0" />
+               </font>
+               <HBox.margin>
+                  <Insets right="50.0" />
+               </HBox.margin></Button>
+                <Button fx:id="updateButton" onAction="#handleUpdate" style="-fx-background-color: #29FE29;" text="Cập nhật">
+               <HBox.margin>
+                  <Insets left="30.0" right="260.0" />
+               </HBox.margin>
+               <font>
+                  <Font name="System Bold" size="13.0" />
+               </font></Button>
+            <VBox.margin>
+               <Insets />
+            </VBox.margin>
+            </HBox>
+        </VBox>
+    </children>
+</AnchorPane>

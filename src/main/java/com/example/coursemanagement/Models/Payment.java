@@ -10,6 +10,35 @@ public class Payment {
     private String method;
     private String status;
     private LocalDateTime paymentDate;
+    private String email;
+    private String fullName;
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getFullName() {
+        return fullName;
+    }
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
+    }
+
+    public Payment(int paymentId, int orderId, BigDecimal amount, String method, String status, LocalDateTime paymentDate, String email, String fullName) {
+        this.paymentId = paymentId;
+        this.orderId = orderId;
+        this.amount = amount;
+        this.method = method;
+        this.status = status;
+        this.paymentDate = paymentDate;
+        this.email = email;
+        this.fullName = fullName;
+    }
 
     public Payment() {
     }

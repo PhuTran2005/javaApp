@@ -23,16 +23,19 @@ public class PaymentRepository {
 
     /**
      * Get a paginated list of all payments
-     * @param page Current page number (1-based)
+     *
+     * @param page     Current page number (1-based)
      * @param pageSize Number of records per page
      * @return List of Payment objects
      */
     public List<Payment> getPayments(int page, int pageSize) {
         List<Payment> payments = new ArrayList<>();
         int offset = (page - 1) * pageSize;
-
-        // SQL Server pagination uses OFFSET-FETCH syntax
-        String query = "SELECT * FROM payments ORDER BY payment_date DESC OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+        String query = "SELECT Pay.amount,Pay.method,Pay.order_id,Pay.payment_date,Pay.status,Pay.payments_id as id,u.email,u.full_name \n" +
+                "FROM Payments Pay\n" +
+                "JOIN Orders o ON Pay.order_id = o.order_id\n" +
+                "JOIN Users u ON u.user_id = o.user_id\n" +
+                "ORDER BY payment_date DESC OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
 
         try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -42,7 +45,17 @@ public class PaymentRepository {
 
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
-                    payments.add(mapResultSetToPayment(rs));
+                    Payment payment = new Payment();
+
+                    payment.setPaymentId(rs.getInt("id"));
+                    payment.setOrderId(rs.getInt("order_id"));
+                    payment.setAmount(rs.getBigDecimal("amount"));
+                    payment.setMethod(rs.getString("method"));
+                    payment.setStatus(rs.getString("status"));
+                    payment.setPaymentDate(rs.getTimestamp("payment_date").toLocalDateTime());
+                    payment.setEmail(rs.getString("email"));
+                    payment.setFullName(rs.getString("full_name"));
+                    payments.add(payment);
                 }
             }
         } catch (SQLException e) {
@@ -52,8 +65,45 @@ public class PaymentRepository {
         return payments;
     }
 
+    public Payment getPaymentsDetail(int PaymentId) {
+
+        // SQL Server pagination uses OFFSET-FETCH syntax
+        String query = "SELECT Pay.amount,Pay.method,Pay.order_id,Pay.payment_date,Pay.status,Pay.payments_id as id,u.email,u.full_name \n" +
+                "FROM Payments Pay\n" +
+                "JOIN Orders o ON Pay.order_id = o.order_id\n" +
+                "JOIN Users u ON u.user_id = o.user_id\n" +
+                "where Pay.payments_id = ?;";
+
+        try (Connection conn = DatabaseConfig.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            stmt.setInt(1, PaymentId);
+
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                Payment payment = new Payment();
+
+                payment.setPaymentId(rs.getInt("id"));
+                payment.setOrderId(rs.getInt("order_id"));
+                payment.setAmount(rs.getBigDecimal("amount"));
+                payment.setMethod(rs.getString("method"));
+                payment.setStatus(rs.getString("status"));
+                payment.setPaymentDate(rs.getTimestamp("payment_date").toLocalDateTime());
+                payment.setEmail(rs.getString("email"));
+                payment.setFullName(rs.getString("full_name"));
+                return payment;
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
     /**
      * Get the total count of all payments
+     *
      * @return Total number of payment records
      */
     public int getTotalPaymentsCount() {
@@ -75,22 +125,24 @@ public class PaymentRepository {
 
     /**
      * Search payments by order ID, payment ID, or amount
+     *
      * @param searchTerm Search keyword
-     * @param page Current page number (1-based)
-     * @param pageSize Number of records per page
+     * @param page       Current page number (1-based)
+     * @param pageSize   Number of records per page
      * @return List of Payment objects matching search criteria
      */
     public List<Payment> searchPayments(String searchTerm, int page, int pageSize) {
         List<Payment> payments = new ArrayList<>();
         int offset = (page - 1) * pageSize;
+        String query = "SELECT Pay.amount,Pay.method,Pay.order_id,Pay.payment_date,Pay.status,Pay.payments_id as id,u.email,u.full_name \n" +
+                "FROM Payments Pay\n" +
+                "JOIN Orders o ON Pay.order_id = o.order_id\n" +
+                "JOIN Users u ON u.user_id = o.user_id\n" +
+                "WHERE " +
+                "CAST(u.full_name AS NVARCHAR) LIKE ? OR " +
 
-        // SQL Server uses CAST for explicit conversion rather than CAST AS CHAR
-        String query = "SELECT * FROM payments WHERE " +
-                "CAST(payments_id AS NVARCHAR) LIKE ? OR " +
-                "CAST(order_id AS NVARCHAR) LIKE ? OR " +
-                "CAST(amount AS NVARCHAR) LIKE ? OR " +
                 "method LIKE ? " +
-                "ORDER BY payment_date DESC OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+                "ORDER BY Pay.payment_date DESC OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
 
         try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -98,14 +150,22 @@ public class PaymentRepository {
             String searchPattern = "%" + searchTerm + "%";
             stmt.setString(1, searchPattern);
             stmt.setString(2, searchPattern);
-            stmt.setString(3, searchPattern);
-            stmt.setString(4, searchPattern);
-            stmt.setInt(5, offset);
-            stmt.setInt(6, pageSize);
+            stmt.setInt(3, offset);
+            stmt.setInt(4, pageSize);
 
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
-                    payments.add(mapResultSetToPayment(rs));
+                    Payment payment = new Payment();
+
+                    payment.setPaymentId(rs.getInt("id"));
+                    payment.setOrderId(rs.getInt("order_id"));
+                    payment.setAmount(rs.getBigDecimal("amount"));
+                    payment.setMethod(rs.getString("method"));
+                    payment.setStatus(rs.getString("status"));
+                    payment.setPaymentDate(rs.getTimestamp("payment_date").toLocalDateTime());
+                    payment.setEmail(rs.getString("email"));
+                    payment.setFullName(rs.getString("full_name"));
+                    payments.add(payment);
                 }
             }
         } catch (SQLException e) {
@@ -117,11 +177,13 @@ public class PaymentRepository {
 
 
     public int getSearchResultsCount(String searchTerm) {
-        String query = "SELECT COUNT(*) AS count FROM payments WHERE " +
-                "CAST(payments_id AS NVARCHAR) LIKE ? OR " +
-                "CAST(order_id AS NVARCHAR) LIKE ? OR " +
-                "CAST(amount AS NVARCHAR) LIKE ? OR " +
-                "method LIKE ?";
+        String query = "SELECT COUNT(*) AS count \n" +
+                "FROM Payments Pay\n" +
+                "JOIN Orders o ON Pay.order_id = o.order_id\n" +
+                "JOIN Users u ON u.user_id = o.user_id\n" +
+                "WHERE \n" +
+                "    CAST(u.full_name AS NVARCHAR) LIKE ? \n" +
+                "    OR method LIKE ?\n";
 
         try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -129,8 +191,6 @@ public class PaymentRepository {
             String searchPattern = "%" + searchTerm + "%";
             stmt.setString(1, searchPattern);
             stmt.setString(2, searchPattern);
-            stmt.setString(3, searchPattern);
-            stmt.setString(4, searchPattern);
 
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
@@ -148,8 +208,11 @@ public class PaymentRepository {
     public List<Payment> filterPaymentsByStatus(String status, int page, int pageSize) {
         List<Payment> payments = new ArrayList<>();
         int offset = (page - 1) * pageSize;
-
-        String query = "SELECT * FROM payments WHERE status = ? ORDER BY payment_date DESC OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+        String query = "SELECT Pay.amount,Pay.method,Pay.order_id,Pay.payment_date,Pay.status,Pay.payments_id as id,u.email,u.full_name \n" +
+                "FROM Payments Pay\n" +
+                "JOIN Orders o ON Pay.order_id = o.order_id\n" +
+                "JOIN Users u ON u.user_id = o.user_id\n" +
+                "WHERE Pay.status = ? ORDER BY Pay.payment_date DESC OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
 
         try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -160,7 +223,17 @@ public class PaymentRepository {
 
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
-                    payments.add(mapResultSetToPayment(rs));
+                    Payment payment = new Payment();
+
+                    payment.setPaymentId(rs.getInt("id"));
+                    payment.setOrderId(rs.getInt("order_id"));
+                    payment.setAmount(rs.getBigDecimal("amount"));
+                    payment.setMethod(rs.getString("method"));
+                    payment.setStatus(rs.getString("status"));
+                    payment.setPaymentDate(rs.getTimestamp("payment_date").toLocalDateTime());
+                    payment.setEmail(rs.getString("email"));
+                    payment.setFullName(rs.getString("full_name"));
+                    payments.add(payment);
                 }
             }
         } catch (SQLException e) {
@@ -194,14 +267,15 @@ public class PaymentRepository {
     public List<Payment> filterAndSearchPayments(String searchTerm, String status, int page, int pageSize) {
         List<Payment> payments = new ArrayList<>();
         int offset = (page - 1) * pageSize;
-
-        String query = "SELECT * FROM payments WHERE " +
-                "status = ? AND " +
-                "(CAST(payments_id AS NVARCHAR) LIKE ? OR " +
-                "CAST(order_id AS NVARCHAR) LIKE ? OR " +
-                "CAST(amount AS NVARCHAR) LIKE ? OR " +
+        String query = "SELECT Pay.amount,Pay.method,Pay.order_id,Pay.payment_date,Pay.status,Pay.payments_id as id,u.email,u.full_name \n" +
+                "FROM Payments Pay\n" +
+                "JOIN Orders o ON Pay.order_id = o.order_id\n" +
+                "JOIN Users u ON u.user_id = o.user_id\n" +
+                "WHERE " +
+                "Pay.status = ? AND " +
+                "CAST(u.full_name AS NVARCHAR) LIKE ? OR " +
                 "method LIKE ?) " +
-                "ORDER BY payment_date DESC OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+                "ORDER BY Pay.payment_date DESC OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
 
         try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -210,14 +284,22 @@ public class PaymentRepository {
             stmt.setString(1, status);
             stmt.setString(2, searchPattern);
             stmt.setString(3, searchPattern);
-            stmt.setString(4, searchPattern);
-            stmt.setString(5, searchPattern);
-            stmt.setInt(6, offset);
-            stmt.setInt(7, pageSize);
+            stmt.setInt(4, offset);
+            stmt.setInt(5, pageSize);
 
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
-                    payments.add(mapResultSetToPayment(rs));
+                    Payment payment = new Payment();
+
+                    payment.setPaymentId(rs.getInt("id"));
+                    payment.setOrderId(rs.getInt("order_id"));
+                    payment.setAmount(rs.getBigDecimal("amount"));
+                    payment.setMethod(rs.getString("method"));
+                    payment.setStatus(rs.getString("status"));
+                    payment.setPaymentDate(rs.getTimestamp("payment_date").toLocalDateTime());
+                    payment.setEmail(rs.getString("email"));
+                    payment.setFullName(rs.getString("full_name"));
+                    payments.add(payment);
                 }
             }
         } catch (SQLException e) {
@@ -229,12 +311,12 @@ public class PaymentRepository {
 
 
     public int getFilterAndSearchResultsCount(String searchTerm, String status) {
-        String query = "SELECT COUNT(*) AS count FROM payments WHERE " +
-                "status = ? AND " +
-                "(CAST(payments_id AS NVARCHAR) LIKE ? OR " +
-                "CAST(order_id AS NVARCHAR) LIKE ? OR " +
-                "CAST(amount AS NVARCHAR) LIKE ? OR " +
-                "method LIKE ?)";
+        String query = "SELECT COUNT(*) AS count \n" +
+                "FROM Payments Pay\n" +
+                "JOIN Orders o ON Pay.order_id = o.order_id\n" +
+                "JOIN Users u ON u.user_id = o.user_id\n" +
+                "WHERE Pay.status = ?\n" +
+                "  AND (CAST(u.full_name AS NVARCHAR) LIKE ? OR method LIKE ?)\n";
 
         try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -259,68 +341,31 @@ public class PaymentRepository {
     }
 
 
-    public boolean updatePaymentStatus(int paymentId, String newStatus) {
-        String query = "UPDATE payments SET status = ? WHERE payments_id = ?";
-
-        try (Connection conn = DatabaseConfig.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(query)) {
-
-            stmt.setString(1, newStatus);
-            stmt.setInt(2, paymentId);
-
-            int rowsAffected = stmt.executeUpdate();
-            return rowsAffected > 0;
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-
-
-    public int createPayment(Payment payment) {
-        // SQL Server identity retrieval with SCOPE_IDENTITY()
-        String query = "INSERT INTO payments (order_id, amount, method, status, payment_date) VALUES (?, ?, ?, ?, ?)";
-        String getIdentity = "SELECT SCOPE_IDENTITY() AS id";
-
-        try (Connection conn = DatabaseConfig.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(query)) {
-
-            stmt.setInt(1, payment.getOrderId());
-            stmt.setBigDecimal(2, payment.getAmount());
-            stmt.setString(3, payment.getMethod());
-            stmt.setString(4, payment.getStatus());
-            stmt.setTimestamp(5, Timestamp.valueOf(payment.getPaymentDate()));
-
-            int rowsAffected = stmt.executeUpdate();
-
-            if (rowsAffected > 0) {
-                try (Statement idStmt = conn.createStatement();
-                     ResultSet rs = idStmt.executeQuery(getIdentity)) {
-                    if (rs.next()) {
-                        return rs.getInt("id");
-                    }
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return -1;
-    }
-
-
     public List<Payment> getAllPayments() {
         List<Payment> payments = new ArrayList<>();
-
-        String query = "SELECT * FROM payments ORDER BY payment_date DESC";
+        String query = "SELECT Pay.amount,Pay.method,Pay.order_id,Pay.payment_date,Pay.status,Pay.payments_id as id,u.email,u.full_name \n" +
+                "FROM Payments Pay\n" +
+                "JOIN Orders o ON Pay.order_id = o.order_id\n" +
+                "JOIN Users u ON u.user_id = o.user_id\n" +
+                "ORDER BY payment_date DESC";
 
         try (Connection conn = DatabaseConfig.getConnection();
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(query)) {
+             PreparedStatement stmt = conn.prepareStatement(query)) {
 
-            while (rs.next()) {
-                payments.add(mapResultSetToPayment(rs));
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    Payment payment = new Payment();
+
+                    payment.setPaymentId(rs.getInt("id"));
+                    payment.setOrderId(rs.getInt("order_id"));
+                    payment.setAmount(rs.getBigDecimal("amount"));
+                    payment.setMethod(rs.getString("method"));
+                    payment.setStatus(rs.getString("status"));
+                    payment.setPaymentDate(rs.getTimestamp("payment_date").toLocalDateTime());
+                    payment.setEmail(rs.getString("email"));
+                    payment.setFullName(rs.getString("full_name"));
+                    payments.add(payment);
+                }
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -329,16 +374,16 @@ public class PaymentRepository {
         return payments;
     }
 
-
     public List<Payment> searchAllPayments(String searchTerm) {
         List<Payment> payments = new ArrayList<>();
+        String query = "SELECT Pay.amount,Pay.method,Pay.order_id,Pay.payment_date,Pay.status,Pay.payments_id as id,u.email,u.full_name \n" +
+                "FROM Payments Pay\n" +
+                "JOIN Orders o ON Pay.order_id = o.order_id\n" +
+                "JOIN Users u ON u.user_id = o.user_id\n" +
+                "WHERE " +
+                "CAST(u.full_name AS NVARCHAR) LIKE ? OR " +
 
-        String query = "SELECT * FROM payments WHERE " +
-                "CAST(payments_id AS NVARCHAR) LIKE ? OR " +
-                "CAST(order_id AS NVARCHAR) LIKE ? OR " +
-                "CAST(amount AS NVARCHAR) LIKE ? OR " +
-                "method LIKE ? " +
-                "ORDER BY payment_date DESC";
+                "method LIKE ? " + "ORDER BY payment_date DESC";
 
         try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -346,12 +391,21 @@ public class PaymentRepository {
             String searchPattern = "%" + searchTerm + "%";
             stmt.setString(1, searchPattern);
             stmt.setString(2, searchPattern);
-            stmt.setString(3, searchPattern);
-            stmt.setString(4, searchPattern);
+
 
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
-                    payments.add(mapResultSetToPayment(rs));
+                    Payment payment = new Payment();
+
+                    payment.setPaymentId(rs.getInt("id"));
+                    payment.setOrderId(rs.getInt("order_id"));
+                    payment.setAmount(rs.getBigDecimal("amount"));
+                    payment.setMethod(rs.getString("method"));
+                    payment.setStatus(rs.getString("status"));
+                    payment.setPaymentDate(rs.getTimestamp("payment_date").toLocalDateTime());
+                    payment.setEmail(rs.getString("email"));
+                    payment.setFullName(rs.getString("full_name"));
+                    payments.add(payment);
                 }
             }
         } catch (SQLException e) {
@@ -364,17 +418,31 @@ public class PaymentRepository {
 
     public List<Payment> filterAllPaymentsByStatus(String status) {
         List<Payment> payments = new ArrayList<>();
-
-        String query = "SELECT * FROM payments WHERE status = ? ORDER BY payment_date DESC";
+        String query = "SELECT Pay.amount,Pay.method,Pay.order_id,Pay.payment_date,Pay.status,Pay.payments_id as id,u.email,u.full_name \n" +
+                "FROM Payments Pay\n" +
+                "JOIN Orders o ON Pay.order_id = o.order_id\n" +
+                "JOIN Users u ON u.user_id = o.user_id\n" +
+                "WHERE Pay.status = ? ORDER BY Pay.payment_date DESC ";
 
         try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
 
             stmt.setString(1, status);
 
+
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
-                    payments.add(mapResultSetToPayment(rs));
+                    Payment payment = new Payment();
+
+                    payment.setPaymentId(rs.getInt("id"));
+                    payment.setOrderId(rs.getInt("order_id"));
+                    payment.setAmount(rs.getBigDecimal("amount"));
+                    payment.setMethod(rs.getString("method"));
+                    payment.setStatus(rs.getString("status"));
+                    payment.setPaymentDate(rs.getTimestamp("payment_date").toLocalDateTime());
+                    payment.setEmail(rs.getString("email"));
+                    payment.setFullName(rs.getString("full_name"));
+                    payments.add(payment);
                 }
             }
         } catch (SQLException e) {
@@ -387,14 +455,15 @@ public class PaymentRepository {
 
     public List<Payment> filterAndSearchAllPayments(String searchTerm, String status) {
         List<Payment> payments = new ArrayList<>();
-
-        String query = "SELECT * FROM payments WHERE " +
-                "status = ? AND " +
-                "(CAST(payments_id AS NVARCHAR) LIKE ? OR " +
-                "CAST(order_id AS NVARCHAR) LIKE ? OR " +
-                "CAST(amount AS NVARCHAR) LIKE ? OR " +
+        String query = "SELECT Pay.amount,Pay.method,Pay.order_id,Pay.payment_date,Pay.status,Pay.payments_id as id,u.email,u.full_name \n" +
+                "FROM Payments Pay\n" +
+                "JOIN Orders o ON Pay.order_id = o.order_id\n" +
+                "JOIN Users u ON u.user_id = o.user_id\n" +
+                "WHERE " +
+                "Pay.status = ? AND " +
+                "CAST(u.full_name AS NVARCHAR) LIKE ? OR " +
                 "method LIKE ?) " +
-                "ORDER BY payment_date DESC";
+                "ORDER BY Pay.payment_date DESC ";
 
         try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -403,23 +472,32 @@ public class PaymentRepository {
             stmt.setString(1, status);
             stmt.setString(2, searchPattern);
             stmt.setString(3, searchPattern);
-            stmt.setString(4, searchPattern);
-            stmt.setString(5, searchPattern);
+
 
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
-                    payments.add(mapResultSetToPayment(rs));
+                    Payment payment = new Payment();
+
+                    payment.setPaymentId(rs.getInt("id"));
+                    payment.setOrderId(rs.getInt("order_id"));
+                    payment.setAmount(rs.getBigDecimal("amount"));
+                    payment.setMethod(rs.getString("method"));
+                    payment.setStatus(rs.getString("status"));
+                    payment.setPaymentDate(rs.getTimestamp("payment_date").toLocalDateTime());
+                    payment.setEmail(rs.getString("email"));
+                    payment.setFullName(rs.getString("full_name"));
+                    payments.add(payment);
                 }
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
         return payments;
     }
 
     /**
      * Get a specific payment by ID
+     *
      * @param paymentId ID of the payment to retrieve
      * @return Payment object if found, null otherwise
      */
@@ -445,6 +523,7 @@ public class PaymentRepository {
 
     /**
      * Get payments by order ID
+     *
      * @param orderId ID of the order
      * @return List of Payment objects associated with the order
      */
@@ -472,6 +551,7 @@ public class PaymentRepository {
 
     /**
      * Get total payment amount for a specific order
+     *
      * @param orderId ID of the order
      * @return Total amount paid for the order
      */
@@ -499,6 +579,7 @@ public class PaymentRepository {
 
     /**
      * Delete a payment record
+     *
      * @param paymentId ID of the payment to delete
      * @return true if deletion was successful, false otherwise
      */
@@ -521,6 +602,7 @@ public class PaymentRepository {
 
     /**
      * Map database ResultSet to Payment object
+     *
      * @param rs ResultSet from database query
      * @return Populated Payment object
      * @throws SQLException If there's an error accessing the ResultSet

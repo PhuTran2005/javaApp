@@ -33,16 +33,12 @@ import java.util.Locale;
 import java.util.ResourceBundle;
 
 public class TransactionController implements Initializable {
-
+    @FXML
+    public  TableColumn<Payment, String> fullnameColumn;
     @FXML
     private TableView<Payment> transactionTableView;
-
     @FXML
     private TableColumn<Payment, Integer> paymentIdColumn;
-
-    @FXML
-    private TableColumn<Payment, Integer> orderIdColumn;
-
     @FXML
     private TableColumn<Payment, BigDecimal> amountColumn;
 
@@ -92,7 +88,7 @@ public class TransactionController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
         // Initialize table columns
         paymentIdColumn.setCellValueFactory(new PropertyValueFactory<>("paymentId"));
-        orderIdColumn.setCellValueFactory(new PropertyValueFactory<>("orderId"));
+        fullnameColumn.setCellValueFactory(new PropertyValueFactory<>("fullName"));
         amountColumn.setCellValueFactory(new PropertyValueFactory<>("amount"));
         methodColumn.setCellValueFactory(new PropertyValueFactory<>("method"));
         statusColumn.setCellValueFactory(new PropertyValueFactory<>("status"));
@@ -175,25 +171,19 @@ public class TransactionController implements Initializable {
                     public TableCell<Payment, Void> call(TableColumn<Payment, Void> param) {
                         return new TableCell<Payment, Void>() {
                             private final Button viewBtn = new Button("View");
-                            private final Button updateBtn = new Button("Update");
-                            private final HBox pane = new HBox(5, viewBtn, updateBtn);
+                            private final HBox pane = new HBox(5, viewBtn);
 
                             {
                                 // Configure button actions
                                 viewBtn.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white;");
-                                updateBtn.setStyle("-fx-background-color: #2196F3; -fx-text-fill: white;");
 
                                 pane.setPadding(new Insets(3));
 
                                 viewBtn.setOnAction(event -> {
                                     Payment payment = getTableView().getItems().get(getIndex());
-                                    showPaymentDetails(payment);
+                                    showPaymentDetails(payment, payment.getPaymentId());
                                 });
 
-                                updateBtn.setOnAction(event -> {
-                                    Payment payment = getTableView().getItems().get(getIndex());
-                                    showUpdatePaymentStatus(payment);
-                                });
                             }
 
                             @Override
@@ -300,89 +290,24 @@ public class TransactionController implements Initializable {
     }
 
     @FXML
-    private void handleNewTransactionAction() {
-        showNewTransactionDialog();
-    }
 
-    private void showPaymentDetails(Payment payment) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Payment Details");
-        alert.setHeaderText("Payment ID: " + payment.getPaymentId());
+    private void showPaymentDetails(Payment payment, int paymentId) {
+        payment = paymentRepository.getPaymentsDetail(paymentId);
 
         NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
 
-        String content = "Order ID: " + payment.getOrderId() + "\n" +
+        String content = "Payment ID: " + payment.getPaymentId() + "\n" +
+                "Email: " + payment.getEmail() + "\n" +
+                "Fullname: " + payment.getFullName() + "\n" +
                 "Amount: " + currencyFormat.format(payment.getAmount()) + "\n" +
                 "Payment Method: " + payment.getMethod() + "\n" +
                 "Status: " + payment.getStatus() + "\n" +
                 "Payment Date: " + dateFormatter.format(payment.getPaymentDate());
 
-        alert.setContentText(content);
-        alert.showAndWait();
-
+        alerts.showSuccessAlert(content);
         // Log this view action
         System.out.println("Viewed payment details for Payment ID: " + payment.getPaymentId());
-    }
-
-    private void showUpdatePaymentStatus(Payment payment) {
-        Dialog<String> dialog = new Dialog<>();
-        dialog.setTitle("Update Payment Status");
-        dialog.setHeaderText("Update status for Payment ID: " + payment.getPaymentId());
-
-        // Set the button types
-        ButtonType updateButtonType = new ButtonType("Update", ButtonBar.ButtonData.OK_DONE);
-        dialog.getDialogPane().getButtonTypes().addAll(updateButtonType, ButtonType.CANCEL);
-
-        // Create the status combo box
-        ComboBox<String> statusCombo = new ComboBox<>();
-        statusCombo.getItems().addAll("Success", "Pending", "Failed");
-        statusCombo.setValue(payment.getStatus());
-
-        // Layout the dialog
-        dialog.getDialogPane().setContent(statusCombo);
-
-        // Convert the result
-        dialog.setResultConverter(dialogButton -> {
-            if (dialogButton == updateButtonType) {
-                return statusCombo.getValue();
-            }
-            return null;
-        });
-
-        // Show the dialog and process the result
-        dialog.showAndWait().ifPresent(newStatus -> {
-            if (!newStatus.equals(payment.getStatus())) {
-                boolean success = paymentRepository.updatePaymentStatus(payment.getPaymentId(), newStatus);
-                if (success) {
-                    loadData(); // Reload data to reflect changes
-                    // Log this update action
-                    System.out.println("Updated payment status for Payment ID: " + payment.getPaymentId() + " to " + newStatus);
-                } else {
-                    showAlert(Alert.AlertType.ERROR, "Update Failed", "Failed to update payment status.");
-                }
-            }
-        });
-    }
-
-    private void showNewTransactionDialog() {
-//        try {
-//            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/NewTransactionView.fxml"));
-//            Parent root = loader.load();
-//
-//            NewTransactionController controller = loader.getController();
-//            controller.setTransactionController(this); // Set reference back to this controller
-//
-//            Stage stage = new Stage();
-//            stage.initModality(Modality.APPLICATION_MODAL);
-//            stage.setTitle("Create New Transaction");
-//            stage.setScene(new Scene(root));
-//            stage.showAndWait();
-//
-//        } catch (IOException e) {
-//            AlertUtil.showError("Error", "Could not load the new transaction form.");
-//            e.printStackTrace();
-//        }
     }
 
     /**
@@ -406,14 +331,14 @@ public class TransactionController implements Initializable {
                 paymentsToExport = paymentRepository.getAllPayments();
             } else if (!currentSearchTerm.isEmpty() && currentStatusFilter.equals("All")) {
                 paymentsToExport = paymentRepository.searchAllPayments(currentSearchTerm);
-            } else if (currentSearchTerm.isEmpty() && !currentStatusFilter.equals("All")) {
+            } else if (currentSearchTerm.isEmpty() && (!currentStatusFilter.equals("All"))) {
                 paymentsToExport = paymentRepository.filterAllPaymentsByStatus(currentStatusFilter);
             } else {
                 paymentsToExport = paymentRepository.filterAndSearchAllPayments(currentSearchTerm, currentStatusFilter);
             }
 
             if (paymentsToExport.isEmpty()) {
-                showAlert(Alert.AlertType.INFORMATION, "No Data", "There are no payment records to export.");
+                alerts.showConfirmationWarmingAlert(" Không có bản ghi thanh toán để xuất file");
                 return;
             }
 
@@ -432,17 +357,17 @@ public class TransactionController implements Initializable {
                 boolean success = ExcelExporter.exportPaymentsToExcel(paymentsToExport, file.getAbsolutePath());
 
                 if (success) {
-                    showAlert(Alert.AlertType.INFORMATION, "Export Successful",
-                            "Successfully exported " + paymentsToExport.size() + " payment records to Excel.");
+                    alerts.showSuccessAlert("Xuất thành công file Excel thanh toán ");
+
 
                     // Log the export action
                     System.out.println("Exported " + paymentsToExport.size() + " payment records to: " + file.getAbsolutePath());
                 } else {
-                    showAlert(Alert.AlertType.ERROR, "Export Failed", "Failed to export payment records to Excel.");
+                    alerts.showErrorAlert("Xuất Excel thanh toán thất bại");
                 }
             }
         } catch (Exception e) {
-            showAlert(Alert.AlertType.ERROR, "Export Error", "An error occurred while exporting: " + e.getMessage());
+            alerts.showErrorAlert("Xảy ra lỗi khi xuất file " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -458,11 +383,5 @@ public class TransactionController implements Initializable {
     /**
      * Helper method to show alerts
      */
-    private void showAlert(Alert.AlertType alertType, String title, String content) {
-        Alert alert = new Alert(alertType);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(content);
-        alert.showAndWait();
-    }
+
 }

@@ -9,7 +9,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane prefHeight="750.0" prefWidth="900.0" stylesheets="@../../Styles/CourseManagement.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.coursemanagement.Controllers.Admin.CourseController.CourseManagementController">
+<AnchorPane fx:id="Box" prefHeight="750.0" prefWidth="900.0" stylesheets="@../../Styles/CourseManagement.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.coursemanagement.Controllers.Admin.CourseController.CourseManagementController">
     <children>
         <Text layoutX="414.0" layoutY="27.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Course Management" />
     </children>

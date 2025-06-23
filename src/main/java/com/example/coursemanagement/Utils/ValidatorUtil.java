@@ -30,14 +30,15 @@ public class ValidatorUtil {
     }
 
     public static boolean validateFullName(String fullname) {
-
-        if (!fullname.matches("^[\\p{L} .'-]+$")) {
-
+        // Kiểm tra null hoặc chuỗi rỗng
+        if (fullname == null || fullname.trim().isEmpty()) {
             return false;
         }
 
-        return true;
+        // Cho phép chữ có dấu, dấu cách, dấu nháy đơn, chấm, và gạch nối
+        return fullname.matches("^[\\p{L} .'-]+$");
     }
+
     public static LocalDate getLocalDateSafe(ResultSet rs, String column) throws SQLException {
         Date sqlDate = rs.getDate(column);
         return (sqlDate != null) ? ((java.sql.Date) sqlDate).toLocalDate() : null;

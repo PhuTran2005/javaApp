@@ -33,10 +33,10 @@ logo login
     -fx-background-color: #e6e6e6; /* Màu nền tổng thể */
     -fx-alignment: center; /* Căn giữa tất cả các thành phần */
     -fx-padding: 20px;
-    -fx-pref-width: 100%;
-    -fx-pref-height: 100%;
-    -fx-max-width: Infinity;
-    -fx-max-height: Infinity;
+    /*-fx-pref-width: 100%;*/
+    /*-fx-pref-height: 100%;*/
+    /*-fx-max-width: Infinity;*/
+    /*-fx-max-height: Infinity;*/
 }
 
 /* Kiểu cho VBox (căn giữa các phần tử) */

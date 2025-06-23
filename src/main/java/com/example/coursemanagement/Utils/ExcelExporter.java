@@ -90,7 +90,7 @@ public class ExcelExporter {
 
             // Create header row
             Row headerRow = sheet.createRow(0);
-            String[] columns = {"Payment ID", "Order ID", "Amount", "Payment Method", "Status", "Payment Date"};
+            String[] columns = {"Payment ID", "Fullname", "Amount", "Payment Method", "Status", "Payment Date"};
 
             for (int i = 0; i < columns.length; i++) {
                 Cell cell = headerRow.createCell(i);
@@ -130,9 +130,9 @@ public class ExcelExporter {
                 Cell idCell = row.createCell(0);
                 idCell.setCellValue(payment.getPaymentId());
 
-                // Order ID
+                // fullname
                 Cell orderIdCell = row.createCell(1);
-                orderIdCell.setCellValue(payment.getOrderId());
+                orderIdCell.setCellValue(payment.getFullName());
 
                 // Amount (with currency format)
                 Cell amountCell = row.createCell(2);

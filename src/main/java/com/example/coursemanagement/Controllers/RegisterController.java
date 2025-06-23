@@ -125,6 +125,7 @@ public class RegisterController implements Initializable {
             return;
         }
         if (!ValidatorUtil.validateFullName(fullname)) {
+            shake(registerForm);
             showMessage("Họ và tên không hợp lệ!", "RED", 400);
             return;
         }

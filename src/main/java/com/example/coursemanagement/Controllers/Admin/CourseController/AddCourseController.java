@@ -34,8 +34,9 @@ public class AddCourseController {
     private static final int MAX_COURSE_NAME_LENGTH = 100;
     private static final int MIN_DESCRIPTION_LENGTH = 10;
     private static final int MAX_DESCRIPTION_LENGTH = 1000;
-    private static final double MIN_PRICE = 0.0;
-    private static final double MAX_PRICE = 999999999.99;
+    private static final double MIN_PRICE = 0.00;
+    private static final double MAX_PRICE = 9999999.99 ;
+
     private static final int MIN_COURSE_DURATION_DAYS = 1;
     private static final int MAX_COURSE_DURATION_DAYS = 365;
     private static final long MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB

@@ -102,7 +102,7 @@
                                 <Hyperlink fx:id="linkForgetPassword"
                                            onAction="#switchToForgetPassword"
                                            prefHeight="30.0" prefWidth="218.0"
-                                           text="Quên mật khẩu? Đổi mật khẩu đi">
+                                           text="Quên mật khẩu? Lấy lại mật khẩu">
                                     <font>
                                         <Font size="14.0"/>
                                     </font>

@@ -4,12 +4,14 @@ import com.example.coursemanagement.Models.Assignment;
 import com.example.coursemanagement.Models.Model;
 import com.example.coursemanagement.Service.AssignmentService;
 import com.example.coursemanagement.Utils.DatabaseConfig;
+import javafx.animation.FadeTransition;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.Parent;
+import javafx.util.Duration;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -62,6 +64,13 @@ public class AssignmentListController {
             Parent myCourseView = loader.load();
 
             ((BorderPane) Model.getInstance().getViewFactory().getClientRoot()).setCenter(myCourseView);
+
+            // Hiệu ứng mờ khi chuyển
+            FadeTransition ft = new FadeTransition(Duration.millis(400), myCourseView);
+            ft.setFromValue(0);
+            ft.setToValue(1);
+            ft.play();
+
         } catch (IOException e) {
             e.printStackTrace();
         }

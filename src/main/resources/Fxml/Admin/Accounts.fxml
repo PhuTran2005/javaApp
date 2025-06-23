@@ -19,17 +19,6 @@
             <!-- Thanh công cụ: Add, Upload, Filter, Search -->
             <AnchorPane prefHeight="130.0" prefWidth="900.0" styleClass="white-bg" stylesheets="@../../Styles/admin_dashboard.css">
                <children>
-                  <Button fx:id="editButton" graphicTextGap="2.0" layoutX="685.0" layoutY="116.0" mnemonicParsing="false" onAction="#onEditClicked" prefHeight="31.0" prefWidth="66.0" style="-fx-background-color: #007bff;" styleClass="shadow" stylesheets="@../../Styles/admin_dashboard.css" text="Edit" textFill="WHITE">
-                     <font>
-                        <Font name="System Bold" size="13.0" />
-                     </font>
-                     <graphic>
-                        <ImageView fitHeight="23.0" fitWidth="29.0" pickOnBounds="true" preserveRatio="true" styleClass="shadow">
-                           <image>
-                              <Image url="@../../Images/pencil.png" />
-                           </image>
-                        </ImageView>
-                     </graphic></Button>
                   <Button fx:id="filterButton" graphicTextGap="0.0" layoutX="230.0" layoutY="116.0" mnemonicParsing="false" onAction="#onFilterClicked" prefHeight="31.0" prefWidth="86.0" style="-fx-background-color: #007bff;" styleClass="shadow" stylesheets="@../../Styles/admin_dashboard.css" text="Filter ▼" textAlignment="JUSTIFY" textFill="WHITE">
                      <graphic>
                         <ImageView fitHeight="23.0" fitWidth="27.0" pickOnBounds="true" preserveRatio="true" styleClass="shadow">
@@ -48,12 +37,12 @@
                         <String fx:value="search-focused" />
                      </styleClass></TextField>
 
-                  <ImageView fx:id="exportImageView" fitHeight="38.0" fitWidth="41.0" layoutX="848.0" layoutY="113.0" onMouseClicked="#onExportExcelClicked" pickOnBounds="true" preserveRatio="true" style="-fx-cursor: hand;" styleClass="shadow">
+                  <ImageView fx:id="exportImageView" fitHeight="38.0" fitWidth="41.0" layoutX="754.0" layoutY="113.0" onMouseClicked="#onExportExcelClicked" pickOnBounds="true" preserveRatio="true" style="-fx-cursor: hand;" styleClass="shadow">
                      <image>
                         <Image url="@../../Images/upload.png" />
                      </image>
                   </ImageView>
-                  <Button graphicTextGap="0.0" layoutX="761.0" layoutY="116.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="79.0" style="-fx-background-color: #007bff;" styleClass="shadow" stylesheets="@../../Styles/admin_dashboard.css" text="Delete " textFill="WHITE">
+                  <Button graphicTextGap="0.0" layoutX="803.0" layoutY="116.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="79.0" style="-fx-background-color: #007bff;" styleClass="shadow" stylesheets="@../../Styles/admin_dashboard.css" text="Delete " textFill="WHITE">
                      <font>
                         <Font name="System Bold" size="12.0" />
                      </font>

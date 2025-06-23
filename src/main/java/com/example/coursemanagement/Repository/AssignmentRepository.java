@@ -129,13 +129,32 @@ public class AssignmentRepository {
 
     public List<Assignment> getAssignmentsByCourseId(int courseId) {
         String sql = """
-        SELECT assignment_id, title, description, due_date, file_name, file_path, course_id
-        FROM Assignments
-        WHERE course_id = ?
-        ORDER BY due_date ASC
+        SELECT 
+            a.assignment_id,
+            a.title,
+            a.description,
+            a.due_date,
+            a.file_name,
+            a.file_path,
+            a.course_id,
+            c.course_name,  -- Lấy tên khóa học
+
+            (SELECT COUNT(*) 
+             FROM Enrollments e 
+             WHERE e.course_id = a.course_id) AS total,
+
+            (SELECT COUNT(*) 
+             FROM Submissions s 
+             WHERE s.assignment_id = a.assignment_id AND s.file_path IS NOT NULL) AS completed
+
+        FROM Assignments a
+        JOIN Courses c ON a.course_id = c.course_id
+        WHERE a.course_id = ?
+        ORDER BY a.due_date ASC
     """;
 
         List<Assignment> list = new ArrayList<>();
+
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, courseId);
             ResultSet rs = stmt.executeQuery();
@@ -145,17 +164,24 @@ public class AssignmentRepository {
                 a.setId(rs.getInt("assignment_id"));
                 a.setTitle(rs.getString("title"));
                 a.setDescription(rs.getString("description"));
-                a.setDueDate(rs.getTimestamp("due_date").toLocalDateTime());
+                a.setDueDate(rs.getTimestamp("due_date") != null ? rs.getTimestamp("due_date").toLocalDateTime() : null);
                 a.setFileName(rs.getString("file_name"));
                 a.setFilePath(rs.getString("file_path"));
                 a.setCourseId(rs.getInt("course_id"));
+                a.setCourseName(rs.getString("course_name")); // ✅ Thêm dòng này
+
+                a.setTotal(rs.getInt("total"));
+                a.setCompleted(rs.getInt("completed"));
+
                 list.add(a);
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
+
         return list;
     }
+
 
 
 }

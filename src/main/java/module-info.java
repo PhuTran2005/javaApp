@@ -38,6 +38,10 @@ module com.example.coursemanagement {
     exports com.example.coursemanagement.Models;
     exports com.example.coursemanagement.Views;
     exports com.example.coursemanagement.Utils;
+    opens com.example.coursemanagement.Controllers.Client.LearningMaterial to javafx.fxml;
+
+    exports com.example.coursemanagement.Controllers.Client.LearningMaterial to javafx.fxml;
+
     exports com.example.coursemanagement.Service;
     exports com.example.coursemanagement.Repository;
     opens com.example.coursemanagement.Utils to javafx.fxml;

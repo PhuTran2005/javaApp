@@ -63,4 +63,19 @@ public class SessionManager {
     public User getUser() {
         return currentUser;
     }
+
+    // them moi
+    public boolean isStudent() {
+        return currentUser != null && "STUDENT".equalsIgnoreCase(currentUser.getRoleName());
+    }
+
+    public boolean isInstructor() {
+        return currentUser != null && "INSTRUCTOR".equalsIgnoreCase(currentUser.getRoleName());
+    }
+
+    public boolean isAdmin() {
+        return currentUser != null && "ADMIN".equalsIgnoreCase(currentUser.getRoleName());
+    }
+
+
 }

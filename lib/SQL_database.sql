@@ -230,7 +230,7 @@ BEGIN
     SET NOCOUNT ON;
 
     -- Tính tổng số bản ghi
-    SELECT @TotalRecords = COUNT(*)
+    SELECT @TotalRecords = COUNT(*)222
     FROM Courses
     WHERE is_deleted = 0;
 

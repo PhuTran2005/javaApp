@@ -238,6 +238,7 @@ public class PaymentSimulation {
             return Math.random() < 0.75;
         }
     }
+
     // Giao diện thanh toán
     public static class PaymentUI extends Application {
         private PaymentProcessor paymentProcessor = new PaymentProcessor();
@@ -389,10 +390,9 @@ public class PaymentSimulation {
                     showAlert(Alert.AlertType.ERROR, "Lỗi", "Có lỗi xảy ra: " + ex.getMessage());
                 }
             });
-
         }
 
-        public void star(Stage primaryStage) {
+        public void sart(Stage primaryStage) {
             primaryStage.setTitle("Thanh toán khóa học");
 
             // Tạo giao diện thanh toán
@@ -534,8 +534,3133 @@ public class PaymentSimulation {
                     resultArea.setText("Lỗi: " + ex.getMessage());
                     showAlert(Alert.AlertType.ERROR, "Lỗi", "Có lỗi xảy ra: " + ex.getMessage());
                 }
+
+
             });
 
+
+        }
+
+        public void stat(Stage primaryStage) {
+            primaryStage.setTitle("Thanh toán khóa học");
+
+            // Tạo giao diện thanh toán
+            VBox root = new VBox(10);
+            root.setPadding(new Insets(20));
+
+            // Thông tin khóa học
+            Label courseInfoLabel = new Label("Khóa học: Lập trình Java căn bản");
+            Label priceLabel = new Label(String.format("Giá: %.0f VND", coursePrice));
+
+            // Phương thức thanh toán
+            Label paymentMethodLabel = new Label("Chọn phương thức thanh toán:");
+            ComboBox<String> paymentMethodCombo = new ComboBox<>(
+                    FXCollections.observableArrayList(
+                            "MOMO", "ZALOPAY", "VNPAY", "CREDIT_CARD", "BANK_TRANSFER"
+                    )
+            );
+            paymentMethodCombo.setValue("MOMO");
+
+            // Container cho các form thanh toán
+            VBox paymentFormContainer = new VBox(10);
+
+            // Ban đầu hiển thị form MoMo
+            GridPane momoForm = createMomoForm();
+            paymentFormContainer.getChildren().add(momoForm);
+
+            // Sự kiện thay đổi phương thức thanh toán
+            paymentMethodCombo.setOnAction(e -> {
+                paymentFormContainer.getChildren().clear();
+
+                switch (paymentMethodCombo.getValue()) {
+                    case "MOMO":
+                        paymentFormContainer.getChildren().add(createMomoForm());
+                        break;
+                    case "ZALOPAY":
+                        paymentFormContainer.getChildren().add(createZaloPayForm());
+                        break;
+                    case "VNPAY":
+                        paymentFormContainer.getChildren().add(createVNPayForm());
+                        break;
+                    case "CREDIT_CARD":
+                        paymentFormContainer.getChildren().add(createCreditCardForm());
+                        break;
+                    case "BANK_TRANSFER":
+                        paymentFormContainer.getChildren().add(createBankTransferForm());
+                        break;
+                }
+            });
+
+            // Nút thanh toán
+            Button payButton = new Button("Thanh toán");
+            payButton.setOnAction(e -> {
+                processSelectedPayment(paymentMethodCombo.getValue(), paymentFormContainer);
+            });
+
+            // Khu vực hiển thị kết quả giao dịch
+            TextArea resultArea = new TextArea();
+            resultArea.setEditable(false);
+            resultArea.setPrefHeight(200);
+
+            root.getChildren().addAll(
+                    courseInfoLabel, priceLabel,
+                    new Separator(),
+                    paymentMethodLabel, paymentMethodCombo,
+                    paymentFormContainer,
+                    payButton,
+                    new Separator(),
+                    new Label("Kết quả giao dịch:"),
+                    resultArea
+            );
+
+            Scene scene = new Scene(root, 500, 650);
+            primaryStage.setScene(scene);
+            primaryStage.show();
+
+            // Function to process payment based on selected method
+            payButton.setOnAction(e -> {
+                Map<String, String> paymentDetails = new HashMap<>();
+
+                // Lấy thông tin chi tiết thanh toán từ form
+                switch (paymentMethodCombo.getValue()) {
+                    case "MOMO":
+                        TextField momoPhone = (TextField) findNodeByID(paymentFormContainer, "momoPhone");
+                        TextField momoOtp = (TextField) findNodeByID(paymentFormContainer, "momoOtp");
+                        paymentDetails.put("phoneNumber", momoPhone.getText());
+                        paymentDetails.put("otp", momoOtp.getText());
+                        break;
+                    case "ZALOPAY":
+                        TextField zaloId = (TextField) findNodeByID(paymentFormContainer, "zaloId");
+                        PasswordField zaloPass = (PasswordField) findNodeByID(paymentFormContainer, "zaloPass");
+                        paymentDetails.put("accountId", zaloId.getText());
+                        paymentDetails.put("password", zaloPass.getText());
+                        break;
+                    case "VNPAY":
+                        ComboBox<String> bankCombo = (ComboBox<String>) findNodeByID(paymentFormContainer, "bankCombo");
+                        TextField vnpayAccount = (TextField) findNodeByID(paymentFormContainer, "vnpayAccount");
+                        paymentDetails.put("bankCode", bankCombo.getValue().substring(0, 3));
+                        paymentDetails.put("accountNumber", vnpayAccount.getText());
+                        break;
+                    case "CREDIT_CARD":
+                        TextField cardNumber = (TextField) findNodeByID(paymentFormContainer, "cardNumber");
+                        TextField expiryDate = (TextField) findNodeByID(paymentFormContainer, "expiryDate");
+                        TextField cvv = (TextField) findNodeByID(paymentFormContainer, "cvv");
+                        paymentDetails.put("cardNumber", cardNumber.getText());
+                        paymentDetails.put("expiryDate", expiryDate.getText());
+                        paymentDetails.put("cvv", cvv.getText());
+                        break;
+                    case "BANK_TRANSFER":
+                        TextField bankName = (TextField) findNodeByID(paymentFormContainer, "bankName");
+                        TextField accountNumber = (TextField) findNodeByID(paymentFormContainer, "accountNumber");
+                        paymentDetails.put("bankName", bankName.getText());
+                        paymentDetails.put("accountNumber", accountNumber.getText());
+                        break;
+                }
+
+                // Xử lý thanh toán
+                try {
+                    Transaction transaction = paymentProcessor.processPayment(
+                            paymentMethodCombo.getValue(),
+                            coursePrice,
+                            paymentDetails,
+                            courseId,
+                            userId
+                    );
+
+                    // Hiển thị kết quả
+                    resultArea.setText(transaction.toString());
+
+                    // Thông báo xác nhận
+                    if ("SUCCESS".equals(transaction.getStatus())) {
+                        showAlert(Alert.AlertType.INFORMATION, "Thanh toán thành công",
+                                "Giao dịch đã được xử lý thành công!\nMã giao dịch: " + transaction.getTransactionId());
+                    } else {
+                        showAlert(Alert.AlertType.ERROR, "Thanh toán thất bại",
+                                "Giao dịch không thành công. Vui lòng thử lại hoặc chọn phương thức thanh toán khác.");
+                    }
+
+                } catch (Exception ex) {
+                    resultArea.setText("Lỗi: " + ex.getMessage());
+                    showAlert(Alert.AlertType.ERROR, "Lỗi", "Có lỗi xảy ra: " + ex.getMessage());
+                }
+
+
+            });
+
+
+        }
+
+
+
+        public void st(Stage primaryStage) {
+            primaryStage.setTitle("Thanh toán khóa học");
+
+            // Tạo giao diện thanh toán
+            VBox root = new VBox(10);
+            root.setPadding(new Insets(20));
+
+            // Thông tin khóa học
+            Label courseInfoLabel = new Label("Khóa học: Lập trình Java căn bản");
+            Label priceLabel = new Label(String.format("Giá: %.0f VND", coursePrice));
+
+            // Phương thức thanh toán
+            Label paymentMethodLabel = new Label("Chọn phương thức thanh toán:");
+            ComboBox<String> paymentMethodCombo = new ComboBox<>(
+                    FXCollections.observableArrayList(
+                            "MOMO", "ZALOPAY", "VNPAY", "CREDIT_CARD", "BANK_TRANSFER"
+                    )
+            );
+            paymentMethodCombo.setValue("MOMO");
+
+            // Container cho các form thanh toán
+            VBox paymentFormContainer = new VBox(10);
+
+            // Ban đầu hiển thị form MoMo
+            GridPane momoForm = createMomoForm();
+            paymentFormContainer.getChildren().add(momoForm);
+
+            // Sự kiện thay đổi phương thức thanh toán
+            paymentMethodCombo.setOnAction(e -> {
+                paymentFormContainer.getChildren().clear();
+
+                switch (paymentMethodCombo.getValue()) {
+                    case "MOMO":
+                        paymentFormContainer.getChildren().add(createMomoForm());
+                        break;
+                    case "ZALOPAY":
+                        paymentFormContainer.getChildren().add(createZaloPayForm());
+                        break;
+                    case "VNPAY":
+                        paymentFormContainer.getChildren().add(createVNPayForm());
+                        break;
+                    case "CREDIT_CARD":
+                        paymentFormContainer.getChildren().add(createCreditCardForm());
+                        break;
+                    case "BANK_TRANSFER":
+                        paymentFormContainer.getChildren().add(createBankTransferForm());
+                        break;
+                }
+            });
+
+            // Nút thanh toán
+            Button payButton = new Button("Thanh toán");
+            payButton.setOnAction(e -> {
+                processSelectedPayment(paymentMethodCombo.getValue(), paymentFormContainer);
+            });
+
+            // Khu vực hiển thị kết quả giao dịch
+            TextArea resultArea = new TextArea();
+            resultArea.setEditable(false);
+            resultArea.setPrefHeight(200);
+
+            root.getChildren().addAll(
+                    courseInfoLabel, priceLabel,
+                    new Separator(),
+                    paymentMethodLabel, paymentMethodCombo,
+                    paymentFormContainer,
+                    payButton,
+                    new Separator(),
+                    new Label("Kết quả giao dịch:"),
+                    resultArea
+            );
+
+            Scene scene = new Scene(root, 500, 650);
+            primaryStage.setScene(scene);
+            primaryStage.show();
+
+            // Function to process payment based on selected method
+            payButton.setOnAction(e -> {
+                Map<String, String> paymentDetails = new HashMap<>();
+
+                // Lấy thông tin chi tiết thanh toán từ form
+                switch (paymentMethodCombo.getValue()) {
+                    case "MOMO":
+                        TextField momoPhone = (TextField) findNodeByID(paymentFormContainer, "momoPhone");
+                        TextField momoOtp = (TextField) findNodeByID(paymentFormContainer, "momoOtp");
+                        paymentDetails.put("phoneNumber", momoPhone.getText());
+                        paymentDetails.put("otp", momoOtp.getText());
+                        break;
+                    case "ZALOPAY":
+                        TextField zaloId = (TextField) findNodeByID(paymentFormContainer, "zaloId");
+                        PasswordField zaloPass = (PasswordField) findNodeByID(paymentFormContainer, "zaloPass");
+                        paymentDetails.put("accountId", zaloId.getText());
+                        paymentDetails.put("password", zaloPass.getText());
+                        break;
+                    case "VNPAY":
+                        ComboBox<String> bankCombo = (ComboBox<String>) findNodeByID(paymentFormContainer, "bankCombo");
+                        TextField vnpayAccount = (TextField) findNodeByID(paymentFormContainer, "vnpayAccount");
+                        paymentDetails.put("bankCode", bankCombo.getValue().substring(0, 3));
+                        paymentDetails.put("accountNumber", vnpayAccount.getText());
+                        break;
+                    case "CREDIT_CARD":
+                        TextField cardNumber = (TextField) findNodeByID(paymentFormContainer, "cardNumber");
+                        TextField expiryDate = (TextField) findNodeByID(paymentFormContainer, "expiryDate");
+                        TextField cvv = (TextField) findNodeByID(paymentFormContainer, "cvv");
+                        paymentDetails.put("cardNumber", cardNumber.getText());
+                        paymentDetails.put("expiryDate", expiryDate.getText());
+                        paymentDetails.put("cvv", cvv.getText());
+                        break;
+                    case "BANK_TRANSFER":
+                        TextField bankName = (TextField) findNodeByID(paymentFormContainer, "bankName");
+                        TextField accountNumber = (TextField) findNodeByID(paymentFormContainer, "accountNumber");
+                        paymentDetails.put("bankName", bankName.getText());
+                        paymentDetails.put("accountNumber", accountNumber.getText());
+                        break;
+                }
+
+                // Xử lý thanh toán
+                try {
+                    Transaction transaction = paymentProcessor.processPayment(
+                            paymentMethodCombo.getValue(),
+                            coursePrice,
+                            paymentDetails,
+                            courseId,
+                            userId
+                    );
+
+                    // Hiển thị kết quả
+                    resultArea.setText(transaction.toString());
+
+                    // Thông báo xác nhận
+                    if ("SUCCESS".equals(transaction.getStatus())) {
+                        showAlert(Alert.AlertType.INFORMATION, "Thanh toán thành công",
+                                "Giao dịch đã được xử lý thành công!\nMã giao dịch: " + transaction.getTransactionId());
+                    } else {
+                        showAlert(Alert.AlertType.ERROR, "Thanh toán thất bại",
+                                "Giao dịch không thành công. Vui lòng thử lại hoặc chọn phương thức thanh toán khác.");
+                    }
+
+                } catch (Exception ex) {
+                    resultArea.setText("Lỗi: " + ex.getMessage());
+                    showAlert(Alert.AlertType.ERROR, "Lỗi", "Có lỗi xảy ra: " + ex.getMessage());
+                }
+
+
+            });
+
+
+        }
+
+        public void sta(Stage primaryStage) {
+            primaryStage.setTitle("Thanh toán khóa học");
+
+            // Tạo giao diện thanh toán
+            VBox root = new VBox(10);
+            root.setPadding(new Insets(20));
+
+            // Thông tin khóa học
+            Label courseInfoLabel = new Label("Khóa học: Lập trình Java căn bản");
+            Label priceLabel = new Label(String.format("Giá: %.0f VND", coursePrice));
+
+            // Phương thức thanh toán
+            Label paymentMethodLabel = new Label("Chọn phương thức thanh toán:");
+            ComboBox<String> paymentMethodCombo = new ComboBox<>(
+                    FXCollections.observableArrayList(
+                            "MOMO", "ZALOPAY", "VNPAY", "CREDIT_CARD", "BANK_TRANSFER"
+                    )
+            );
+            paymentMethodCombo.setValue("MOMO");
+
+            // Container cho các form thanh toán
+            VBox paymentFormContainer = new VBox(10);
+
+            // Ban đầu hiển thị form MoMo
+            GridPane momoForm = createMomoForm();
+            paymentFormContainer.getChildren().add(momoForm);
+
+            // Sự kiện thay đổi phương thức thanh toán
+            paymentMethodCombo.setOnAction(e -> {
+                paymentFormContainer.getChildren().clear();
+
+                switch (paymentMethodCombo.getValue()) {
+                    case "MOMO":
+                        paymentFormContainer.getChildren().add(createMomoForm());
+                        break;
+                    case "ZALOPAY":
+                        paymentFormContainer.getChildren().add(createZaloPayForm());
+                        break;
+                    case "VNPAY":
+                        paymentFormContainer.getChildren().add(createVNPayForm());
+                        break;
+                    case "CREDIT_CARD":
+                        paymentFormContainer.getChildren().add(createCreditCardForm());
+                        break;
+                    case "BANK_TRANSFER":
+                        paymentFormContainer.getChildren().add(createBankTransferForm());
+                        break;
+                }
+            });
+
+            // Nút thanh toán
+            Button payButton = new Button("Thanh toán");
+            payButton.setOnAction(e -> {
+                processSelectedPayment(paymentMethodCombo.getValue(), paymentFormContainer);
+            });
+
+            // Khu vực hiển thị kết quả giao dịch
+            TextArea resultArea = new TextArea();
+            resultArea.setEditable(false);
+            resultArea.setPrefHeight(200);
+
+            root.getChildren().addAll(
+                    courseInfoLabel, priceLabel,
+                    new Separator(),
+                    paymentMethodLabel, paymentMethodCombo,
+                    paymentFormContainer,
+                    payButton,
+                    new Separator(),
+                    new Label("Kết quả giao dịch:"),
+                    resultArea
+            );
+
+            Scene scene = new Scene(root, 500, 650);
+            primaryStage.setScene(scene);
+            primaryStage.show();
+
+            // Function to process payment based on selected method
+            payButton.setOnAction(e -> {
+                Map<String, String> paymentDetails = new HashMap<>();
+
+                // Lấy thông tin chi tiết thanh toán từ form
+                switch (paymentMethodCombo.getValue()) {
+                    case "MOMO":
+                        TextField momoPhone = (TextField) findNodeByID(paymentFormContainer, "momoPhone");
+                        TextField momoOtp = (TextField) findNodeByID(paymentFormContainer, "momoOtp");
+                        paymentDetails.put("phoneNumber", momoPhone.getText());
+                        paymentDetails.put("otp", momoOtp.getText());
+                        break;
+                    case "ZALOPAY":
+                        TextField zaloId = (TextField) findNodeByID(paymentFormContainer, "zaloId");
+                        PasswordField zaloPass = (PasswordField) findNodeByID(paymentFormContainer, "zaloPass");
+                        paymentDetails.put("accountId", zaloId.getText());
+                        paymentDetails.put("password", zaloPass.getText());
+                        break;
+                    case "VNPAY":
+                        ComboBox<String> bankCombo = (ComboBox<String>) findNodeByID(paymentFormContainer, "bankCombo");
+                        TextField vnpayAccount = (TextField) findNodeByID(paymentFormContainer, "vnpayAccount");
+                        paymentDetails.put("bankCode", bankCombo.getValue().substring(0, 3));
+                        paymentDetails.put("accountNumber", vnpayAccount.getText());
+                        break;
+                    case "CREDIT_CARD":
+                        TextField cardNumber = (TextField) findNodeByID(paymentFormContainer, "cardNumber");
+                        TextField expiryDate = (TextField) findNodeByID(paymentFormContainer, "expiryDate");
+                        TextField cvv = (TextField) findNodeByID(paymentFormContainer, "cvv");
+                        paymentDetails.put("cardNumber", cardNumber.getText());
+                        paymentDetails.put("expiryDate", expiryDate.getText());
+                        paymentDetails.put("cvv", cvv.getText());
+                        break;
+                    case "BANK_TRANSFER":
+                        TextField bankName = (TextField) findNodeByID(paymentFormContainer, "bankName");
+                        TextField accountNumber = (TextField) findNodeByID(paymentFormContainer, "accountNumber");
+                        paymentDetails.put("bankName", bankName.getText());
+                        paymentDetails.put("accountNumber", accountNumber.getText());
+                        break;
+                }
+
+                // Xử lý thanh toán
+                try {
+                    Transaction transaction = paymentProcessor.processPayment(
+                            paymentMethodCombo.getValue(),
+                            coursePrice,
+                            paymentDetails,
+                            courseId,
+                            userId
+                    );
+
+                    // Hiển thị kết quả
+                    resultArea.setText(transaction.toString());
+
+                    // Thông báo xác nhận
+                    if ("SUCCESS".equals(transaction.getStatus())) {
+                        showAlert(Alert.AlertType.INFORMATION, "Thanh toán thành công",
+                                "Giao dịch đã được xử lý thành công!\nMã giao dịch: " + transaction.getTransactionId());
+                    } else {
+                        showAlert(Alert.AlertType.ERROR, "Thanh toán thất bại",
+                                "Giao dịch không thành công. Vui lòng thử lại hoặc chọn phương thức thanh toán khác.");
+                    }
+
+                } catch (Exception ex) {
+                    resultArea.setText("Lỗi: " + ex.getMessage());
+                    showAlert(Alert.AlertType.ERROR, "Lỗi", "Có lỗi xảy ra: " + ex.getMessage());
+                }
+
+
+            });
+
+
+        }
+
+        public void startwww(Stage primaryStage) {
+            primaryStage.setTitle("Thanh toán khóa học");
+
+            // Tạo giao diện thanh toán
+            VBox root = new VBox(10);
+            root.setPadding(new Insets(20));
+
+            // Thông tin khóa học
+            Label courseInfoLabel = new Label("Khóa học: Lập trình Java căn bản");
+            Label priceLabel = new Label(String.format("Giá: %.0f VND", coursePrice));
+
+            // Phương thức thanh toán
+            Label paymentMethodLabel = new Label("Chọn phương thức thanh toán:");
+            ComboBox<String> paymentMethodCombo = new ComboBox<>(
+                    FXCollections.observableArrayList(
+                            "MOMO", "ZALOPAY", "VNPAY", "CREDIT_CARD", "BANK_TRANSFER"
+                    )
+            );
+            paymentMethodCombo.setValue("MOMO");
+
+            // Container cho các form thanh toán
+            VBox paymentFormContainer = new VBox(10);
+
+            // Ban đầu hiển thị form MoMo
+            GridPane momoForm = createMomoForm();
+            paymentFormContainer.getChildren().add(momoForm);
+
+            // Sự kiện thay đổi phương thức thanh toán
+            paymentMethodCombo.setOnAction(e -> {
+                paymentFormContainer.getChildren().clear();
+
+                switch (paymentMethodCombo.getValue()) {
+                    case "MOMO":
+                        paymentFormContainer.getChildren().add(createMomoForm());
+                        break;
+                    case "ZALOPAY":
+                        paymentFormContainer.getChildren().add(createZaloPayForm());
+                        break;
+                    case "VNPAY":
+                        paymentFormContainer.getChildren().add(createVNPayForm());
+                        break;
+                    case "CREDIT_CARD":
+                        paymentFormContainer.getChildren().add(createCreditCardForm());
+                        break;
+                    case "BANK_TRANSFER":
+                        paymentFormContainer.getChildren().add(createBankTransferForm());
+                        break;
+                }
+            });
+
+            // Nút thanh toán
+            Button payButton = new Button("Thanh toán");
+            payButton.setOnAction(e -> {
+                processSelectedPayment(paymentMethodCombo.getValue(), paymentFormContainer);
+            });
+
+            // Khu vực hiển thị kết quả giao dịch
+            TextArea resultArea = new TextArea();
+            resultArea.setEditable(false);
+            resultArea.setPrefHeight(200);
+
+            root.getChildren().addAll(
+                    courseInfoLabel, priceLabel,
+                    new Separator(),
+                    paymentMethodLabel, paymentMethodCombo,
+                    paymentFormContainer,
+                    payButton,
+                    new Separator(),
+                    new Label("Kết quả giao dịch:"),
+                    resultArea
+            );
+
+            Scene scene = new Scene(root, 500, 650);
+            primaryStage.setScene(scene);
+            primaryStage.show();
+
+            // Function to process payment based on selected method
+            payButton.setOnAction(e -> {
+                Map<String, String> paymentDetails = new HashMap<>();
+
+                // Lấy thông tin chi tiết thanh toán từ form
+                switch (paymentMethodCombo.getValue()) {
+                    case "MOMO":
+                        TextField momoPhone = (TextField) findNodeByID(paymentFormContainer, "momoPhone");
+                        TextField momoOtp = (TextField) findNodeByID(paymentFormContainer, "momoOtp");
+                        paymentDetails.put("phoneNumber", momoPhone.getText());
+                        paymentDetails.put("otp", momoOtp.getText());
+                        break;
+                    case "ZALOPAY":
+                        TextField zaloId = (TextField) findNodeByID(paymentFormContainer, "zaloId");
+                        PasswordField zaloPass = (PasswordField) findNodeByID(paymentFormContainer, "zaloPass");
+                        paymentDetails.put("accountId", zaloId.getText());
+                        paymentDetails.put("password", zaloPass.getText());
+                        break;
+                    case "VNPAY":
+                        ComboBox<String> bankCombo = (ComboBox<String>) findNodeByID(paymentFormContainer, "bankCombo");
+                        TextField vnpayAccount = (TextField) findNodeByID(paymentFormContainer, "vnpayAccount");
+                        paymentDetails.put("bankCode", bankCombo.getValue().substring(0, 3));
+                        paymentDetails.put("accountNumber", vnpayAccount.getText());
+                        break;
+                    case "CREDIT_CARD":
+                        TextField cardNumber = (TextField) findNodeByID(paymentFormContainer, "cardNumber");
+                        TextField expiryDate = (TextField) findNodeByID(paymentFormContainer, "expiryDate");
+                        TextField cvv = (TextField) findNodeByID(paymentFormContainer, "cvv");
+                        paymentDetails.put("cardNumber", cardNumber.getText());
+                        paymentDetails.put("expiryDate", expiryDate.getText());
+                        paymentDetails.put("cvv", cvv.getText());
+                        break;
+                    case "BANK_TRANSFER":
+                        TextField bankName = (TextField) findNodeByID(paymentFormContainer, "bankName");
+                        TextField accountNumber = (TextField) findNodeByID(paymentFormContainer, "accountNumber");
+                        paymentDetails.put("bankName", bankName.getText());
+                        paymentDetails.put("accountNumber", accountNumber.getText());
+                        break;
+                }
+
+                // Xử lý thanh toán
+                try {
+                    Transaction transaction = paymentProcessor.processPayment(
+                            paymentMethodCombo.getValue(),
+                            coursePrice,
+                            paymentDetails,
+                            courseId,
+                            userId
+                    );
+
+                    // Hiển thị kết quả
+                    resultArea.setText(transaction.toString());
+
+                    // Thông báo xác nhận
+                    if ("SUCCESS".equals(transaction.getStatus())) {
+                        showAlert(Alert.AlertType.INFORMATION, "Thanh toán thành công",
+                                "Giao dịch đã được xử lý thành công!\nMã giao dịch: " + transaction.getTransactionId());
+                    } else {
+                        showAlert(Alert.AlertType.ERROR, "Thanh toán thất bại",
+                                "Giao dịch không thành công. Vui lòng thử lại hoặc chọn phương thức thanh toán khác.");
+                    }
+
+                } catch (Exception ex) {
+                    resultArea.setText("Lỗi: " + ex.getMessage());
+                    showAlert(Alert.AlertType.ERROR, "Lỗi", "Có lỗi xảy ra: " + ex.getMessage());
+                }
+
+
+            });
+
+
+        }
+
+        public void start(Stage primaryStage) {
+            primaryStage.setTitle("Thanh toán khóa học");
+
+            // Tạo giao diện thanh toán
+            VBox root = new VBox(10);
+            root.setPadding(new Insets(20));
+
+            // Thông tin khóa học
+            Label courseInfoLabel = new Label("Khóa học: Lập trình Java căn bản");
+            Label priceLabel = new Label(String.format("Giá: %.0f VND", coursePrice));
+
+            // Phương thức thanh toán
+            Label paymentMethodLabel = new Label("Chọn phương thức thanh toán:");
+            ComboBox<String> paymentMethodCombo = new ComboBox<>(
+                    FXCollections.observableArrayList(
+                            "MOMO", "ZALOPAY", "VNPAY", "CREDIT_CARD", "BANK_TRANSFER"
+                    )
+            );
+            paymentMethodCombo.setValue("MOMO");
+
+            // Container cho các form thanh toán
+            VBox paymentFormContainer = new VBox(10);
+
+            // Ban đầu hiển thị form MoMo
+            GridPane momoForm = createMomoForm();
+            paymentFormContainer.getChildren().add(momoForm);
+
+            // Sự kiện thay đổi phương thức thanh toán
+            paymentMethodCombo.setOnAction(e -> {
+                paymentFormContainer.getChildren().clear();
+
+                switch (paymentMethodCombo.getValue()) {
+                    case "MOMO":
+                        paymentFormContainer.getChildren().add(createMomoForm());
+                        break;
+                    case "ZALOPAY":
+                        paymentFormContainer.getChildren().add(createZaloPayForm());
+                        break;
+                    case "VNPAY":
+                        paymentFormContainer.getChildren().add(createVNPayForm());
+                        break;
+                    case "CREDIT_CARD":
+                        paymentFormContainer.getChildren().add(createCreditCardForm());
+                        break;
+                    case "BANK_TRANSFER":
+                        paymentFormContainer.getChildren().add(createBankTransferForm());
+                        break;
+                }
+            });
+
+            // Nút thanh toán
+            Button payButton = new Button("Thanh toán");
+            payButton.setOnAction(e -> {
+                processSelectedPayment(paymentMethodCombo.getValue(), paymentFormContainer);
+            });
+
+            // Khu vực hiển thị kết quả giao dịch
+            TextArea resultArea = new TextArea();
+            resultArea.setEditable(false);
+            resultArea.setPrefHeight(200);
+
+            root.getChildren().addAll(
+                    courseInfoLabel, priceLabel,
+                    new Separator(),
+                    paymentMethodLabel, paymentMethodCombo,
+                    paymentFormContainer,
+                    payButton,
+                    new Separator(),
+                    new Label("Kết quả giao dịch:"),
+                    resultArea
+            );
+
+            Scene scene = new Scene(root, 500, 650);
+            primaryStage.setScene(scene);
+            primaryStage.show();
+
+            // Function to process payment based on selected method
+            payButton.setOnAction(e -> {
+                Map<String, String> paymentDetails = new HashMap<>();
+
+                // Lấy thông tin chi tiết thanh toán từ form
+                switch (paymentMethodCombo.getValue()) {
+                    case "MOMO":
+                        TextField momoPhone = (TextField) findNodeByID(paymentFormContainer, "momoPhone");
+                        TextField momoOtp = (TextField) findNodeByID(paymentFormContainer, "momoOtp");
+                        paymentDetails.put("phoneNumber", momoPhone.getText());
+                        paymentDetails.put("otp", momoOtp.getText());
+                        break;
+                    case "ZALOPAY":
+                        TextField zaloId = (TextField) findNodeByID(paymentFormContainer, "zaloId");
+                        PasswordField zaloPass = (PasswordField) findNodeByID(paymentFormContainer, "zaloPass");
+                        paymentDetails.put("accountId", zaloId.getText());
+                        paymentDetails.put("password", zaloPass.getText());
+                        break;
+                    case "VNPAY":
+                        ComboBox<String> bankCombo = (ComboBox<String>) findNodeByID(paymentFormContainer, "bankCombo");
+                        TextField vnpayAccount = (TextField) findNodeByID(paymentFormContainer, "vnpayAccount");
+                        paymentDetails.put("bankCode", bankCombo.getValue().substring(0, 3));
+                        paymentDetails.put("accountNumber", vnpayAccount.getText());
+                        break;
+                    case "CREDIT_CARD":
+                        TextField cardNumber = (TextField) findNodeByID(paymentFormContainer, "cardNumber");
+                        TextField expiryDate = (TextField) findNodeByID(paymentFormContainer, "expiryDate");
+                        TextField cvv = (TextField) findNodeByID(paymentFormContainer, "cvv");
+                        paymentDetails.put("cardNumber", cardNumber.getText());
+                        paymentDetails.put("expiryDate", expiryDate.getText());
+                        paymentDetails.put("cvv", cvv.getText());
+                        break;
+                    case "BANK_TRANSFER":
+                        TextField bankName = (TextField) findNodeByID(paymentFormContainer, "bankName");
+                        TextField accountNumber = (TextField) findNodeByID(paymentFormContainer, "accountNumber");
+                        paymentDetails.put("bankName", bankName.getText());
+                        paymentDetails.put("accountNumber", accountNumber.getText());
+                        break;
+                }
+
+                // Xử lý thanh toán
+                try {
+                    Transaction transaction = paymentProcessor.processPayment(
+                            paymentMethodCombo.getValue(),
+                            coursePrice,
+                            paymentDetails,
+                            courseId,
+                            userId
+                    );
+
+                    // Hiển thị kết quả
+                    resultArea.setText(transaction.toString());
+
+                    // Thông báo xác nhận
+                    if ("SUCCESS".equals(transaction.getStatus())) {
+                        showAlert(Alert.AlertType.INFORMATION, "Thanh toán thành công",
+                                "Giao dịch đã được xử lý thành công!\nMã giao dịch: " + transaction.getTransactionId());
+                    } else {
+                        showAlert(Alert.AlertType.ERROR, "Thanh toán thất bại",
+                                "Giao dịch không thành công. Vui lòng thử lại hoặc chọn phương thức thanh toán khác.");
+                    }
+
+                } catch (Exception ex) {
+                    resultArea.setText("Lỗi: " + ex.getMessage());
+                    showAlert(Alert.AlertType.ERROR, "Lỗi", "Có lỗi xảy ra: " + ex.getMessage());
+                }
+
+
+            });
+
+
+        }
+
+
+        public void startmmmm(Stage primaryStage) {
+            primaryStage.setTitle("Thanh toán khóa học");
+
+            // Tạo giao diện thanh toán
+            VBox root = new VBox(10);
+            root.setPadding(new Insets(20));
+
+            // Thông tin khóa học
+            Label courseInfoLabel = new Label("Khóa học: Lập trình Java căn bản");
+            Label priceLabel = new Label(String.format("Giá: %.0f VND", coursePrice));
+
+            // Phương thức thanh toán
+            Label paymentMethodLabel = new Label("Chọn phương thức thanh toán:");
+            ComboBox<String> paymentMethodCombo = new ComboBox<>(
+                    FXCollections.observableArrayList(
+                            "MOMO", "ZALOPAY", "VNPAY", "CREDIT_CARD", "BANK_TRANSFER"
+                    )
+            );
+            paymentMethodCombo.setValue("MOMO");
+
+            // Container cho các form thanh toán
+            VBox paymentFormContainer = new VBox(10);
+
+            // Ban đầu hiển thị form MoMo
+            GridPane momoForm = createMomoForm();
+            paymentFormContainer.getChildren().add(momoForm);
+
+            // Sự kiện thay đổi phương thức thanh toán
+            paymentMethodCombo.setOnAction(e -> {
+                paymentFormContainer.getChildren().clear();
+
+                switch (paymentMethodCombo.getValue()) {
+                    case "MOMO":
+                        paymentFormContainer.getChildren().add(createMomoForm());
+                        break;
+                    case "ZALOPAY":
+                        paymentFormContainer.getChildren().add(createZaloPayForm());
+                        break;
+                    case "VNPAY":
+                        paymentFormContainer.getChildren().add(createVNPayForm());
+                        break;
+                    case "CREDIT_CARD":
+                        paymentFormContainer.getChildren().add(createCreditCardForm());
+                        break;
+                    case "BANK_TRANSFER":
+                        paymentFormContainer.getChildren().add(createBankTransferForm());
+                        break;
+                }
+            });
+
+            // Nút thanh toán
+            Button payButton = new Button("Thanh toán");
+            payButton.setOnAction(e -> {
+                processSelectedPayment(paymentMethodCombo.getValue(), paymentFormContainer);
+            });
+
+            // Khu vực hiển thị kết quả giao dịch
+            TextArea resultArea = new TextArea();
+            resultArea.setEditable(false);
+            resultArea.setPrefHeight(200);
+
+            root.getChildren().addAll(
+                    courseInfoLabel, priceLabel,
+                    new Separator(),
+                    paymentMethodLabel, paymentMethodCombo,
+                    paymentFormContainer,
+                    payButton,
+                    new Separator(),
+                    new Label("Kết quả giao dịch:"),
+                    resultArea
+            );
+
+            Scene scene = new Scene(root, 500, 650);
+            primaryStage.setScene(scene);
+            primaryStage.show();
+
+            // Function to process payment based on selected method
+            payButton.setOnAction(e -> {
+                Map<String, String> paymentDetails = new HashMap<>();
+
+                // Lấy thông tin chi tiết thanh toán từ form
+                switch (paymentMethodCombo.getValue()) {
+                    case "MOMO":
+                        TextField momoPhone = (TextField) findNodeByID(paymentFormContainer, "momoPhone");
+                        TextField momoOtp = (TextField) findNodeByID(paymentFormContainer, "momoOtp");
+                        paymentDetails.put("phoneNumber", momoPhone.getText());
+                        paymentDetails.put("otp", momoOtp.getText());
+                        break;
+                    case "ZALOPAY":
+                        TextField zaloId = (TextField) findNodeByID(paymentFormContainer, "zaloId");
+                        PasswordField zaloPass = (PasswordField) findNodeByID(paymentFormContainer, "zaloPass");
+                        paymentDetails.put("accountId", zaloId.getText());
+                        paymentDetails.put("password", zaloPass.getText());
+                        break;
+                    case "VNPAY":
+                        ComboBox<String> bankCombo = (ComboBox<String>) findNodeByID(paymentFormContainer, "bankCombo");
+                        TextField vnpayAccount = (TextField) findNodeByID(paymentFormContainer, "vnpayAccount");
+                        paymentDetails.put("bankCode", bankCombo.getValue().substring(0, 3));
+                        paymentDetails.put("accountNumber", vnpayAccount.getText());
+                        break;
+                    case "CREDIT_CARD":
+                        TextField cardNumber = (TextField) findNodeByID(paymentFormContainer, "cardNumber");
+                        TextField expiryDate = (TextField) findNodeByID(paymentFormContainer, "expiryDate");
+                        TextField cvv = (TextField) findNodeByID(paymentFormContainer, "cvv");
+                        paymentDetails.put("cardNumber", cardNumber.getText());
+                        paymentDetails.put("expiryDate", expiryDate.getText());
+                        paymentDetails.put("cvv", cvv.getText());
+                        break;
+                    case "BANK_TRANSFER":
+                        TextField bankName = (TextField) findNodeByID(paymentFormContainer, "bankName");
+                        TextField accountNumber = (TextField) findNodeByID(paymentFormContainer, "accountNumber");
+                        paymentDetails.put("bankName", bankName.getText());
+                        paymentDetails.put("accountNumber", accountNumber.getText());
+                        break;
+                }
+
+                // Xử lý thanh toán
+                try {
+                    Transaction transaction = paymentProcessor.processPayment(
+                            paymentMethodCombo.getValue(),
+                            coursePrice,
+                            paymentDetails,
+                            courseId,
+                            userId
+                    );
+
+                    // Hiển thị kết quả
+                    resultArea.setText(transaction.toString());
+
+                    // Thông báo xác nhận
+                    if ("SUCCESS".equals(transaction.getStatus())) {
+                        showAlert(Alert.AlertType.INFORMATION, "Thanh toán thành công",
+                                "Giao dịch đã được xử lý thành công!\nMã giao dịch: " + transaction.getTransactionId());
+                    } else {
+                        showAlert(Alert.AlertType.ERROR, "Thanh toán thất bại",
+                                "Giao dịch không thành công. Vui lòng thử lại hoặc chọn phương thức thanh toán khác.");
+                    }
+
+                } catch (Exception ex) {
+                    resultArea.setText("Lỗi: " + ex.getMessage());
+                    showAlert(Alert.AlertType.ERROR, "Lỗi", "Có lỗi xảy ra: " + ex.getMessage());
+                }
+
+
+            });
+
+
+        }
+        public void stardddddt(Stage primaryStage) {
+            primaryStage.setTitle("Thanh toán khóa học");
+
+            // Tạo giao diện thanh toán
+            VBox root = new VBox(10);
+            root.setPadding(new Insets(20));
+
+            // Thông tin khóa học
+            Label courseInfoLabel = new Label("Khóa học: Lập trình Java căn bản");
+            Label priceLabel = new Label(String.format("Giá: %.0f VND", coursePrice));
+
+            // Phương thức thanh toán
+            Label paymentMethodLabel = new Label("Chọn phương thức thanh toán:");
+            ComboBox<String> paymentMethodCombo = new ComboBox<>(
+                    FXCollections.observableArrayList(
+                            "MOMO", "ZALOPAY", "VNPAY", "CREDIT_CARD", "BANK_TRANSFER"
+                    )
+            );
+            paymentMethodCombo.setValue("MOMO");
+
+            // Container cho các form thanh toán
+            VBox paymentFormContainer = new VBox(10);
+
+            // Ban đầu hiển thị form MoMo
+            GridPane momoForm = createMomoForm();
+            paymentFormContainer.getChildren().add(momoForm);
+
+            // Sự kiện thay đổi phương thức thanh toán
+            paymentMethodCombo.setOnAction(e -> {
+                paymentFormContainer.getChildren().clear();
+
+                switch (paymentMethodCombo.getValue()) {
+                    case "MOMO":
+                        paymentFormContainer.getChildren().add(createMomoForm());
+                        break;
+                    case "ZALOPAY":
+                        paymentFormContainer.getChildren().add(createZaloPayForm());
+                        break;
+                    case "VNPAY":
+                        paymentFormContainer.getChildren().add(createVNPayForm());
+                        break;
+                    case "CREDIT_CARD":
+                        paymentFormContainer.getChildren().add(createCreditCardForm());
+                        break;
+                    case "BANK_TRANSFER":
+                        paymentFormContainer.getChildren().add(createBankTransferForm());
+                        break;
+                }
+            });
+
+            // Nút thanh toán
+            Button payButton = new Button("Thanh toán");
+            payButton.setOnAction(e -> {
+                processSelectedPayment(paymentMethodCombo.getValue(), paymentFormContainer);
+            });
+
+            // Khu vực hiển thị kết quả giao dịch
+            TextArea resultArea = new TextArea();
+            resultArea.setEditable(false);
+            resultArea.setPrefHeight(200);
+
+            root.getChildren().addAll(
+                    courseInfoLabel, priceLabel,
+                    new Separator(),
+                    paymentMethodLabel, paymentMethodCombo,
+                    paymentFormContainer,
+                    payButton,
+                    new Separator(),
+                    new Label("Kết quả giao dịch:"),
+                    resultArea
+            );
+
+            Scene scene = new Scene(root, 500, 650);
+            primaryStage.setScene(scene);
+            primaryStage.show();
+
+            // Function to process payment based on selected method
+            payButton.setOnAction(e -> {
+                Map<String, String> paymentDetails = new HashMap<>();
+
+                // Lấy thông tin chi tiết thanh toán từ form
+                switch (paymentMethodCombo.getValue()) {
+                    case "MOMO":
+                        TextField momoPhone = (TextField) findNodeByID(paymentFormContainer, "momoPhone");
+                        TextField momoOtp = (TextField) findNodeByID(paymentFormContainer, "momoOtp");
+                        paymentDetails.put("phoneNumber", momoPhone.getText());
+                        paymentDetails.put("otp", momoOtp.getText());
+                        break;
+                    case "ZALOPAY":
+                        TextField zaloId = (TextField) findNodeByID(paymentFormContainer, "zaloId");
+                        PasswordField zaloPass = (PasswordField) findNodeByID(paymentFormContainer, "zaloPass");
+                        paymentDetails.put("accountId", zaloId.getText());
+                        paymentDetails.put("password", zaloPass.getText());
+                        break;
+                    case "VNPAY":
+                        ComboBox<String> bankCombo = (ComboBox<String>) findNodeByID(paymentFormContainer, "bankCombo");
+                        TextField vnpayAccount = (TextField) findNodeByID(paymentFormContainer, "vnpayAccount");
+                        paymentDetails.put("bankCode", bankCombo.getValue().substring(0, 3));
+                        paymentDetails.put("accountNumber", vnpayAccount.getText());
+                        break;
+                    case "CREDIT_CARD":
+                        TextField cardNumber = (TextField) findNodeByID(paymentFormContainer, "cardNumber");
+                        TextField expiryDate = (TextField) findNodeByID(paymentFormContainer, "expiryDate");
+                        TextField cvv = (TextField) findNodeByID(paymentFormContainer, "cvv");
+                        paymentDetails.put("cardNumber", cardNumber.getText());
+                        paymentDetails.put("expiryDate", expiryDate.getText());
+                        paymentDetails.put("cvv", cvv.getText());
+                        break;
+                    case "BANK_TRANSFER":
+                        TextField bankName = (TextField) findNodeByID(paymentFormContainer, "bankName");
+                        TextField accountNumber = (TextField) findNodeByID(paymentFormContainer, "accountNumber");
+                        paymentDetails.put("bankName", bankName.getText());
+                        paymentDetails.put("accountNumber", accountNumber.getText());
+                        break;
+                }
+
+                // Xử lý thanh toán
+                try {
+                    Transaction transaction = paymentProcessor.processPayment(
+                            paymentMethodCombo.getValue(),
+                            coursePrice,
+                            paymentDetails,
+                            courseId,
+                            userId
+                    );
+
+                    // Hiển thị kết quả
+                    resultArea.setText(transaction.toString());
+
+                    // Thông báo xác nhận
+                    if ("SUCCESS".equals(transaction.getStatus())) {
+                        showAlert(Alert.AlertType.INFORMATION, "Thanh toán thành công",
+                                "Giao dịch đã được xử lý thành công!\nMã giao dịch: " + transaction.getTransactionId());
+                    } else {
+                        showAlert(Alert.AlertType.ERROR, "Thanh toán thất bại",
+                                "Giao dịch không thành công. Vui lòng thử lại hoặc chọn phương thức thanh toán khác.");
+                    }
+
+                } catch (Exception ex) {
+                    resultArea.setText("Lỗi: " + ex.getMessage());
+                    showAlert(Alert.AlertType.ERROR, "Lỗi", "Có lỗi xảy ra: " + ex.getMessage());
+                }
+
+
+            });
+
+
+        }
+        public void stassssrt(Stage primaryStage) {
+            primaryStage.setTitle("Thanh toán khóa học");
+
+            // Tạo giao diện thanh toán
+            VBox root = new VBox(10);
+            root.setPadding(new Insets(20));
+
+            // Thông tin khóa học
+            Label courseInfoLabel = new Label("Khóa học: Lập trình Java căn bản");
+            Label priceLabel = new Label(String.format("Giá: %.0f VND", coursePrice));
+
+            // Phương thức thanh toán
+            Label paymentMethodLabel = new Label("Chọn phương thức thanh toán:");
+            ComboBox<String> paymentMethodCombo = new ComboBox<>(
+                    FXCollections.observableArrayList(
+                            "MOMO", "ZALOPAY", "VNPAY", "CREDIT_CARD", "BANK_TRANSFER"
+                    )
+            );
+            paymentMethodCombo.setValue("MOMO");
+
+            // Container cho các form thanh toán
+            VBox paymentFormContainer = new VBox(10);
+
+            // Ban đầu hiển thị form MoMo
+            GridPane momoForm = createMomoForm();
+            paymentFormContainer.getChildren().add(momoForm);
+
+            // Sự kiện thay đổi phương thức thanh toán
+            paymentMethodCombo.setOnAction(e -> {
+                paymentFormContainer.getChildren().clear();
+
+                switch (paymentMethodCombo.getValue()) {
+                    case "MOMO":
+                        paymentFormContainer.getChildren().add(createMomoForm());
+                        break;
+                    case "ZALOPAY":
+                        paymentFormContainer.getChildren().add(createZaloPayForm());
+                        break;
+                    case "VNPAY":
+                        paymentFormContainer.getChildren().add(createVNPayForm());
+                        break;
+                    case "CREDIT_CARD":
+                        paymentFormContainer.getChildren().add(createCreditCardForm());
+                        break;
+                    case "BANK_TRANSFER":
+                        paymentFormContainer.getChildren().add(createBankTransferForm());
+                        break;
+                }
+            });
+
+            // Nút thanh toán
+            Button payButton = new Button("Thanh toán");
+            payButton.setOnAction(e -> {
+                processSelectedPayment(paymentMethodCombo.getValue(), paymentFormContainer);
+            });
+
+            // Khu vực hiển thị kết quả giao dịch
+            TextArea resultArea = new TextArea();
+            resultArea.setEditable(false);
+            resultArea.setPrefHeight(200);
+
+            root.getChildren().addAll(
+                    courseInfoLabel, priceLabel,
+                    new Separator(),
+                    paymentMethodLabel, paymentMethodCombo,
+                    paymentFormContainer,
+                    payButton,
+                    new Separator(),
+                    new Label("Kết quả giao dịch:"),
+                    resultArea
+            );
+
+            Scene scene = new Scene(root, 500, 650);
+            primaryStage.setScene(scene);
+            primaryStage.show();
+
+            // Function to process payment based on selected method
+            payButton.setOnAction(e -> {
+                Map<String, String> paymentDetails = new HashMap<>();
+
+                // Lấy thông tin chi tiết thanh toán từ form
+                switch (paymentMethodCombo.getValue()) {
+                    case "MOMO":
+                        TextField momoPhone = (TextField) findNodeByID(paymentFormContainer, "momoPhone");
+                        TextField momoOtp = (TextField) findNodeByID(paymentFormContainer, "momoOtp");
+                        paymentDetails.put("phoneNumber", momoPhone.getText());
+                        paymentDetails.put("otp", momoOtp.getText());
+                        break;
+                    case "ZALOPAY":
+                        TextField zaloId = (TextField) findNodeByID(paymentFormContainer, "zaloId");
+                        PasswordField zaloPass = (PasswordField) findNodeByID(paymentFormContainer, "zaloPass");
+                        paymentDetails.put("accountId", zaloId.getText());
+                        paymentDetails.put("password", zaloPass.getText());
+                        break;
+                    case "VNPAY":
+                        ComboBox<String> bankCombo = (ComboBox<String>) findNodeByID(paymentFormContainer, "bankCombo");
+                        TextField vnpayAccount = (TextField) findNodeByID(paymentFormContainer, "vnpayAccount");
+                        paymentDetails.put("bankCode", bankCombo.getValue().substring(0, 3));
+                        paymentDetails.put("accountNumber", vnpayAccount.getText());
+                        break;
+                    case "CREDIT_CARD":
+                        TextField cardNumber = (TextField) findNodeByID(paymentFormContainer, "cardNumber");
+                        TextField expiryDate = (TextField) findNodeByID(paymentFormContainer, "expiryDate");
+                        TextField cvv = (TextField) findNodeByID(paymentFormContainer, "cvv");
+                        paymentDetails.put("cardNumber", cardNumber.getText());
+                        paymentDetails.put("expiryDate", expiryDate.getText());
+                        paymentDetails.put("cvv", cvv.getText());
+                        break;
+                    case "BANK_TRANSFER":
+                        TextField bankName = (TextField) findNodeByID(paymentFormContainer, "bankName");
+                        TextField accountNumber = (TextField) findNodeByID(paymentFormContainer, "accountNumber");
+                        paymentDetails.put("bankName", bankName.getText());
+                        paymentDetails.put("accountNumber", accountNumber.getText());
+                        break;
+                }
+
+                // Xử lý thanh toán
+                try {
+                    Transaction transaction = paymentProcessor.processPayment(
+                            paymentMethodCombo.getValue(),
+                            coursePrice,
+                            paymentDetails,
+                            courseId,
+                            userId
+                    );
+
+                    // Hiển thị kết quả
+                    resultArea.setText(transaction.toString());
+
+                    // Thông báo xác nhận
+                    if ("SUCCESS".equals(transaction.getStatus())) {
+                        showAlert(Alert.AlertType.INFORMATION, "Thanh toán thành công",
+                                "Giao dịch đã được xử lý thành công!\nMã giao dịch: " + transaction.getTransactionId());
+                    } else {
+                        showAlert(Alert.AlertType.ERROR, "Thanh toán thất bại",
+                                "Giao dịch không thành công. Vui lòng thử lại hoặc chọn phương thức thanh toán khác.");
+                    }
+
+                } catch (Exception ex) {
+                    resultArea.setText("Lỗi: " + ex.getMessage());
+                    showAlert(Alert.AlertType.ERROR, "Lỗi", "Có lỗi xảy ra: " + ex.getMessage());
+                }
+
+
+            });
+
+
+        }
+
+        public void startbbb(Stage primaryStage) {
+            primaryStage.setTitle("Thanh toán khóa học");
+
+            // Tạo giao diện thanh toán
+            VBox root = new VBox(10);
+            root.setPadding(new Insets(20));
+
+            // Thông tin khóa học
+            Label courseInfoLabel = new Label("Khóa học: Lập trình Java căn bản");
+            Label priceLabel = new Label(String.format("Giá: %.0f VND", coursePrice));
+
+            // Phương thức thanh toán
+            Label paymentMethodLabel = new Label("Chọn phương thức thanh toán:");
+            ComboBox<String> paymentMethodCombo = new ComboBox<>(
+                    FXCollections.observableArrayList(
+                            "MOMO", "ZALOPAY", "VNPAY", "CREDIT_CARD", "BANK_TRANSFER"
+                    )
+            );
+            paymentMethodCombo.setValue("MOMO");
+
+            // Container cho các form thanh toán
+            VBox paymentFormContainer = new VBox(10);
+
+            // Ban đầu hiển thị form MoMo
+            GridPane momoForm = createMomoForm();
+            paymentFormContainer.getChildren().add(momoForm);
+
+            // Sự kiện thay đổi phương thức thanh toán
+            paymentMethodCombo.setOnAction(e -> {
+                paymentFormContainer.getChildren().clear();
+
+                switch (paymentMethodCombo.getValue()) {
+                    case "MOMO":
+                        paymentFormContainer.getChildren().add(createMomoForm());
+                        break;
+                    case "ZALOPAY":
+                        paymentFormContainer.getChildren().add(createZaloPayForm());
+                        break;
+                    case "VNPAY":
+                        paymentFormContainer.getChildren().add(createVNPayForm());
+                        break;
+                    case "CREDIT_CARD":
+                        paymentFormContainer.getChildren().add(createCreditCardForm());
+                        break;
+                    case "BANK_TRANSFER":
+                        paymentFormContainer.getChildren().add(createBankTransferForm());
+                        break;
+                }
+            });
+
+            // Nút thanh toán
+            Button payButton = new Button("Thanh toán");
+            payButton.setOnAction(e -> {
+                processSelectedPayment(paymentMethodCombo.getValue(), paymentFormContainer);
+            });
+
+            // Khu vực hiển thị kết quả giao dịch
+            TextArea resultArea = new TextArea();
+            resultArea.setEditable(false);
+            resultArea.setPrefHeight(200);
+
+            root.getChildren().addAll(
+                    courseInfoLabel, priceLabel,
+                    new Separator(),
+                    paymentMethodLabel, paymentMethodCombo,
+                    paymentFormContainer,
+                    payButton,
+                    new Separator(),
+                    new Label("Kết quả giao dịch:"),
+                    resultArea
+            );
+
+            Scene scene = new Scene(root, 500, 650);
+            primaryStage.setScene(scene);
+            primaryStage.show();
+
+            // Function to process payment based on selected method
+            payButton.setOnAction(e -> {
+                Map<String, String> paymentDetails = new HashMap<>();
+
+                // Lấy thông tin chi tiết thanh toán từ form
+                switch (paymentMethodCombo.getValue()) {
+                    case "MOMO":
+                        TextField momoPhone = (TextField) findNodeByID(paymentFormContainer, "momoPhone");
+                        TextField momoOtp = (TextField) findNodeByID(paymentFormContainer, "momoOtp");
+                        paymentDetails.put("phoneNumber", momoPhone.getText());
+                        paymentDetails.put("otp", momoOtp.getText());
+                        break;
+                    case "ZALOPAY":
+                        TextField zaloId = (TextField) findNodeByID(paymentFormContainer, "zaloId");
+                        PasswordField zaloPass = (PasswordField) findNodeByID(paymentFormContainer, "zaloPass");
+                        paymentDetails.put("accountId", zaloId.getText());
+                        paymentDetails.put("password", zaloPass.getText());
+                        break;
+                    case "VNPAY":
+                        ComboBox<String> bankCombo = (ComboBox<String>) findNodeByID(paymentFormContainer, "bankCombo");
+                        TextField vnpayAccount = (TextField) findNodeByID(paymentFormContainer, "vnpayAccount");
+                        paymentDetails.put("bankCode", bankCombo.getValue().substring(0, 3));
+                        paymentDetails.put("accountNumber", vnpayAccount.getText());
+                        break;
+                    case "CREDIT_CARD":
+                        TextField cardNumber = (TextField) findNodeByID(paymentFormContainer, "cardNumber");
+                        TextField expiryDate = (TextField) findNodeByID(paymentFormContainer, "expiryDate");
+                        TextField cvv = (TextField) findNodeByID(paymentFormContainer, "cvv");
+                        paymentDetails.put("cardNumber", cardNumber.getText());
+                        paymentDetails.put("expiryDate", expiryDate.getText());
+                        paymentDetails.put("cvv", cvv.getText());
+                        break;
+                    case "BANK_TRANSFER":
+                        TextField bankName = (TextField) findNodeByID(paymentFormContainer, "bankName");
+                        TextField accountNumber = (TextField) findNodeByID(paymentFormContainer, "accountNumber");
+                        paymentDetails.put("bankName", bankName.getText());
+                        paymentDetails.put("accountNumber", accountNumber.getText());
+                        break;
+                }
+
+                // Xử lý thanh toán
+                try {
+                    Transaction transaction = paymentProcessor.processPayment(
+                            paymentMethodCombo.getValue(),
+                            coursePrice,
+                            paymentDetails,
+                            courseId,
+                            userId
+                    );
+
+                    // Hiển thị kết quả
+                    resultArea.setText(transaction.toString());
+
+                    // Thông báo xác nhận
+                    if ("SUCCESS".equals(transaction.getStatus())) {
+                        showAlert(Alert.AlertType.INFORMATION, "Thanh toán thành công",
+                                "Giao dịch đã được xử lý thành công!\nMã giao dịch: " + transaction.getTransactionId());
+                    } else {
+                        showAlert(Alert.AlertType.ERROR, "Thanh toán thất bại",
+                                "Giao dịch không thành công. Vui lòng thử lại hoặc chọn phương thức thanh toán khác.");
+                    }
+
+                } catch (Exception ex) {
+                    resultArea.setText("Lỗi: " + ex.getMessage());
+                    showAlert(Alert.AlertType.ERROR, "Lỗi", "Có lỗi xảy ra: " + ex.getMessage());
+                }
+
+
+            });
+
+
+        }
+        public void startaaa(Stage primaryStage) {
+            primaryStage.setTitle("Thanh toán khóa học");
+
+            // Tạo giao diện thanh toán
+            VBox root = new VBox(10);
+            root.setPadding(new Insets(20));
+
+            // Thông tin khóa học
+            Label courseInfoLabel = new Label("Khóa học: Lập trình Java căn bản");
+            Label priceLabel = new Label(String.format("Giá: %.0f VND", coursePrice));
+
+            // Phương thức thanh toán
+            Label paymentMethodLabel = new Label("Chọn phương thức thanh toán:");
+            ComboBox<String> paymentMethodCombo = new ComboBox<>(
+                    FXCollections.observableArrayList(
+                            "MOMO", "ZALOPAY", "VNPAY", "CREDIT_CARD", "BANK_TRANSFER"
+                    )
+            );
+            paymentMethodCombo.setValue("MOMO");
+
+            // Container cho các form thanh toán
+            VBox paymentFormContainer = new VBox(10);
+
+            // Ban đầu hiển thị form MoMo
+            GridPane momoForm = createMomoForm();
+            paymentFormContainer.getChildren().add(momoForm);
+
+            // Sự kiện thay đổi phương thức thanh toán
+            paymentMethodCombo.setOnAction(e -> {
+                paymentFormContainer.getChildren().clear();
+
+                switch (paymentMethodCombo.getValue()) {
+                    case "MOMO":
+                        paymentFormContainer.getChildren().add(createMomoForm());
+                        break;
+                    case "ZALOPAY":
+                        paymentFormContainer.getChildren().add(createZaloPayForm());
+                        break;
+                    case "VNPAY":
+                        paymentFormContainer.getChildren().add(createVNPayForm());
+                        break;
+                    case "CREDIT_CARD":
+                        paymentFormContainer.getChildren().add(createCreditCardForm());
+                        break;
+                    case "BANK_TRANSFER":
+                        paymentFormContainer.getChildren().add(createBankTransferForm());
+                        break;
+                }
+            });
+
+            // Nút thanh toán
+            Button payButton = new Button("Thanh toán");
+            payButton.setOnAction(e -> {
+                processSelectedPayment(paymentMethodCombo.getValue(), paymentFormContainer);
+            });
+
+            // Khu vực hiển thị kết quả giao dịch
+            TextArea resultArea = new TextArea();
+            resultArea.setEditable(false);
+            resultArea.setPrefHeight(200);
+
+            root.getChildren().addAll(
+                    courseInfoLabel, priceLabel,
+                    new Separator(),
+                    paymentMethodLabel, paymentMethodCombo,
+                    paymentFormContainer,
+                    payButton,
+                    new Separator(),
+                    new Label("Kết quả giao dịch:"),
+                    resultArea
+            );
+
+            Scene scene = new Scene(root, 500, 650);
+            primaryStage.setScene(scene);
+            primaryStage.show();
+
+            // Function to process payment based on selected method
+            payButton.setOnAction(e -> {
+                Map<String, String> paymentDetails = new HashMap<>();
+
+                // Lấy thông tin chi tiết thanh toán từ form
+                switch (paymentMethodCombo.getValue()) {
+                    case "MOMO":
+                        TextField momoPhone = (TextField) findNodeByID(paymentFormContainer, "momoPhone");
+                        TextField momoOtp = (TextField) findNodeByID(paymentFormContainer, "momoOtp");
+                        paymentDetails.put("phoneNumber", momoPhone.getText());
+                        paymentDetails.put("otp", momoOtp.getText());
+                        break;
+                    case "ZALOPAY":
+                        TextField zaloId = (TextField) findNodeByID(paymentFormContainer, "zaloId");
+                        PasswordField zaloPass = (PasswordField) findNodeByID(paymentFormContainer, "zaloPass");
+                        paymentDetails.put("accountId", zaloId.getText());
+                        paymentDetails.put("password", zaloPass.getText());
+                        break;
+                    case "VNPAY":
+                        ComboBox<String> bankCombo = (ComboBox<String>) findNodeByID(paymentFormContainer, "bankCombo");
+                        TextField vnpayAccount = (TextField) findNodeByID(paymentFormContainer, "vnpayAccount");
+                        paymentDetails.put("bankCode", bankCombo.getValue().substring(0, 3));
+                        paymentDetails.put("accountNumber", vnpayAccount.getText());
+                        break;
+                    case "CREDIT_CARD":
+                        TextField cardNumber = (TextField) findNodeByID(paymentFormContainer, "cardNumber");
+                        TextField expiryDate = (TextField) findNodeByID(paymentFormContainer, "expiryDate");
+                        TextField cvv = (TextField) findNodeByID(paymentFormContainer, "cvv");
+                        paymentDetails.put("cardNumber", cardNumber.getText());
+                        paymentDetails.put("expiryDate", expiryDate.getText());
+                        paymentDetails.put("cvv", cvv.getText());
+                        break;
+                    case "BANK_TRANSFER":
+                        TextField bankName = (TextField) findNodeByID(paymentFormContainer, "bankName");
+                        TextField accountNumber = (TextField) findNodeByID(paymentFormContainer, "accountNumber");
+                        paymentDetails.put("bankName", bankName.getText());
+                        paymentDetails.put("accountNumber", accountNumber.getText());
+                        break;
+                }
+
+                // Xử lý thanh toán
+                try {
+                    Transaction transaction = paymentProcessor.processPayment(
+                            paymentMethodCombo.getValue(),
+                            coursePrice,
+                            paymentDetails,
+                            courseId,
+                            userId
+                    );
+
+                    // Hiển thị kết quả
+                    resultArea.setText(transaction.toString());
+
+                    // Thông báo xác nhận
+                    if ("SUCCESS".equals(transaction.getStatus())) {
+                        showAlert(Alert.AlertType.INFORMATION, "Thanh toán thành công",
+                                "Giao dịch đã được xử lý thành công!\nMã giao dịch: " + transaction.getTransactionId());
+                    } else {
+                        showAlert(Alert.AlertType.ERROR, "Thanh toán thất bại",
+                                "Giao dịch không thành công. Vui lòng thử lại hoặc chọn phương thức thanh toán khác.");
+                    }
+
+                } catch (Exception ex) {
+                    resultArea.setText("Lỗi: " + ex.getMessage());
+                    showAlert(Alert.AlertType.ERROR, "Lỗi", "Có lỗi xảy ra: " + ex.getMessage());
+                }
+
+
+            });
+
+
+        }
+        public void startqqq(Stage primaryStage) {
+            primaryStage.setTitle("Thanh toán khóa học");
+
+            // Tạo giao diện thanh toán
+            VBox root = new VBox(10);
+            root.setPadding(new Insets(20));
+
+            // Thông tin khóa học
+            Label courseInfoLabel = new Label("Khóa học: Lập trình Java căn bản");
+            Label priceLabel = new Label(String.format("Giá: %.0f VND", coursePrice));
+
+            // Phương thức thanh toán
+            Label paymentMethodLabel = new Label("Chọn phương thức thanh toán:");
+            ComboBox<String> paymentMethodCombo = new ComboBox<>(
+                    FXCollections.observableArrayList(
+                            "MOMO", "ZALOPAY", "VNPAY", "CREDIT_CARD", "BANK_TRANSFER"
+                    )
+            );
+            paymentMethodCombo.setValue("MOMO");
+
+            // Container cho các form thanh toán
+            VBox paymentFormContainer = new VBox(10);
+
+            // Ban đầu hiển thị form MoMo
+            GridPane momoForm = createMomoForm();
+            paymentFormContainer.getChildren().add(momoForm);
+
+            // Sự kiện thay đổi phương thức thanh toán
+            paymentMethodCombo.setOnAction(e -> {
+                paymentFormContainer.getChildren().clear();
+
+                switch (paymentMethodCombo.getValue()) {
+                    case "MOMO":
+                        paymentFormContainer.getChildren().add(createMomoForm());
+                        break;
+                    case "ZALOPAY":
+                        paymentFormContainer.getChildren().add(createZaloPayForm());
+                        break;
+                    case "VNPAY":
+                        paymentFormContainer.getChildren().add(createVNPayForm());
+                        break;
+                    case "CREDIT_CARD":
+                        paymentFormContainer.getChildren().add(createCreditCardForm());
+                        break;
+                    case "BANK_TRANSFER":
+                        paymentFormContainer.getChildren().add(createBankTransferForm());
+                        break;
+                }
+            });
+
+            // Nút thanh toán
+            Button payButton = new Button("Thanh toán");
+            payButton.setOnAction(e -> {
+                processSelectedPayment(paymentMethodCombo.getValue(), paymentFormContainer);
+            });
+
+            // Khu vực hiển thị kết quả giao dịch
+            TextArea resultArea = new TextArea();
+            resultArea.setEditable(false);
+            resultArea.setPrefHeight(200);
+
+            root.getChildren().addAll(
+                    courseInfoLabel, priceLabel,
+                    new Separator(),
+                    paymentMethodLabel, paymentMethodCombo,
+                    paymentFormContainer,
+                    payButton,
+                    new Separator(),
+                    new Label("Kết quả giao dịch:"),
+                    resultArea
+            );
+
+            Scene scene = new Scene(root, 500, 650);
+            primaryStage.setScene(scene);
+            primaryStage.show();
+
+            // Function to process payment based on selected method
+            payButton.setOnAction(e -> {
+                Map<String, String> paymentDetails = new HashMap<>();
+
+                // Lấy thông tin chi tiết thanh toán từ form
+                switch (paymentMethodCombo.getValue()) {
+                    case "MOMO":
+                        TextField momoPhone = (TextField) findNodeByID(paymentFormContainer, "momoPhone");
+                        TextField momoOtp = (TextField) findNodeByID(paymentFormContainer, "momoOtp");
+                        paymentDetails.put("phoneNumber", momoPhone.getText());
+                        paymentDetails.put("otp", momoOtp.getText());
+                        break;
+                    case "ZALOPAY":
+                        TextField zaloId = (TextField) findNodeByID(paymentFormContainer, "zaloId");
+                        PasswordField zaloPass = (PasswordField) findNodeByID(paymentFormContainer, "zaloPass");
+                        paymentDetails.put("accountId", zaloId.getText());
+                        paymentDetails.put("password", zaloPass.getText());
+                        break;
+                    case "VNPAY":
+                        ComboBox<String> bankCombo = (ComboBox<String>) findNodeByID(paymentFormContainer, "bankCombo");
+                        TextField vnpayAccount = (TextField) findNodeByID(paymentFormContainer, "vnpayAccount");
+                        paymentDetails.put("bankCode", bankCombo.getValue().substring(0, 3));
+                        paymentDetails.put("accountNumber", vnpayAccount.getText());
+                        break;
+                    case "CREDIT_CARD":
+                        TextField cardNumber = (TextField) findNodeByID(paymentFormContainer, "cardNumber");
+                        TextField expiryDate = (TextField) findNodeByID(paymentFormContainer, "expiryDate");
+                        TextField cvv = (TextField) findNodeByID(paymentFormContainer, "cvv");
+                        paymentDetails.put("cardNumber", cardNumber.getText());
+                        paymentDetails.put("expiryDate", expiryDate.getText());
+                        paymentDetails.put("cvv", cvv.getText());
+                        break;
+                    case "BANK_TRANSFER":
+                        TextField bankName = (TextField) findNodeByID(paymentFormContainer, "bankName");
+                        TextField accountNumber = (TextField) findNodeByID(paymentFormContainer, "accountNumber");
+                        paymentDetails.put("bankName", bankName.getText());
+                        paymentDetails.put("accountNumber", accountNumber.getText());
+                        break;
+                }
+
+                // Xử lý thanh toán
+                try {
+                    Transaction transaction = paymentProcessor.processPayment(
+                            paymentMethodCombo.getValue(),
+                            coursePrice,
+                            paymentDetails,
+                            courseId,
+                            userId
+                    );
+
+                    // Hiển thị kết quả
+                    resultArea.setText(transaction.toString());
+
+                    // Thông báo xác nhận
+                    if ("SUCCESS".equals(transaction.getStatus())) {
+                        showAlert(Alert.AlertType.INFORMATION, "Thanh toán thành công",
+                                "Giao dịch đã được xử lý thành công!\nMã giao dịch: " + transaction.getTransactionId());
+                    } else {
+                        showAlert(Alert.AlertType.ERROR, "Thanh toán thất bại",
+                                "Giao dịch không thành công. Vui lòng thử lại hoặc chọn phương thức thanh toán khác.");
+                    }
+
+                } catch (Exception ex) {
+                    resultArea.setText("Lỗi: " + ex.getMessage());
+                    showAlert(Alert.AlertType.ERROR, "Lỗi", "Có lỗi xảy ra: " + ex.getMessage());
+                }
+
+
+            });
+
+
+        }
+        public void startvvvv(Stage primaryStage) {
+            primaryStage.setTitle("Thanh toán khóa học");
+
+            // Tạo giao diện thanh toán
+            VBox root = new VBox(10);
+            root.setPadding(new Insets(20));
+
+            // Thông tin khóa học
+            Label courseInfoLabel = new Label("Khóa học: Lập trình Java căn bản");
+            Label priceLabel = new Label(String.format("Giá: %.0f VND", coursePrice));
+
+            // Phương thức thanh toán
+            Label paymentMethodLabel = new Label("Chọn phương thức thanh toán:");
+            ComboBox<String> paymentMethodCombo = new ComboBox<>(
+                    FXCollections.observableArrayList(
+                            "MOMO", "ZALOPAY", "VNPAY", "CREDIT_CARD", "BANK_TRANSFER"
+                    )
+            );
+            paymentMethodCombo.setValue("MOMO");
+
+            // Container cho các form thanh toán
+            VBox paymentFormContainer = new VBox(10);
+
+            // Ban đầu hiển thị form MoMo
+            GridPane momoForm = createMomoForm();
+            paymentFormContainer.getChildren().add(momoForm);
+
+            // Sự kiện thay đổi phương thức thanh toán
+            paymentMethodCombo.setOnAction(e -> {
+                paymentFormContainer.getChildren().clear();
+
+                switch (paymentMethodCombo.getValue()) {
+                    case "MOMO":
+                        paymentFormContainer.getChildren().add(createMomoForm());
+                        break;
+                    case "ZALOPAY":
+                        paymentFormContainer.getChildren().add(createZaloPayForm());
+                        break;
+                    case "VNPAY":
+                        paymentFormContainer.getChildren().add(createVNPayForm());
+                        break;
+                    case "CREDIT_CARD":
+                        paymentFormContainer.getChildren().add(createCreditCardForm());
+                        break;
+                    case "BANK_TRANSFER":
+                        paymentFormContainer.getChildren().add(createBankTransferForm());
+                        break;
+                }
+            });
+
+            // Nút thanh toán
+            Button payButton = new Button("Thanh toán");
+            payButton.setOnAction(e -> {
+                processSelectedPayment(paymentMethodCombo.getValue(), paymentFormContainer);
+            });
+
+            // Khu vực hiển thị kết quả giao dịch
+            TextArea resultArea = new TextArea();
+            resultArea.setEditable(false);
+            resultArea.setPrefHeight(200);
+
+            root.getChildren().addAll(
+                    courseInfoLabel, priceLabel,
+                    new Separator(),
+                    paymentMethodLabel, paymentMethodCombo,
+                    paymentFormContainer,
+                    payButton,
+                    new Separator(),
+                    new Label("Kết quả giao dịch:"),
+                    resultArea
+            );
+
+            Scene scene = new Scene(root, 500, 650);
+            primaryStage.setScene(scene);
+            primaryStage.show();
+
+            // Function to process payment based on selected method
+            payButton.setOnAction(e -> {
+                Map<String, String> paymentDetails = new HashMap<>();
+
+                // Lấy thông tin chi tiết thanh toán từ form
+                switch (paymentMethodCombo.getValue()) {
+                    case "MOMO":
+                        TextField momoPhone = (TextField) findNodeByID(paymentFormContainer, "momoPhone");
+                        TextField momoOtp = (TextField) findNodeByID(paymentFormContainer, "momoOtp");
+                        paymentDetails.put("phoneNumber", momoPhone.getText());
+                        paymentDetails.put("otp", momoOtp.getText());
+                        break;
+                    case "ZALOPAY":
+                        TextField zaloId = (TextField) findNodeByID(paymentFormContainer, "zaloId");
+                        PasswordField zaloPass = (PasswordField) findNodeByID(paymentFormContainer, "zaloPass");
+                        paymentDetails.put("accountId", zaloId.getText());
+                        paymentDetails.put("password", zaloPass.getText());
+                        break;
+                    case "VNPAY":
+                        ComboBox<String> bankCombo = (ComboBox<String>) findNodeByID(paymentFormContainer, "bankCombo");
+                        TextField vnpayAccount = (TextField) findNodeByID(paymentFormContainer, "vnpayAccount");
+                        paymentDetails.put("bankCode", bankCombo.getValue().substring(0, 3));
+                        paymentDetails.put("accountNumber", vnpayAccount.getText());
+                        break;
+                    case "CREDIT_CARD":
+                        TextField cardNumber = (TextField) findNodeByID(paymentFormContainer, "cardNumber");
+                        TextField expiryDate = (TextField) findNodeByID(paymentFormContainer, "expiryDate");
+                        TextField cvv = (TextField) findNodeByID(paymentFormContainer, "cvv");
+                        paymentDetails.put("cardNumber", cardNumber.getText());
+                        paymentDetails.put("expiryDate", expiryDate.getText());
+                        paymentDetails.put("cvv", cvv.getText());
+                        break;
+                    case "BANK_TRANSFER":
+                        TextField bankName = (TextField) findNodeByID(paymentFormContainer, "bankName");
+                        TextField accountNumber = (TextField) findNodeByID(paymentFormContainer, "accountNumber");
+                        paymentDetails.put("bankName", bankName.getText());
+                        paymentDetails.put("accountNumber", accountNumber.getText());
+                        break;
+                }
+
+                // Xử lý thanh toán
+                try {
+                    Transaction transaction = paymentProcessor.processPayment(
+                            paymentMethodCombo.getValue(),
+                            coursePrice,
+                            paymentDetails,
+                            courseId,
+                            userId
+                    );
+
+                    // Hiển thị kết quả
+                    resultArea.setText(transaction.toString());
+
+                    // Thông báo xác nhận
+                    if ("SUCCESS".equals(transaction.getStatus())) {
+                        showAlert(Alert.AlertType.INFORMATION, "Thanh toán thành công",
+                                "Giao dịch đã được xử lý thành công!\nMã giao dịch: " + transaction.getTransactionId());
+                    } else {
+                        showAlert(Alert.AlertType.ERROR, "Thanh toán thất bại",
+                                "Giao dịch không thành công. Vui lòng thử lại hoặc chọn phương thức thanh toán khác.");
+                    }
+
+                } catch (Exception ex) {
+                    resultArea.setText("Lỗi: " + ex.getMessage());
+                    showAlert(Alert.AlertType.ERROR, "Lỗi", "Có lỗi xảy ra: " + ex.getMessage());
+                }
+
+
+            });
+
+
+        }
+        public void startcccc(Stage primaryStage) {
+            primaryStage.setTitle("Thanh toán khóa học");
+
+            // Tạo giao diện thanh toán
+            VBox root = new VBox(10);
+            root.setPadding(new Insets(20));
+
+            // Thông tin khóa học
+            Label courseInfoLabel = new Label("Khóa học: Lập trình Java căn bản");
+            Label priceLabel = new Label(String.format("Giá: %.0f VND", coursePrice));
+
+            // Phương thức thanh toán
+            Label paymentMethodLabel = new Label("Chọn phương thức thanh toán:");
+            ComboBox<String> paymentMethodCombo = new ComboBox<>(
+                    FXCollections.observableArrayList(
+                            "MOMO", "ZALOPAY", "VNPAY", "CREDIT_CARD", "BANK_TRANSFER"
+                    )
+            );
+            paymentMethodCombo.setValue("MOMO");
+
+            // Container cho các form thanh toán
+            VBox paymentFormContainer = new VBox(10);
+
+            // Ban đầu hiển thị form MoMo
+            GridPane momoForm = createMomoForm();
+            paymentFormContainer.getChildren().add(momoForm);
+
+            // Sự kiện thay đổi phương thức thanh toán
+            paymentMethodCombo.setOnAction(e -> {
+                paymentFormContainer.getChildren().clear();
+
+                switch (paymentMethodCombo.getValue()) {
+                    case "MOMO":
+                        paymentFormContainer.getChildren().add(createMomoForm());
+                        break;
+                    case "ZALOPAY":
+                        paymentFormContainer.getChildren().add(createZaloPayForm());
+                        break;
+                    case "VNPAY":
+                        paymentFormContainer.getChildren().add(createVNPayForm());
+                        break;
+                    case "CREDIT_CARD":
+                        paymentFormContainer.getChildren().add(createCreditCardForm());
+                        break;
+                    case "BANK_TRANSFER":
+                        paymentFormContainer.getChildren().add(createBankTransferForm());
+                        break;
+                }
+            });
+
+            // Nút thanh toán
+            Button payButton = new Button("Thanh toán");
+            payButton.setOnAction(e -> {
+                processSelectedPayment(paymentMethodCombo.getValue(), paymentFormContainer);
+            });
+
+            // Khu vực hiển thị kết quả giao dịch
+            TextArea resultArea = new TextArea();
+            resultArea.setEditable(false);
+            resultArea.setPrefHeight(200);
+
+            root.getChildren().addAll(
+                    courseInfoLabel, priceLabel,
+                    new Separator(),
+                    paymentMethodLabel, paymentMethodCombo,
+                    paymentFormContainer,
+                    payButton,
+                    new Separator(),
+                    new Label("Kết quả giao dịch:"),
+                    resultArea
+            );
+
+            Scene scene = new Scene(root, 500, 650);
+            primaryStage.setScene(scene);
+            primaryStage.show();
+
+            // Function to process payment based on selected method
+            payButton.setOnAction(e -> {
+                Map<String, String> paymentDetails = new HashMap<>();
+
+                // Lấy thông tin chi tiết thanh toán từ form
+                switch (paymentMethodCombo.getValue()) {
+                    case "MOMO":
+                        TextField momoPhone = (TextField) findNodeByID(paymentFormContainer, "momoPhone");
+                        TextField momoOtp = (TextField) findNodeByID(paymentFormContainer, "momoOtp");
+                        paymentDetails.put("phoneNumber", momoPhone.getText());
+                        paymentDetails.put("otp", momoOtp.getText());
+                        break;
+                    case "ZALOPAY":
+                        TextField zaloId = (TextField) findNodeByID(paymentFormContainer, "zaloId");
+                        PasswordField zaloPass = (PasswordField) findNodeByID(paymentFormContainer, "zaloPass");
+                        paymentDetails.put("accountId", zaloId.getText());
+                        paymentDetails.put("password", zaloPass.getText());
+                        break;
+                    case "VNPAY":
+                        ComboBox<String> bankCombo = (ComboBox<String>) findNodeByID(paymentFormContainer, "bankCombo");
+                        TextField vnpayAccount = (TextField) findNodeByID(paymentFormContainer, "vnpayAccount");
+                        paymentDetails.put("bankCode", bankCombo.getValue().substring(0, 3));
+                        paymentDetails.put("accountNumber", vnpayAccount.getText());
+                        break;
+                    case "CREDIT_CARD":
+                        TextField cardNumber = (TextField) findNodeByID(paymentFormContainer, "cardNumber");
+                        TextField expiryDate = (TextField) findNodeByID(paymentFormContainer, "expiryDate");
+                        TextField cvv = (TextField) findNodeByID(paymentFormContainer, "cvv");
+                        paymentDetails.put("cardNumber", cardNumber.getText());
+                        paymentDetails.put("expiryDate", expiryDate.getText());
+                        paymentDetails.put("cvv", cvv.getText());
+                        break;
+                    case "BANK_TRANSFER":
+                        TextField bankName = (TextField) findNodeByID(paymentFormContainer, "bankName");
+                        TextField accountNumber = (TextField) findNodeByID(paymentFormContainer, "accountNumber");
+                        paymentDetails.put("bankName", bankName.getText());
+                        paymentDetails.put("accountNumber", accountNumber.getText());
+                        break;
+                }
+
+                // Xử lý thanh toán
+                try {
+                    Transaction transaction = paymentProcessor.processPayment(
+                            paymentMethodCombo.getValue(),
+                            coursePrice,
+                            paymentDetails,
+                            courseId,
+                            userId
+                    );
+
+                    // Hiển thị kết quả
+                    resultArea.setText(transaction.toString());
+
+                    // Thông báo xác nhận
+                    if ("SUCCESS".equals(transaction.getStatus())) {
+                        showAlert(Alert.AlertType.INFORMATION, "Thanh toán thành công",
+                                "Giao dịch đã được xử lý thành công!\nMã giao dịch: " + transaction.getTransactionId());
+                    } else {
+                        showAlert(Alert.AlertType.ERROR, "Thanh toán thất bại",
+                                "Giao dịch không thành công. Vui lòng thử lại hoặc chọn phương thức thanh toán khác.");
+                    }
+
+                } catch (Exception ex) {
+                    resultArea.setText("Lỗi: " + ex.getMessage());
+                    showAlert(Alert.AlertType.ERROR, "Lỗi", "Có lỗi xảy ra: " + ex.getMessage());
+                }
+
+
+            });
+
+
+        }
+
+        public void startaddad(Stage primaryStage) {
+            primaryStage.setTitle("Thanh toán khóa học");
+
+            // Tạo giao diện thanh toán
+            VBox root = new VBox(10);
+            root.setPadding(new Insets(20));
+
+            // Thông tin khóa học
+            Label courseInfoLabel = new Label("Khóa học: Lập trình Java căn bản");
+            Label priceLabel = new Label(String.format("Giá: %.0f VND", coursePrice));
+
+            // Phương thức thanh toán
+            Label paymentMethodLabel = new Label("Chọn phương thức thanh toán:");
+            ComboBox<String> paymentMethodCombo = new ComboBox<>(
+                    FXCollections.observableArrayList(
+                            "MOMO", "ZALOPAY", "VNPAY", "CREDIT_CARD", "BANK_TRANSFER"
+                    )
+            );
+            paymentMethodCombo.setValue("MOMO");
+
+            // Container cho các form thanh toán
+            VBox paymentFormContainer = new VBox(10);
+
+            // Ban đầu hiển thị form MoMo
+            GridPane momoForm = createMomoForm();
+            paymentFormContainer.getChildren().add(momoForm);
+
+            // Sự kiện thay đổi phương thức thanh toán
+            paymentMethodCombo.setOnAction(e -> {
+                paymentFormContainer.getChildren().clear();
+
+                switch (paymentMethodCombo.getValue()) {
+                    case "MOMO":
+                        paymentFormContainer.getChildren().add(createMomoForm());
+                        break;
+                    case "ZALOPAY":
+                        paymentFormContainer.getChildren().add(createZaloPayForm());
+                        break;
+                    case "VNPAY":
+                        paymentFormContainer.getChildren().add(createVNPayForm());
+                        break;
+                    case "CREDIT_CARD":
+                        paymentFormContainer.getChildren().add(createCreditCardForm());
+                        break;
+                    case "BANK_TRANSFER":
+                        paymentFormContainer.getChildren().add(createBankTransferForm());
+                        break;
+                }
+            });
+
+            // Nút thanh toán
+            Button payButton = new Button("Thanh toán");
+            payButton.setOnAction(e -> {
+                processSelectedPayment(paymentMethodCombo.getValue(), paymentFormContainer);
+            });
+
+            // Khu vực hiển thị kết quả giao dịch
+            TextArea resultArea = new TextArea();
+            resultArea.setEditable(false);
+            resultArea.setPrefHeight(200);
+
+            root.getChildren().addAll(
+                    courseInfoLabel, priceLabel,
+                    new Separator(),
+                    paymentMethodLabel, paymentMethodCombo,
+                    paymentFormContainer,
+                    payButton,
+                    new Separator(),
+                    new Label("Kết quả giao dịch:"),
+                    resultArea
+            );
+
+            Scene scene = new Scene(root, 500, 650);
+            primaryStage.setScene(scene);
+            primaryStage.show();
+
+            // Function to process payment based on selected method
+            payButton.setOnAction(e -> {
+                Map<String, String> paymentDetails = new HashMap<>();
+
+                // Lấy thông tin chi tiết thanh toán từ form
+                switch (paymentMethodCombo.getValue()) {
+                    case "MOMO":
+                        TextField momoPhone = (TextField) findNodeByID(paymentFormContainer, "momoPhone");
+                        TextField momoOtp = (TextField) findNodeByID(paymentFormContainer, "momoOtp");
+                        paymentDetails.put("phoneNumber", momoPhone.getText());
+                        paymentDetails.put("otp", momoOtp.getText());
+                        break;
+                    case "ZALOPAY":
+                        TextField zaloId = (TextField) findNodeByID(paymentFormContainer, "zaloId");
+                        PasswordField zaloPass = (PasswordField) findNodeByID(paymentFormContainer, "zaloPass");
+                        paymentDetails.put("accountId", zaloId.getText());
+                        paymentDetails.put("password", zaloPass.getText());
+                        break;
+                    case "VNPAY":
+                        ComboBox<String> bankCombo = (ComboBox<String>) findNodeByID(paymentFormContainer, "bankCombo");
+                        TextField vnpayAccount = (TextField) findNodeByID(paymentFormContainer, "vnpayAccount");
+                        paymentDetails.put("bankCode", bankCombo.getValue().substring(0, 3));
+                        paymentDetails.put("accountNumber", vnpayAccount.getText());
+                        break;
+                    case "CREDIT_CARD":
+                        TextField cardNumber = (TextField) findNodeByID(paymentFormContainer, "cardNumber");
+                        TextField expiryDate = (TextField) findNodeByID(paymentFormContainer, "expiryDate");
+                        TextField cvv = (TextField) findNodeByID(paymentFormContainer, "cvv");
+                        paymentDetails.put("cardNumber", cardNumber.getText());
+                        paymentDetails.put("expiryDate", expiryDate.getText());
+                        paymentDetails.put("cvv", cvv.getText());
+                        break;
+                    case "BANK_TRANSFER":
+                        TextField bankName = (TextField) findNodeByID(paymentFormContainer, "bankName");
+                        TextField accountNumber = (TextField) findNodeByID(paymentFormContainer, "accountNumber");
+                        paymentDetails.put("bankName", bankName.getText());
+                        paymentDetails.put("accountNumber", accountNumber.getText());
+                        break;
+                }
+
+                // Xử lý thanh toán
+                try {
+                    Transaction transaction = paymentProcessor.processPayment(
+                            paymentMethodCombo.getValue(),
+                            coursePrice,
+                            paymentDetails,
+                            courseId,
+                            userId
+                    );
+
+                    // Hiển thị kết quả
+                    resultArea.setText(transaction.toString());
+
+                    // Thông báo xác nhận
+                    if ("SUCCESS".equals(transaction.getStatus())) {
+                        showAlert(Alert.AlertType.INFORMATION, "Thanh toán thành công",
+                                "Giao dịch đã được xử lý thành công!\nMã giao dịch: " + transaction.getTransactionId());
+                    } else {
+                        showAlert(Alert.AlertType.ERROR, "Thanh toán thất bại",
+                                "Giao dịch không thành công. Vui lòng thử lại hoặc chọn phương thức thanh toán khác.");
+                    }
+
+                } catch (Exception ex) {
+                    resultArea.setText("Lỗi: " + ex.getMessage());
+                    showAlert(Alert.AlertType.ERROR, "Lỗi", "Có lỗi xảy ra: " + ex.getMessage());
+                }
+
+
+            });
+
+
+        }
+
+        public void starssst(Stage primaryStage) {
+            primaryStage.setTitle("Thanh toán khóa học");
+
+            // Tạo giao diện thanh toán
+            VBox root = new VBox(10);
+            root.setPadding(new Insets(20));
+
+            // Thông tin khóa học
+            Label courseInfoLabel = new Label("Khóa học: Lập trình Java căn bản");
+            Label priceLabel = new Label(String.format("Giá: %.0f VND", coursePrice));
+
+            // Phương thức thanh toán
+            Label paymentMethodLabel = new Label("Chọn phương thức thanh toán:");
+            ComboBox<String> paymentMethodCombo = new ComboBox<>(
+                    FXCollections.observableArrayList(
+                            "MOMO", "ZALOPAY", "VNPAY", "CREDIT_CARD", "BANK_TRANSFER"
+                    )
+            );
+            paymentMethodCombo.setValue("MOMO");
+
+            // Container cho các form thanh toán
+            VBox paymentFormContainer = new VBox(10);
+
+            // Ban đầu hiển thị form MoMo
+            GridPane momoForm = createMomoForm();
+            paymentFormContainer.getChildren().add(momoForm);
+
+            // Sự kiện thay đổi phương thức thanh toán
+            paymentMethodCombo.setOnAction(e -> {
+                paymentFormContainer.getChildren().clear();
+
+                switch (paymentMethodCombo.getValue()) {
+                    case "MOMO":
+                        paymentFormContainer.getChildren().add(createMomoForm());
+                        break;
+                    case "ZALOPAY":
+                        paymentFormContainer.getChildren().add(createZaloPayForm());
+                        break;
+                    case "VNPAY":
+                        paymentFormContainer.getChildren().add(createVNPayForm());
+                        break;
+                    case "CREDIT_CARD":
+                        paymentFormContainer.getChildren().add(createCreditCardForm());
+                        break;
+                    case "BANK_TRANSFER":
+                        paymentFormContainer.getChildren().add(createBankTransferForm());
+                        break;
+                }
+            });
+
+            // Nút thanh toán
+            Button payButton = new Button("Thanh toán");
+            payButton.setOnAction(e -> {
+                processSelectedPayment(paymentMethodCombo.getValue(), paymentFormContainer);
+            });
+
+            // Khu vực hiển thị kết quả giao dịch
+            TextArea resultArea = new TextArea();
+            resultArea.setEditable(false);
+            resultArea.setPrefHeight(200);
+
+            root.getChildren().addAll(
+                    courseInfoLabel, priceLabel,
+                    new Separator(),
+                    paymentMethodLabel, paymentMethodCombo,
+                    paymentFormContainer,
+                    payButton,
+                    new Separator(),
+                    new Label("Kết quả giao dịch:"),
+                    resultArea
+            );
+
+            Scene scene = new Scene(root, 500, 650);
+            primaryStage.setScene(scene);
+            primaryStage.show();
+
+            // Function to process payment based on selected method
+            payButton.setOnAction(e -> {
+                Map<String, String> paymentDetails = new HashMap<>();
+
+                // Lấy thông tin chi tiết thanh toán từ form
+                switch (paymentMethodCombo.getValue()) {
+                    case "MOMO":
+                        TextField momoPhone = (TextField) findNodeByID(paymentFormContainer, "momoPhone");
+                        TextField momoOtp = (TextField) findNodeByID(paymentFormContainer, "momoOtp");
+                        paymentDetails.put("phoneNumber", momoPhone.getText());
+                        paymentDetails.put("otp", momoOtp.getText());
+                        break;
+                    case "ZALOPAY":
+                        TextField zaloId = (TextField) findNodeByID(paymentFormContainer, "zaloId");
+                        PasswordField zaloPass = (PasswordField) findNodeByID(paymentFormContainer, "zaloPass");
+                        paymentDetails.put("accountId", zaloId.getText());
+                        paymentDetails.put("password", zaloPass.getText());
+                        break;
+                    case "VNPAY":
+                        ComboBox<String> bankCombo = (ComboBox<String>) findNodeByID(paymentFormContainer, "bankCombo");
+                        TextField vnpayAccount = (TextField) findNodeByID(paymentFormContainer, "vnpayAccount");
+                        paymentDetails.put("bankCode", bankCombo.getValue().substring(0, 3));
+                        paymentDetails.put("accountNumber", vnpayAccount.getText());
+                        break;
+                    case "CREDIT_CARD":
+                        TextField cardNumber = (TextField) findNodeByID(paymentFormContainer, "cardNumber");
+                        TextField expiryDate = (TextField) findNodeByID(paymentFormContainer, "expiryDate");
+                        TextField cvv = (TextField) findNodeByID(paymentFormContainer, "cvv");
+                        paymentDetails.put("cardNumber", cardNumber.getText());
+                        paymentDetails.put("expiryDate", expiryDate.getText());
+                        paymentDetails.put("cvv", cvv.getText());
+                        break;
+                    case "BANK_TRANSFER":
+                        TextField bankName = (TextField) findNodeByID(paymentFormContainer, "bankName");
+                        TextField accountNumber = (TextField) findNodeByID(paymentFormContainer, "accountNumber");
+                        paymentDetails.put("bankName", bankName.getText());
+                        paymentDetails.put("accountNumber", accountNumber.getText());
+                        break;
+                }
+
+                // Xử lý thanh toán
+                try {
+                    Transaction transaction = paymentProcessor.processPayment(
+                            paymentMethodCombo.getValue(),
+                            coursePrice,
+                            paymentDetails,
+                            courseId,
+                            userId
+                    );
+
+                    // Hiển thị kết quả
+                    resultArea.setText(transaction.toString());
+
+                    // Thông báo xác nhận
+                    if ("SUCCESS".equals(transaction.getStatus())) {
+                        showAlert(Alert.AlertType.INFORMATION, "Thanh toán thành công",
+                                "Giao dịch đã được xử lý thành công!\nMã giao dịch: " + transaction.getTransactionId());
+                    } else {
+                        showAlert(Alert.AlertType.ERROR, "Thanh toán thất bại",
+                                "Giao dịch không thành công. Vui lòng thử lại hoặc chọn phương thức thanh toán khác.");
+                    }
+
+                } catch (Exception ex) {
+                    resultArea.setText("Lỗi: " + ex.getMessage());
+                    showAlert(Alert.AlertType.ERROR, "Lỗi", "Có lỗi xảy ra: " + ex.getMessage());
+                }
+
+
+            });
+
+
+        }
+        public void ssstart(Stage primaryStage) {
+            primaryStage.setTitle("Thanh toán khóa học");
+
+            // Tạo giao diện thanh toán
+            VBox root = new VBox(10);
+            root.setPadding(new Insets(20));
+
+            // Thông tin khóa học
+            Label courseInfoLabel = new Label("Khóa học: Lập trình Java căn bản");
+            Label priceLabel = new Label(String.format("Giá: %.0f VND", coursePrice));
+
+            // Phương thức thanh toán
+            Label paymentMethodLabel = new Label("Chọn phương thức thanh toán:");
+            ComboBox<String> paymentMethodCombo = new ComboBox<>(
+                    FXCollections.observableArrayList(
+                            "MOMO", "ZALOPAY", "VNPAY", "CREDIT_CARD", "BANK_TRANSFER"
+                    )
+            );
+            paymentMethodCombo.setValue("MOMO");
+
+            // Container cho các form thanh toán
+            VBox paymentFormContainer = new VBox(10);
+
+            // Ban đầu hiển thị form MoMo
+            GridPane momoForm = createMomoForm();
+            paymentFormContainer.getChildren().add(momoForm);
+
+            // Sự kiện thay đổi phương thức thanh toán
+            paymentMethodCombo.setOnAction(e -> {
+                paymentFormContainer.getChildren().clear();
+
+                switch (paymentMethodCombo.getValue()) {
+                    case "MOMO":
+                        paymentFormContainer.getChildren().add(createMomoForm());
+                        break;
+                    case "ZALOPAY":
+                        paymentFormContainer.getChildren().add(createZaloPayForm());
+                        break;
+                    case "VNPAY":
+                        paymentFormContainer.getChildren().add(createVNPayForm());
+                        break;
+                    case "CREDIT_CARD":
+                        paymentFormContainer.getChildren().add(createCreditCardForm());
+                        break;
+                    case "BANK_TRANSFER":
+                        paymentFormContainer.getChildren().add(createBankTransferForm());
+                        break;
+                }
+            });
+
+            // Nút thanh toán
+            Button payButton = new Button("Thanh toán");
+            payButton.setOnAction(e -> {
+                processSelectedPayment(paymentMethodCombo.getValue(), paymentFormContainer);
+            });
+
+            // Khu vực hiển thị kết quả giao dịch
+            TextArea resultArea = new TextArea();
+            resultArea.setEditable(false);
+            resultArea.setPrefHeight(200);
+
+            root.getChildren().addAll(
+                    courseInfoLabel, priceLabel,
+                    new Separator(),
+                    paymentMethodLabel, paymentMethodCombo,
+                    paymentFormContainer,
+                    payButton,
+                    new Separator(),
+                    new Label("Kết quả giao dịch:"),
+                    resultArea
+            );
+
+            Scene scene = new Scene(root, 500, 650);
+            primaryStage.setScene(scene);
+            primaryStage.show();
+
+            // Function to process payment based on selected method
+            payButton.setOnAction(e -> {
+                Map<String, String> paymentDetails = new HashMap<>();
+
+                // Lấy thông tin chi tiết thanh toán từ form
+                switch (paymentMethodCombo.getValue()) {
+                    case "MOMO":
+                        TextField momoPhone = (TextField) findNodeByID(paymentFormContainer, "momoPhone");
+                        TextField momoOtp = (TextField) findNodeByID(paymentFormContainer, "momoOtp");
+                        paymentDetails.put("phoneNumber", momoPhone.getText());
+                        paymentDetails.put("otp", momoOtp.getText());
+                        break;
+                    case "ZALOPAY":
+                        TextField zaloId = (TextField) findNodeByID(paymentFormContainer, "zaloId");
+                        PasswordField zaloPass = (PasswordField) findNodeByID(paymentFormContainer, "zaloPass");
+                        paymentDetails.put("accountId", zaloId.getText());
+                        paymentDetails.put("password", zaloPass.getText());
+                        break;
+                    case "VNPAY":
+                        ComboBox<String> bankCombo = (ComboBox<String>) findNodeByID(paymentFormContainer, "bankCombo");
+                        TextField vnpayAccount = (TextField) findNodeByID(paymentFormContainer, "vnpayAccount");
+                        paymentDetails.put("bankCode", bankCombo.getValue().substring(0, 3));
+                        paymentDetails.put("accountNumber", vnpayAccount.getText());
+                        break;
+                    case "CREDIT_CARD":
+                        TextField cardNumber = (TextField) findNodeByID(paymentFormContainer, "cardNumber");
+                        TextField expiryDate = (TextField) findNodeByID(paymentFormContainer, "expiryDate");
+                        TextField cvv = (TextField) findNodeByID(paymentFormContainer, "cvv");
+                        paymentDetails.put("cardNumber", cardNumber.getText());
+                        paymentDetails.put("expiryDate", expiryDate.getText());
+                        paymentDetails.put("cvv", cvv.getText());
+                        break;
+                    case "BANK_TRANSFER":
+                        TextField bankName = (TextField) findNodeByID(paymentFormContainer, "bankName");
+                        TextField accountNumber = (TextField) findNodeByID(paymentFormContainer, "accountNumber");
+                        paymentDetails.put("bankName", bankName.getText());
+                        paymentDetails.put("accountNumber", accountNumber.getText());
+                        break;
+                }
+
+                // Xử lý thanh toán
+                try {
+                    Transaction transaction = paymentProcessor.processPayment(
+                            paymentMethodCombo.getValue(),
+                            coursePrice,
+                            paymentDetails,
+                            courseId,
+                            userId
+                    );
+
+                    // Hiển thị kết quả
+                    resultArea.setText(transaction.toString());
+
+                    // Thông báo xác nhận
+                    if ("SUCCESS".equals(transaction.getStatus())) {
+                        showAlert(Alert.AlertType.INFORMATION, "Thanh toán thành công",
+                                "Giao dịch đã được xử lý thành công!\nMã giao dịch: " + transaction.getTransactionId());
+                    } else {
+                        showAlert(Alert.AlertType.ERROR, "Thanh toán thất bại",
+                                "Giao dịch không thành công. Vui lòng thử lại hoặc chọn phương thức thanh toán khác.");
+                    }
+
+                } catch (Exception ex) {
+                    resultArea.setText("Lỗi: " + ex.getMessage());
+                    showAlert(Alert.AlertType.ERROR, "Lỗi", "Có lỗi xảy ra: " + ex.getMessage());
+                }
+
+
+            });
+
+
+        }
+
+        public void astart(Stage primaryStage) {
+            primaryStage.setTitle("Thanh toán khóa học");
+
+            // Tạo giao diện thanh toán
+            VBox root = new VBox(10);
+            root.setPadding(new Insets(20));
+
+            // Thông tin khóa học
+            Label courseInfoLabel = new Label("Khóa học: Lập trình Java căn bản");
+            Label priceLabel = new Label(String.format("Giá: %.0f VND", coursePrice));
+
+            // Phương thức thanh toán
+            Label paymentMethodLabel = new Label("Chọn phương thức thanh toán:");
+            ComboBox<String> paymentMethodCombo = new ComboBox<>(
+                    FXCollections.observableArrayList(
+                            "MOMO", "ZALOPAY", "VNPAY", "CREDIT_CARD", "BANK_TRANSFER"
+                    )
+            );
+            paymentMethodCombo.setValue("MOMO");
+
+            // Container cho các form thanh toán
+            VBox paymentFormContainer = new VBox(10);
+
+            // Ban đầu hiển thị form MoMo
+            GridPane momoForm = createMomoForm();
+            paymentFormContainer.getChildren().add(momoForm);
+
+            // Sự kiện thay đổi phương thức thanh toán
+            paymentMethodCombo.setOnAction(e -> {
+                paymentFormContainer.getChildren().clear();
+
+                switch (paymentMethodCombo.getValue()) {
+                    case "MOMO":
+                        paymentFormContainer.getChildren().add(createMomoForm());
+                        break;
+                    case "ZALOPAY":
+                        paymentFormContainer.getChildren().add(createZaloPayForm());
+                        break;
+                    case "VNPAY":
+                        paymentFormContainer.getChildren().add(createVNPayForm());
+                        break;
+                    case "CREDIT_CARD":
+                        paymentFormContainer.getChildren().add(createCreditCardForm());
+                        break;
+                    case "BANK_TRANSFER":
+                        paymentFormContainer.getChildren().add(createBankTransferForm());
+                        break;
+                }
+            });
+
+            // Nút thanh toán
+            Button payButton = new Button("Thanh toán");
+            payButton.setOnAction(e -> {
+                processSelectedPayment(paymentMethodCombo.getValue(), paymentFormContainer);
+            });
+
+            // Khu vực hiển thị kết quả giao dịch
+            TextArea resultArea = new TextArea();
+            resultArea.setEditable(false);
+            resultArea.setPrefHeight(200);
+
+            root.getChildren().addAll(
+                    courseInfoLabel, priceLabel,
+                    new Separator(),
+                    paymentMethodLabel, paymentMethodCombo,
+                    paymentFormContainer,
+                    payButton,
+                    new Separator(),
+                    new Label("Kết quả giao dịch:"),
+                    resultArea
+            );
+
+            Scene scene = new Scene(root, 500, 650);
+            primaryStage.setScene(scene);
+            primaryStage.show();
+
+            // Function to process payment based on selected method
+            payButton.setOnAction(e -> {
+                Map<String, String> paymentDetails = new HashMap<>();
+
+                // Lấy thông tin chi tiết thanh toán từ form
+                switch (paymentMethodCombo.getValue()) {
+                    case "MOMO":
+                        TextField momoPhone = (TextField) findNodeByID(paymentFormContainer, "momoPhone");
+                        TextField momoOtp = (TextField) findNodeByID(paymentFormContainer, "momoOtp");
+                        paymentDetails.put("phoneNumber", momoPhone.getText());
+                        paymentDetails.put("otp", momoOtp.getText());
+                        break;
+                    case "ZALOPAY":
+                        TextField zaloId = (TextField) findNodeByID(paymentFormContainer, "zaloId");
+                        PasswordField zaloPass = (PasswordField) findNodeByID(paymentFormContainer, "zaloPass");
+                        paymentDetails.put("accountId", zaloId.getText());
+                        paymentDetails.put("password", zaloPass.getText());
+                        break;
+                    case "VNPAY":
+                        ComboBox<String> bankCombo = (ComboBox<String>) findNodeByID(paymentFormContainer, "bankCombo");
+                        TextField vnpayAccount = (TextField) findNodeByID(paymentFormContainer, "vnpayAccount");
+                        paymentDetails.put("bankCode", bankCombo.getValue().substring(0, 3));
+                        paymentDetails.put("accountNumber", vnpayAccount.getText());
+                        break;
+                    case "CREDIT_CARD":
+                        TextField cardNumber = (TextField) findNodeByID(paymentFormContainer, "cardNumber");
+                        TextField expiryDate = (TextField) findNodeByID(paymentFormContainer, "expiryDate");
+                        TextField cvv = (TextField) findNodeByID(paymentFormContainer, "cvv");
+                        paymentDetails.put("cardNumber", cardNumber.getText());
+                        paymentDetails.put("expiryDate", expiryDate.getText());
+                        paymentDetails.put("cvv", cvv.getText());
+                        break;
+                    case "BANK_TRANSFER":
+                        TextField bankName = (TextField) findNodeByID(paymentFormContainer, "bankName");
+                        TextField accountNumber = (TextField) findNodeByID(paymentFormContainer, "accountNumber");
+                        paymentDetails.put("bankName", bankName.getText());
+                        paymentDetails.put("accountNumber", accountNumber.getText());
+                        break;
+                }
+
+                // Xử lý thanh toán
+                try {
+                    Transaction transaction = paymentProcessor.processPayment(
+                            paymentMethodCombo.getValue(),
+                            coursePrice,
+                            paymentDetails,
+                            courseId,
+                            userId
+                    );
+
+                    // Hiển thị kết quả
+                    resultArea.setText(transaction.toString());
+
+                    // Thông báo xác nhận
+                    if ("SUCCESS".equals(transaction.getStatus())) {
+                        showAlert(Alert.AlertType.INFORMATION, "Thanh toán thành công",
+                                "Giao dịch đã được xử lý thành công!\nMã giao dịch: " + transaction.getTransactionId());
+                    } else {
+                        showAlert(Alert.AlertType.ERROR, "Thanh toán thất bại",
+                                "Giao dịch không thành công. Vui lòng thử lại hoặc chọn phương thức thanh toán khác.");
+                    }
+
+                } catch (Exception ex) {
+                    resultArea.setText("Lỗi: " + ex.getMessage());
+                    showAlert(Alert.AlertType.ERROR, "Lỗi", "Có lỗi xảy ra: " + ex.getMessage());
+                }
+
+
+            });
+
+
+        }
+
+        public void starst(Stage primaryStage) {
+            primaryStage.setTitle("Thanh toán khóa học");
+
+            // Tạo giao diện thanh toán
+            VBox root = new VBox(10);
+            root.setPadding(new Insets(20));
+
+            // Thông tin khóa học
+            Label courseInfoLabel = new Label("Khóa học: Lập trình Java căn bản");
+            Label priceLabel = new Label(String.format("Giá: %.0f VND", coursePrice));
+
+            // Phương thức thanh toán
+            Label paymentMethodLabel = new Label("Chọn phương thức thanh toán:");
+            ComboBox<String> paymentMethodCombo = new ComboBox<>(
+                    FXCollections.observableArrayList(
+                            "MOMO", "ZALOPAY", "VNPAY", "CREDIT_CARD", "BANK_TRANSFER"
+                    )
+            );
+            paymentMethodCombo.setValue("MOMO");
+
+            // Container cho các form thanh toán
+            VBox paymentFormContainer = new VBox(10);
+
+            // Ban đầu hiển thị form MoMo
+            GridPane momoForm = createMomoForm();
+            paymentFormContainer.getChildren().add(momoForm);
+
+            // Sự kiện thay đổi phương thức thanh toán
+            paymentMethodCombo.setOnAction(e -> {
+                paymentFormContainer.getChildren().clear();
+
+                switch (paymentMethodCombo.getValue()) {
+                    case "MOMO":
+                        paymentFormContainer.getChildren().add(createMomoForm());
+                        break;
+                    case "ZALOPAY":
+                        paymentFormContainer.getChildren().add(createZaloPayForm());
+                        break;
+                    case "VNPAY":
+                        paymentFormContainer.getChildren().add(createVNPayForm());
+                        break;
+                    case "CREDIT_CARD":
+                        paymentFormContainer.getChildren().add(createCreditCardForm());
+                        break;
+                    case "BANK_TRANSFER":
+                        paymentFormContainer.getChildren().add(createBankTransferForm());
+                        break;
+                }
+            });
+
+            // Nút thanh toán
+            Button payButton = new Button("Thanh toán");
+            payButton.setOnAction(e -> {
+                processSelectedPayment(paymentMethodCombo.getValue(), paymentFormContainer);
+            });
+
+            // Khu vực hiển thị kết quả giao dịch
+            TextArea resultArea = new TextArea();
+            resultArea.setEditable(false);
+            resultArea.setPrefHeight(200);
+
+            root.getChildren().addAll(
+                    courseInfoLabel, priceLabel,
+                    new Separator(),
+                    paymentMethodLabel, paymentMethodCombo,
+                    paymentFormContainer,
+                    payButton,
+                    new Separator(),
+                    new Label("Kết quả giao dịch:"),
+                    resultArea
+            );
+
+            Scene scene = new Scene(root, 500, 650);
+            primaryStage.setScene(scene);
+            primaryStage.show();
+
+            // Function to process payment based on selected method
+            payButton.setOnAction(e -> {
+                Map<String, String> paymentDetails = new HashMap<>();
+
+                // Lấy thông tin chi tiết thanh toán từ form
+                switch (paymentMethodCombo.getValue()) {
+                    case "MOMO":
+                        TextField momoPhone = (TextField) findNodeByID(paymentFormContainer, "momoPhone");
+                        TextField momoOtp = (TextField) findNodeByID(paymentFormContainer, "momoOtp");
+                        paymentDetails.put("phoneNumber", momoPhone.getText());
+                        paymentDetails.put("otp", momoOtp.getText());
+                        break;
+                    case "ZALOPAY":
+                        TextField zaloId = (TextField) findNodeByID(paymentFormContainer, "zaloId");
+                        PasswordField zaloPass = (PasswordField) findNodeByID(paymentFormContainer, "zaloPass");
+                        paymentDetails.put("accountId", zaloId.getText());
+                        paymentDetails.put("password", zaloPass.getText());
+                        break;
+                    case "VNPAY":
+                        ComboBox<String> bankCombo = (ComboBox<String>) findNodeByID(paymentFormContainer, "bankCombo");
+                        TextField vnpayAccount = (TextField) findNodeByID(paymentFormContainer, "vnpayAccount");
+                        paymentDetails.put("bankCode", bankCombo.getValue().substring(0, 3));
+                        paymentDetails.put("accountNumber", vnpayAccount.getText());
+                        break;
+                    case "CREDIT_CARD":
+                        TextField cardNumber = (TextField) findNodeByID(paymentFormContainer, "cardNumber");
+                        TextField expiryDate = (TextField) findNodeByID(paymentFormContainer, "expiryDate");
+                        TextField cvv = (TextField) findNodeByID(paymentFormContainer, "cvv");
+                        paymentDetails.put("cardNumber", cardNumber.getText());
+                        paymentDetails.put("expiryDate", expiryDate.getText());
+                        paymentDetails.put("cvv", cvv.getText());
+                        break;
+                    case "BANK_TRANSFER":
+                        TextField bankName = (TextField) findNodeByID(paymentFormContainer, "bankName");
+                        TextField accountNumber = (TextField) findNodeByID(paymentFormContainer, "accountNumber");
+                        paymentDetails.put("bankName", bankName.getText());
+                        paymentDetails.put("accountNumber", accountNumber.getText());
+                        break;
+                }
+
+                // Xử lý thanh toán
+                try {
+                    Transaction transaction = paymentProcessor.processPayment(
+                            paymentMethodCombo.getValue(),
+                            coursePrice,
+                            paymentDetails,
+                            courseId,
+                            userId
+                    );
+
+                    // Hiển thị kết quả
+                    resultArea.setText(transaction.toString());
+
+                    // Thông báo xác nhận
+                    if ("SUCCESS".equals(transaction.getStatus())) {
+                        showAlert(Alert.AlertType.INFORMATION, "Thanh toán thành công",
+                                "Giao dịch đã được xử lý thành công!\nMã giao dịch: " + transaction.getTransactionId());
+                    } else {
+                        showAlert(Alert.AlertType.ERROR, "Thanh toán thất bại",
+                                "Giao dịch không thành công. Vui lòng thử lại hoặc chọn phương thức thanh toán khác.");
+                    }
+
+                } catch (Exception ex) {
+                    resultArea.setText("Lỗi: " + ex.getMessage());
+                    showAlert(Alert.AlertType.ERROR, "Lỗi", "Có lỗi xảy ra: " + ex.getMessage());
+                }
+
+
+            });
+
+
+        }
+        public void startd(Stage primaryStage) {
+            primaryStage.setTitle("Thanh toán khóa học");
+
+            // Tạo giao diện thanh toán
+            VBox root = new VBox(10);
+            root.setPadding(new Insets(20));
+
+            // Thông tin khóa học
+            Label courseInfoLabel = new Label("Khóa học: Lập trình Java căn bản");
+            Label priceLabel = new Label(String.format("Giá: %.0f VND", coursePrice));
+
+            // Phương thức thanh toán
+            Label paymentMethodLabel = new Label("Chọn phương thức thanh toán:");
+            ComboBox<String> paymentMethodCombo = new ComboBox<>(
+                    FXCollections.observableArrayList(
+                            "MOMO", "ZALOPAY", "VNPAY", "CREDIT_CARD", "BANK_TRANSFER"
+                    )
+            );
+            paymentMethodCombo.setValue("MOMO");
+
+            // Container cho các form thanh toán
+            VBox paymentFormContainer = new VBox(10);
+
+            // Ban đầu hiển thị form MoMo
+            GridPane momoForm = createMomoForm();
+            paymentFormContainer.getChildren().add(momoForm);
+
+            // Sự kiện thay đổi phương thức thanh toán
+            paymentMethodCombo.setOnAction(e -> {
+                paymentFormContainer.getChildren().clear();
+
+                switch (paymentMethodCombo.getValue()) {
+                    case "MOMO":
+                        paymentFormContainer.getChildren().add(createMomoForm());
+                        break;
+                    case "ZALOPAY":
+                        paymentFormContainer.getChildren().add(createZaloPayForm());
+                        break;
+                    case "VNPAY":
+                        paymentFormContainer.getChildren().add(createVNPayForm());
+                        break;
+                    case "CREDIT_CARD":
+                        paymentFormContainer.getChildren().add(createCreditCardForm());
+                        break;
+                    case "BANK_TRANSFER":
+                        paymentFormContainer.getChildren().add(createBankTransferForm());
+                        break;
+                }
+            });
+
+            // Nút thanh toán
+            Button payButton = new Button("Thanh toán");
+            payButton.setOnAction(e -> {
+                processSelectedPayment(paymentMethodCombo.getValue(), paymentFormContainer);
+            });
+
+            // Khu vực hiển thị kết quả giao dịch
+            TextArea resultArea = new TextArea();
+            resultArea.setEditable(false);
+            resultArea.setPrefHeight(200);
+
+            root.getChildren().addAll(
+                    courseInfoLabel, priceLabel,
+                    new Separator(),
+                    paymentMethodLabel, paymentMethodCombo,
+                    paymentFormContainer,
+                    payButton,
+                    new Separator(),
+                    new Label("Kết quả giao dịch:"),
+                    resultArea
+            );
+
+            Scene scene = new Scene(root, 500, 650);
+            primaryStage.setScene(scene);
+            primaryStage.show();
+
+            // Function to process payment based on selected method
+            payButton.setOnAction(e -> {
+                Map<String, String> paymentDetails = new HashMap<>();
+
+                // Lấy thông tin chi tiết thanh toán từ form
+                switch (paymentMethodCombo.getValue()) {
+                    case "MOMO":
+                        TextField momoPhone = (TextField) findNodeByID(paymentFormContainer, "momoPhone");
+                        TextField momoOtp = (TextField) findNodeByID(paymentFormContainer, "momoOtp");
+                        paymentDetails.put("phoneNumber", momoPhone.getText());
+                        paymentDetails.put("otp", momoOtp.getText());
+                        break;
+                    case "ZALOPAY":
+                        TextField zaloId = (TextField) findNodeByID(paymentFormContainer, "zaloId");
+                        PasswordField zaloPass = (PasswordField) findNodeByID(paymentFormContainer, "zaloPass");
+                        paymentDetails.put("accountId", zaloId.getText());
+                        paymentDetails.put("password", zaloPass.getText());
+                        break;
+                    case "VNPAY":
+                        ComboBox<String> bankCombo = (ComboBox<String>) findNodeByID(paymentFormContainer, "bankCombo");
+                        TextField vnpayAccount = (TextField) findNodeByID(paymentFormContainer, "vnpayAccount");
+                        paymentDetails.put("bankCode", bankCombo.getValue().substring(0, 3));
+                        paymentDetails.put("accountNumber", vnpayAccount.getText());
+                        break;
+                    case "CREDIT_CARD":
+                        TextField cardNumber = (TextField) findNodeByID(paymentFormContainer, "cardNumber");
+                        TextField expiryDate = (TextField) findNodeByID(paymentFormContainer, "expiryDate");
+                        TextField cvv = (TextField) findNodeByID(paymentFormContainer, "cvv");
+                        paymentDetails.put("cardNumber", cardNumber.getText());
+                        paymentDetails.put("expiryDate", expiryDate.getText());
+                        paymentDetails.put("cvv", cvv.getText());
+                        break;
+                    case "BANK_TRANSFER":
+                        TextField bankName = (TextField) findNodeByID(paymentFormContainer, "bankName");
+                        TextField accountNumber = (TextField) findNodeByID(paymentFormContainer, "accountNumber");
+                        paymentDetails.put("bankName", bankName.getText());
+                        paymentDetails.put("accountNumber", accountNumber.getText());
+                        break;
+                }
+
+                // Xử lý thanh toán
+                try {
+                    Transaction transaction = paymentProcessor.processPayment(
+                            paymentMethodCombo.getValue(),
+                            coursePrice,
+                            paymentDetails,
+                            courseId,
+                            userId
+                    );
+
+                    // Hiển thị kết quả
+                    resultArea.setText(transaction.toString());
+
+                    // Thông báo xác nhận
+                    if ("SUCCESS".equals(transaction.getStatus())) {
+                        showAlert(Alert.AlertType.INFORMATION, "Thanh toán thành công",
+                                "Giao dịch đã được xử lý thành công!\nMã giao dịch: " + transaction.getTransactionId());
+                    } else {
+                        showAlert(Alert.AlertType.ERROR, "Thanh toán thất bại",
+                                "Giao dịch không thành công. Vui lòng thử lại hoặc chọn phương thức thanh toán khác.");
+                    }
+
+                } catch (Exception ex) {
+                    resultArea.setText("Lỗi: " + ex.getMessage());
+                    showAlert(Alert.AlertType.ERROR, "Lỗi", "Có lỗi xảy ra: " + ex.getMessage());
+                }
+
+
+            });
+
+
+        }
+
+        public void stsddsf(Stage primaryStage) {
+            primaryStage.setTitle("Thanh toán khóa học");
+
+            // Tạo giao diện thanh toán
+            VBox root = new VBox(10);
+            root.setPadding(new Insets(20));
+
+            // Thông tin khóa học
+            Label courseInfoLabel = new Label("Khóa học: Lập trình Java căn bản");
+            Label priceLabel = new Label(String.format("Giá: %.0f VND", coursePrice));
+
+            // Phương thức thanh toán
+            Label paymentMethodLabel = new Label("Chọn phương thức thanh toán:");
+            ComboBox<String> paymentMethodCombo = new ComboBox<>(
+                    FXCollections.observableArrayList(
+                            "MOMO", "ZALOPAY", "VNPAY", "CREDIT_CARD", "BANK_TRANSFER"
+                    )
+            );
+            paymentMethodCombo.setValue("MOMO");
+
+            // Container cho các form thanh toán
+            VBox paymentFormContainer = new VBox(10);
+
+            // Ban đầu hiển thị form MoMo
+            GridPane momoForm = createMomoForm();
+            paymentFormContainer.getChildren().add(momoForm);
+
+            // Sự kiện thay đổi phương thức thanh toán
+            paymentMethodCombo.setOnAction(e -> {
+                paymentFormContainer.getChildren().clear();
+
+                switch (paymentMethodCombo.getValue()) {
+                    case "MOMO":
+                        paymentFormContainer.getChildren().add(createMomoForm());
+                        break;
+                    case "ZALOPAY":
+                        paymentFormContainer.getChildren().add(createZaloPayForm());
+                        break;
+                    case "VNPAY":
+                        paymentFormContainer.getChildren().add(createVNPayForm());
+                        break;
+                    case "CREDIT_CARD":
+                        paymentFormContainer.getChildren().add(createCreditCardForm());
+                        break;
+                    case "BANK_TRANSFER":
+                        paymentFormContainer.getChildren().add(createBankTransferForm());
+                        break;
+                }
+            });
+
+            // Nút thanh toán
+            Button payButton = new Button("Thanh toán");
+            payButton.setOnAction(e -> {
+                processSelectedPayment(paymentMethodCombo.getValue(), paymentFormContainer);
+            });
+
+            // Khu vực hiển thị kết quả giao dịch
+            TextArea resultArea = new TextArea();
+            resultArea.setEditable(false);
+            resultArea.setPrefHeight(200);
+
+            root.getChildren().addAll(
+                    courseInfoLabel, priceLabel,
+                    new Separator(),
+                    paymentMethodLabel, paymentMethodCombo,
+                    paymentFormContainer,
+                    payButton,
+                    new Separator(),
+                    new Label("Kết quả giao dịch:"),
+                    resultArea
+            );
+
+            Scene scene = new Scene(root, 500, 650);
+            primaryStage.setScene(scene);
+            primaryStage.show();
+
+            // Function to process payment based on selected method
+            payButton.setOnAction(e -> {
+                Map<String, String> paymentDetails = new HashMap<>();
+
+                // Lấy thông tin chi tiết thanh toán từ form
+                switch (paymentMethodCombo.getValue()) {
+                    case "MOMO":
+                        TextField momoPhone = (TextField) findNodeByID(paymentFormContainer, "momoPhone");
+                        TextField momoOtp = (TextField) findNodeByID(paymentFormContainer, "momoOtp");
+                        paymentDetails.put("phoneNumber", momoPhone.getText());
+                        paymentDetails.put("otp", momoOtp.getText());
+                        break;
+                    case "ZALOPAY":
+                        TextField zaloId = (TextField) findNodeByID(paymentFormContainer, "zaloId");
+                        PasswordField zaloPass = (PasswordField) findNodeByID(paymentFormContainer, "zaloPass");
+                        paymentDetails.put("accountId", zaloId.getText());
+                        paymentDetails.put("password", zaloPass.getText());
+                        break;
+                    case "VNPAY":
+                        ComboBox<String> bankCombo = (ComboBox<String>) findNodeByID(paymentFormContainer, "bankCombo");
+                        TextField vnpayAccount = (TextField) findNodeByID(paymentFormContainer, "vnpayAccount");
+                        paymentDetails.put("bankCode", bankCombo.getValue().substring(0, 3));
+                        paymentDetails.put("accountNumber", vnpayAccount.getText());
+                        break;
+                    case "CREDIT_CARD":
+                        TextField cardNumber = (TextField) findNodeByID(paymentFormContainer, "cardNumber");
+                        TextField expiryDate = (TextField) findNodeByID(paymentFormContainer, "expiryDate");
+                        TextField cvv = (TextField) findNodeByID(paymentFormContainer, "cvv");
+                        paymentDetails.put("cardNumber", cardNumber.getText());
+                        paymentDetails.put("expiryDate", expiryDate.getText());
+                        paymentDetails.put("cvv", cvv.getText());
+                        break;
+                    case "BANK_TRANSFER":
+                        TextField bankName = (TextField) findNodeByID(paymentFormContainer, "bankName");
+                        TextField accountNumber = (TextField) findNodeByID(paymentFormContainer, "accountNumber");
+                        paymentDetails.put("bankName", bankName.getText());
+                        paymentDetails.put("accountNumber", accountNumber.getText());
+                        break;
+                }
+
+                // Xử lý thanh toán
+                try {
+                    Transaction transaction = paymentProcessor.processPayment(
+                            paymentMethodCombo.getValue(),
+                            coursePrice,
+                            paymentDetails,
+                            courseId,
+                            userId
+                    );
+
+                    // Hiển thị kết quả
+                    resultArea.setText(transaction.toString());
+
+                    // Thông báo xác nhận
+                    if ("SUCCESS".equals(transaction.getStatus())) {
+                        showAlert(Alert.AlertType.INFORMATION, "Thanh toán thành công",
+                                "Giao dịch đã được xử lý thành công!\nMã giao dịch: " + transaction.getTransactionId());
+                    } else {
+                        showAlert(Alert.AlertType.ERROR, "Thanh toán thất bại",
+                                "Giao dịch không thành công. Vui lòng thử lại hoặc chọn phương thức thanh toán khác.");
+                    }
+
+                } catch (Exception ex) {
+                    resultArea.setText("Lỗi: " + ex.getMessage());
+                    showAlert(Alert.AlertType.ERROR, "Lỗi", "Có lỗi xảy ra: " + ex.getMessage());
+                }
+
+
+            });
+
+
+        }
+
+        public void stt(Stage primaryStage) {
+            primaryStage.setTitle("Thanh toán khóa học");
+
+            // Tạo giao diện thanh toán
+            VBox root = new VBox(10);
+            root.setPadding(new Insets(20));
+
+            // Thông tin khóa học
+            Label courseInfoLabel = new Label("Khóa học: Lập trình Java căn bản");
+            Label priceLabel = new Label(String.format("Giá: %.0f VND", coursePrice));
+
+            // Phương thức thanh toán
+            Label paymentMethodLabel = new Label("Chọn phương thức thanh toán:");
+            ComboBox<String> paymentMethodCombo = new ComboBox<>(
+                    FXCollections.observableArrayList(
+                            "MOMO", "ZALOPAY", "VNPAY", "CREDIT_CARD", "BANK_TRANSFER"
+                    )
+            );
+            paymentMethodCombo.setValue("MOMO");
+
+            // Container cho các form thanh toán
+            VBox paymentFormContainer = new VBox(10);
+
+            // Ban đầu hiển thị form MoMo
+            GridPane momoForm = createMomoForm();
+            paymentFormContainer.getChildren().add(momoForm);
+
+            // Sự kiện thay đổi phương thức thanh toán
+            paymentMethodCombo.setOnAction(e -> {
+                paymentFormContainer.getChildren().clear();
+
+                switch (paymentMethodCombo.getValue()) {
+                    case "MOMO":
+                        paymentFormContainer.getChildren().add(createMomoForm());
+                        break;
+                    case "ZALOPAY":
+                        paymentFormContainer.getChildren().add(createZaloPayForm());
+                        break;
+                    case "VNPAY":
+                        paymentFormContainer.getChildren().add(createVNPayForm());
+                        break;
+                    case "CREDIT_CARD":
+                        paymentFormContainer.getChildren().add(createCreditCardForm());
+                        break;
+                    case "BANK_TRANSFER":
+                        paymentFormContainer.getChildren().add(createBankTransferForm());
+                        break;
+                }
+            });
+
+            // Nút thanh toán
+            Button payButton = new Button("Thanh toán");
+            payButton.setOnAction(e -> {
+                processSelectedPayment(paymentMethodCombo.getValue(), paymentFormContainer);
+            });
+
+            // Khu vực hiển thị kết quả giao dịch
+            TextArea resultArea = new TextArea();
+            resultArea.setEditable(false);
+            resultArea.setPrefHeight(200);
+
+            root.getChildren().addAll(
+                    courseInfoLabel, priceLabel,
+                    new Separator(),
+                    paymentMethodLabel, paymentMethodCombo,
+                    paymentFormContainer,
+                    payButton,
+                    new Separator(),
+                    new Label("Kết quả giao dịch:"),
+                    resultArea
+            );
+
+            Scene scene = new Scene(root, 500, 650);
+            primaryStage.setScene(scene);
+            primaryStage.show();
+
+            // Function to process payment based on selected method
+            payButton.setOnAction(e -> {
+                Map<String, String> paymentDetails = new HashMap<>();
+
+                // Lấy thông tin chi tiết thanh toán từ form
+                switch (paymentMethodCombo.getValue()) {
+                    case "MOMO":
+                        TextField momoPhone = (TextField) findNodeByID(paymentFormContainer, "momoPhone");
+                        TextField momoOtp = (TextField) findNodeByID(paymentFormContainer, "momoOtp");
+                        paymentDetails.put("phoneNumber", momoPhone.getText());
+                        paymentDetails.put("otp", momoOtp.getText());
+                        break;
+                    case "ZALOPAY":
+                        TextField zaloId = (TextField) findNodeByID(paymentFormContainer, "zaloId");
+                        PasswordField zaloPass = (PasswordField) findNodeByID(paymentFormContainer, "zaloPass");
+                        paymentDetails.put("accountId", zaloId.getText());
+                        paymentDetails.put("password", zaloPass.getText());
+                        break;
+                    case "VNPAY":
+                        ComboBox<String> bankCombo = (ComboBox<String>) findNodeByID(paymentFormContainer, "bankCombo");
+                        TextField vnpayAccount = (TextField) findNodeByID(paymentFormContainer, "vnpayAccount");
+                        paymentDetails.put("bankCode", bankCombo.getValue().substring(0, 3));
+                        paymentDetails.put("accountNumber", vnpayAccount.getText());
+                        break;
+                    case "CREDIT_CARD":
+                        TextField cardNumber = (TextField) findNodeByID(paymentFormContainer, "cardNumber");
+                        TextField expiryDate = (TextField) findNodeByID(paymentFormContainer, "expiryDate");
+                        TextField cvv = (TextField) findNodeByID(paymentFormContainer, "cvv");
+                        paymentDetails.put("cardNumber", cardNumber.getText());
+                        paymentDetails.put("expiryDate", expiryDate.getText());
+                        paymentDetails.put("cvv", cvv.getText());
+                        break;
+                    case "BANK_TRANSFER":
+                        TextField bankName = (TextField) findNodeByID(paymentFormContainer, "bankName");
+                        TextField accountNumber = (TextField) findNodeByID(paymentFormContainer, "accountNumber");
+                        paymentDetails.put("bankName", bankName.getText());
+                        paymentDetails.put("accountNumber", accountNumber.getText());
+                        break;
+                }
+
+                // Xử lý thanh toán
+                try {
+                    Transaction transaction = paymentProcessor.processPayment(
+                            paymentMethodCombo.getValue(),
+                            coursePrice,
+                            paymentDetails,
+                            courseId,
+                            userId
+                    );
+
+                    // Hiển thị kết quả
+                    resultArea.setText(transaction.toString());
+
+                    // Thông báo xác nhận
+                    if ("SUCCESS".equals(transaction.getStatus())) {
+                        showAlert(Alert.AlertType.INFORMATION, "Thanh toán thành công",
+                                "Giao dịch đã được xử lý thành công!\nMã giao dịch: " + transaction.getTransactionId());
+                    } else {
+                        showAlert(Alert.AlertType.ERROR, "Thanh toán thất bại",
+                                "Giao dịch không thành công. Vui lòng thử lại hoặc chọn phương thức thanh toán khác.");
+                    }
+
+                } catch (Exception ex) {
+                    resultArea.setText("Lỗi: " + ex.getMessage());
+                    showAlert(Alert.AlertType.ERROR, "Lỗi", "Có lỗi xảy ra: " + ex.getMessage());
+                }
+
+
+            });
 
 
         }
@@ -682,7 +3807,10 @@ public class PaymentSimulation {
                     resultArea.setText("Lỗi: " + ex.getMessage());
                     showAlert(Alert.AlertType.ERROR, "Lỗi", "Có lỗi xảy ra: " + ex.getMessage());
                 }
+
+
             });
+
 
         }
 

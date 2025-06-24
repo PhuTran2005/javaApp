@@ -183,32 +183,4 @@ public class ForgetPasswordController implements Initializable {
         sendVerificationCode(email);
 
     }
-
-    @FXML
-    private void handlePassword(ActionEvent event) {
-        String email = emailField.getText().trim();
-        String newPassword = newPasswordField.getText();
-
-        if (email.isEmpty() || newPassword.isEmpty()) {
-            messageLabel.setText("Vui lòng nhập đầy đủ thông tin");
-            messageLabel.setVisible(true);
-            return;
-        }
-
-        boolean exists = userRepository.checkEmailExists(email);
-        if (!exists) {
-            messageLabel.setText("Email không tồn tại");
-            messageLabel.setVisible(true);
-            return;
-        }
-
-        boolean success = userRepository.updatePasswordByEmail(email, newPassword);
-        if (success) {
-            alerts.showSuccessAlert("Đổi mật khẩu thành công!");
-            // Quay về đăng nhập
-            switchToLogin(event);
-        } else {
-            alerts.showErrorAlert("Cập nhật thất bại! Vui lòng thử lại.");
-        }
-    }
 }

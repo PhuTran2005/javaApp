@@ -1,19 +1,12 @@
 package com.example.coursemanagement.Utils;
 
 
-import com.example.coursemanagement.Dto.CourseDetailDTO;
 import com.example.coursemanagement.Models.Course;
 import com.example.coursemanagement.Models.Instructor;
-import com.example.coursemanagement.Models.Student;
 import com.example.coursemanagement.Models.User;
 import com.example.coursemanagement.Repository.CoursesRepository;
-import com.example.coursemanagement.Repository.InstructorRepository;
-import com.example.coursemanagement.Repository.StudentRepository;
-import com.example.coursemanagement.Repository.UserRepository;
 import com.example.coursemanagement.Service.CourseService;
 import com.example.coursemanagement.Service.InstructorService;
-import com.example.coursemanagement.Service.StudentService;
-import org.apache.poi.ss.formula.functions.Index;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -22,28 +15,98 @@ import java.util.List;
 import java.util.Properties;
 
 public class DatabaseConfig {
-    private static final String URL = "jdbc:sqlserver://localhost:1433;databaseName=IT_Course_Management;encrypt=true;trustServerCertificate=true";
+    private static final Properties prop = new Properties();
 
-    private static final String USER = "thang1234";
-        private static final String PASSWORD = "123456";
-
-        public static Connection getConnection() {
-            try {
-                return DriverManager.getConnection(URL,USER,PASSWORD);
-            }catch (Exception e){
-                e.printStackTrace();
+    static {
+        try (InputStream input = DatabaseConfig.class.getClassLoader().getResourceAsStream("db.properties")) {
+            if (input == null) {
+                throw new IOException("Không tìm thấy file config.properties trong resources");
             }
-            return null;
-
+            prop.load(input);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-
-        public static void main(String[] args) {
-            try (Connection conn = getConnection()) {
-                System.out.println("Kết nối thành công!");
-            } catch (SQLException e) {
-                System.out.println("Kết nối thất bại!");
-                e.printStackTrace();
-            }
-        }
-
     }
+
+
+    private static final String URL = prop.getProperty("url");
+    private static final String USER = prop.getProperty("username");
+    private static final String PASSWORD = prop.getProperty("password");
+
+
+    public static Connection getConnection() {
+        Connection conn = null;
+        try {
+            conn = DriverManager.getConnection(URL, USER, PASSWORD);
+            System.out.println("✅ Kết nối SQL Server thành công!");
+        } catch (SQLException e) {
+            System.out.println("❌ Lỗi kết nối: " + e.getMessage());
+        }
+        return conn;
+    }
+
+    public static void test() {
+        InstructorService instructorService = new InstructorService();
+        List<Instructor> instructors = instructorService.getAllInstructor();
+        for (Instructor item : instructors
+        ) {
+            System.out.println(item);
+        }
+    }
+
+    public static void selectAllUsers() {
+        String query = "SELECT * FROM Users";
+
+        try (Connection conn = DatabaseConfig.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query);
+             ResultSet rs = stmt.executeQuery()) {
+
+            boolean hasResult = false;
+            while (rs.next()) {
+                hasResult = true;
+                int id = rs.getInt("user_id");
+                String email = rs.getString("email");
+                String fullName = rs.getString("full_name");
+                int roleId = rs.getInt("role_id");
+
+                System.out.println("ID: " + id + ", Email: " + email + ", Fullname: " + fullName + ", Role ID: " + roleId);
+            }
+            if (!hasResult) {
+                System.out.println("⚠️ Không có người dùng nào trong bảng Users.");
+            }
+
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void main(String[] args) {
+        String query = "SELECT * FROM Users";
+
+        try (Connection conn = DatabaseConfig.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query);
+             ResultSet rs = stmt.executeQuery()) {
+
+            boolean hasResult = false;
+            while (rs.next()) {
+                hasResult = true;
+                int id = rs.getInt("user_id");
+                String email = rs.getString("email");
+                String fullName = rs.getString("full_name");
+                int roleId = rs.getInt("role_id");
+
+                System.out.println("ID: " + id + ", Email: " + email + ", Fullname: " + fullName + ", Role ID: " + roleId);
+            }
+            if (!hasResult) {
+                System.out.println("⚠️ Không có người dùng nào trong bảng Users.");
+            }
+
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        selectAllUsers();
+//        test();
+    }
+}

@@ -92,13 +92,14 @@ Alerts alerts = new Alerts();
         String title = titleField.getText() != null ? titleField.getText().trim() : "";
         String description = descriptionField.getText() != null ? descriptionField.getText().trim() : "";
 
-        String videoPath = null;
+        String videoPath;
         if (videoFileNameField.getText() != null && !videoFileNameField.getText().trim().isEmpty()) {
             videoPath = videoFileNameField.getText().trim();
-            selectedVideoFilePath = videoPath;  // Cập nhật nếu người dùng vừa chọn
-        } else if (selectedVideoFilePath != null && !selectedVideoFilePath.isEmpty()) {
-            videoPath = selectedVideoFilePath;
+            selectedVideoFilePath = videoPath;  // cập nhật nếu có đường dẫn mới
+        } else {
+            videoPath = null;  // <- không dùng lại đường dẫn cũ
         }
+
 
         String documentPath = selectedDocumentFile != null ? selectedDocumentFile.getAbsolutePath() : selectedDocumentFilePath;
         String documentName = selectedDocumentFile != null ? selectedDocumentFile.getName() : (editingMaterial != null ? editingMaterial.getDocumentName() : null);

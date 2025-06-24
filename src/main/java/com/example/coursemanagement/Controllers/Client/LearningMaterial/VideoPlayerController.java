@@ -92,19 +92,55 @@ public class VideoPlayerController {
         if (videoUrl.contains("youtube.com") || videoUrl.contains("youtu.be")) {
             String videoId = extractYouTubeId(videoUrl);
             String embed = """
-            <html>
-              <body style="margin:0">
-                <iframe width="100%%" height="100%%" 
-                        src="https://www.youtube.com/embed/%s" 
-                        frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
-              </body>
-            </html>
-            """.formatted(videoId);
-
+        <html>
+          <body style="margin:0">
+            <iframe width="100%%" height="100%%" 
+                    src="https://www.youtube.com/embed/%s?autoplay=1&mute=1" 
+                    frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+          </body>
+        </html>
+        """.formatted(videoId);
             engine.loadContent(embed);
+
+        } else if (videoUrl.endsWith(".mp4")) {
+            String embed = """
+        <html>
+          <body style="margin:0">
+            <video width="100%%" height="100%%" autoplay muted controls>
+              <source src="%s" type="video/mp4">
+              Trình duyệt không hỗ trợ video này.
+            </video>
+          </body>
+        </html>
+        """.formatted(videoUrl);
+            engine.loadContent(embed);
+
+        } else if (videoUrl.contains("drive.google.com")) {
+            // Convert drive file link to preview embeddable form
+            String previewUrl = convertGoogleDriveLinkToEmbed(videoUrl);
+            String embed = """
+        <html>
+          <body style="margin:0">
+            <iframe src="%s" width="100%%" height="100%%" allow="autoplay"></iframe>
+          </body>
+        </html>
+        """.formatted(previewUrl);
+            engine.loadContent(embed);
+
         } else {
-            engine.load(videoUrl); // Cho Google Drive hoặc link MP4
+            // Nếu không biết loại gì, thử load thẳng (có thể fail)
+            engine.load(videoUrl);
         }
+
+    }
+
+    private String convertGoogleDriveLinkToEmbed(String url) {
+        // Ví dụ: https://drive.google.com/file/d/FILE_ID/view?usp=sharing
+        // → https://drive.google.com/file/d/FILE_ID/preview
+        if (url.contains("/view")) {
+            return url.replace("/view", "/preview");
+        }
+        return url;
     }
 
 

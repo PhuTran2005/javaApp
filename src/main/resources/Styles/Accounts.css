@@ -6,6 +6,9 @@
     -fx-background-color: #fff;
     -fx-background-radius: 8px;
 }
+button{
+    -fx-cursor: hand;
+}
 
 .search {
     -fx-background-color: transparent;
@@ -81,4 +84,95 @@
 /* Cải thiện hiệu ứng shadow khi Button bị pressed */
 .action-button:pressed {
     -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.5), 6, 0.7, 0, 5);
+}
+
+/* Các Button trong menu */
+.menu_container Button {
+    -fx-background-color: transparent;
+    -fx-text-fill: black;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-padding: 10px 20px;
+    -fx-border-radius: 5px;
+    -fx-background-radius: 5px;
+    -fx-alignment: center-left;
+    -fx-spacing: 10px;
+    -fx-cursor: hand;
+    -fx-margin-bottom: 10px;
+}
+
+.menu_container Button:hover {
+    -fx-background-color: #C6E7FF;
+    -fx-text-fill: #FF0000;
+}
+
+.menu_container Button:pressed {
+    -fx-background-color: #52527A;
+}
+.menu_container Button.active {
+    -fx-background-color: linear-gradient(to right, #6A82FB, #FC5C7D);
+    -fx-text-fill: white;
+    -fx-border-width: 0 0 0 4px;
+    -fx-border-color: white;
+}
+/* Đường kẻ phân tách */
+.menu_container .line {
+    -fx-stroke: #505068;
+}
+.menu_button {
+    -fx-background-color: transparent;
+    -fx-font-size: 14px;
+}
+/* Các Button thay thế */
+.alt_menu_btn {
+    -fx-background-color: transparent;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+}
+
+.alt_menu_btn:hover {
+    -fx-background-color: #C6E7FF;
+    -fx-text-fill: #7A73D1;
+}
+.alt_menu_btn.active {
+    -fx-background-color: linear-gradient(to right, #6A82FB, #FC5C7D);
+    -fx-text-fill: white;
+    -fx-border-width: 0 0 0 4px;
+    -fx-border-color: white;
+}
+/* Container của phần Report */
+.report_container {
+    -fx-background-color: #252545;
+    -fx-border-radius: 10px;
+    -fx-background-radius: 10px;
+    -fx-padding: 10px;
+    -fx-spacing: 5px;
+    -fx-alignment: center;
+}
+
+.report_container Text {
+    -fx-fill: #FFD700;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+}
+
+.report_container Label {
+    -fx-text-fill: #C0C0C0;
+    -fx-font-size: 12px;
+    -fx-wrap-text: true;
+    -fx-text-alignment: center;
+}
+
+.report_container Button {
+    -fx-background-color: #FFD700;
+    -fx-text-fill: #2A2A40;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-border-radius: 5px;
+    -fx-background-radius: 5px;
+    -fx-cursor: hand;
+}
+
+.report_container Button:hover {
+    -fx-background-color: #E0C000;
 }

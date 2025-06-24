@@ -39,15 +39,15 @@
                 <Insets bottom="10.0" top="10.0" />
             </VBox.margin>
         </Button>
-      <Button fx:id="learning" mnemonicParsing="false" prefHeight="40.0" prefWidth="66.0" styleClass="action-button" text="Học tập">
-         <VBox.margin>
-            <Insets bottom="10.0" top="10.0" />
-         </VBox.margin>
-      </Button>
-      <Button fx:id="Assignment_btn" mnemonicParsing="false" onAction="#handleAssignment" prefHeight="40.0" prefWidth="67.0" styleClass="action-button" text="Bài tập">
-         <VBox.margin>
-            <Insets bottom="10.0" top="10.0" />
-         </VBox.margin>
-      </Button>
+        <Button fx:id="learning" mnemonicParsing="false" onAction="#handleLearning" prefHeight="40.0" prefWidth="66.0" styleClass="action-button" text="Học tập">
+            <VBox.margin>
+                <Insets bottom="10.0" top="10.0" />
+            </VBox.margin>
+        </Button>
+        <Button fx:id="Assignment_btn" mnemonicParsing="false" onAction="#handleAssignment" prefHeight="40.0" prefWidth="67.0" styleClass="action-button" text="Bài tập">
+            <VBox.margin>
+                <Insets bottom="10.0" top="10.0" />
+            </VBox.margin>
+        </Button>
     </VBox>
 </AnchorPane>

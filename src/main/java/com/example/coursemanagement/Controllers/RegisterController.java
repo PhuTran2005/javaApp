@@ -4,6 +4,7 @@ import com.example.coursemanagement.Models.Category;
 import com.example.coursemanagement.Models.Role;
 import com.example.coursemanagement.Models.User;
 import com.example.coursemanagement.Repository.UserRepository;
+import com.example.coursemanagement.Service.LogService;
 import com.example.coursemanagement.Utils.Alerts;
 import com.example.coursemanagement.Models.Model;
 import com.example.coursemanagement.Utils.GlobalVariable;
@@ -62,6 +63,7 @@ public class RegisterController implements Initializable {
             )
     );
 
+    private static LogService logService = new LogService();
 
     private final UserRepository userRepository = new UserRepository(); // Tạo repository
     private final LoginController loginController = new LoginController(); // Tạo repository
@@ -125,6 +127,7 @@ public class RegisterController implements Initializable {
             return;
         }
         if (!ValidatorUtil.validateFullName(fullname)) {
+            shake(registerForm);
             showMessage("Họ và tên không hợp lệ!", "RED", 400);
             return;
         }
@@ -157,8 +160,10 @@ public class RegisterController implements Initializable {
             showMessage("Email đã tồn tại!", "RED", 400);
             return;
         }
-        if (userRepository.registerUser(email, password, roleField.getValue().getRoleId(), fullname)) {
+        int userId = userRepository.registerUser(email, password, roleField.getValue().getRoleId(), fullname);
+        if (userId != -1) {
             showMessage("Đăng ký thành công!", "GREEN", 400);
+            logService.createLog(userId, "Đăng ký tài khoản thành công");
             alerts.showSuccessAlert("Đăng ký thành công!");
             if (alerts.showConfirmationSelectedAlert("Chuyển đến trang đăng nhập ngay?")) {
 

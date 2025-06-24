@@ -13,27 +13,33 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane fx:id="loginForm" prefHeight="500.0" prefWidth="700.0" styleClass="login_container" stylesheets="@../Styles/Login.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.coursemanagement.Controllers.LoginController">
+<AnchorPane fx:id="loginForm" prefHeight="500.0" prefWidth="700.0" styleClass="login_container"
+            stylesheets="@../Styles/Login.css" xmlns="http://javafx.com/javafx/23.0.1"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.example.coursemanagement.Controllers.LoginController">
 
     <children>
         <!-- Logo bên trái -->
-        <VBox prefHeight="400.0" prefWidth="300.0" styleClass="login_logo_container" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <VBox prefHeight="400.0" prefWidth="300.0" styleClass="login_logo_container" AnchorPane.bottomAnchor="0.0"
+              AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
             <children>
                 <ImageView fitHeight="250.0" fitWidth="250.0">
-                    <Image url="@../Images/logoNhom.png" />
+                    <Image url="@../Images/logoNhom.png"/>
                 </ImageView>
             </children>
         </VBox>
 
         <!-- Form đăng nhập -->
-        <VBox layoutX="386.0" layoutY="28.0" prefHeight="358.0" prefWidth="286.0" styleClass="flex-center" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="320.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="20.0">
+        <VBox layoutX="386.0" layoutY="28.0" prefHeight="358.0" prefWidth="286.0" styleClass="flex-center"
+              AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="320.0" AnchorPane.rightAnchor="20.0"
+              AnchorPane.topAnchor="20.0">
             <children>
                 <!-- Logo đăng nhập -->
                 <VBox prefHeight="104.0" prefWidth="306.0" styleClass="login_logo_extra_container">
                     <children>
                         <ImageView fitHeight="100.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true">
                             <image>
-                                <Image url="@../Images/login.png" />
+                                <Image url="@../Images/login.png"/>
                             </image>
                         </ImageView>
                     </children>
@@ -47,10 +53,12 @@
                             <children>
                                 <ImageView fitHeight="25.0" fitWidth="25.0">
                                     <image>
-                                        <Image url="@../Images/user.png" />
+                                        <Image url="@../Images/user.png"/>
                                     </image>
                                 </ImageView>
-                                <TextField fx:id="LGEmailname" onKeyPressed="#handleKeyPress" prefHeight="28.0" prefWidth="200.0" promptText="Email" style="-fx-background-color: transparent; -fx-border-color: #18CFC4; -fx-border-width: 0px 0px 2px 0px; -fx-font-size: 14px;" />
+                                <TextField fx:id="LGEmailname" onKeyPressed="#handleKeyPress" prefHeight="28.0"
+                                           prefWidth="200.0" promptText="Email"
+                                           style="-fx-background-color: transparent; -fx-border-color: #18CFC4; -fx-border-width: 0px 0px 2px 0px; -fx-font-size: 14px;"/>
                             </children>
                         </HBox>
 
@@ -59,21 +67,25 @@
                             <children>
                                 <ImageView fitHeight="25.0" fitWidth="25.0">
                                     <image>
-                                        <Image url="@../Images/padlock.png" />
+                                        <Image url="@../Images/padlock.png"/>
                                     </image>
                                 </ImageView>
-                                <PasswordField fx:id="LGPassword" onKeyPressed="#handleKeyPress" prefHeight="28.0" prefWidth="200.0" promptText="Password" style="-fx-background-color: transparent; -fx-border-color: #18CFC4; -fx-border-width: 0px 0px 2px 0px; -fx-font-size: 14px;" />
+                                <PasswordField fx:id="LGPassword" onKeyPressed="#handleKeyPress" prefHeight="28.0"
+                                               prefWidth="200.0" promptText="Password"
+                                               style="-fx-background-color: transparent; -fx-border-color: #18CFC4; -fx-border-width: 0px 0px 2px 0px; -fx-font-size: 14px;"/>
                             </children>
                         </HBox>
 
                         <!-- Nút Login -->
-                        <Button fx:id="btnLogin" onAction="#handleLogin" onKeyPressed="#handleKeyPress" prefHeight="38.0" prefWidth="106.0" styleClass="action-button" text="Đăng nhập" textFill="WHITE">
+                        <Button fx:id="btnLogin" onAction="#handleLogin" onKeyPressed="#handleKeyPress"
+                                prefHeight="38.0" prefWidth="106.0" styleClass="action-button" text="Đăng nhập"
+                                textFill="WHITE">
                             <font>
-                                <Font name="Arial" size="14.0" />
+                                <Font name="Arial" size="14.0"/>
                             </font>
-                     <VBox.margin>
-                        <Insets bottom="10.0" />
-                     </VBox.margin>
+                            <VBox.margin>
+                                <Insets bottom="10.0"/>
+                            </VBox.margin>
                         </Button>
 
                         <VBox alignment="CENTER" spacing="5">
@@ -83,28 +95,28 @@
                                            prefHeight="30.0" prefWidth="218.0"
                                            text="Chưa có tài khoản? Đăng ký ngay">
                                     <font>
-                                        <Font size="14.0" />
+                                        <Font size="14.0"/>
                                     </font>
                                 </Hyperlink>
 
                                 <Hyperlink fx:id="linkForgetPassword"
                                            onAction="#switchToForgetPassword"
                                            prefHeight="30.0" prefWidth="218.0"
-                                           text="Quên mật khẩu? Đổi mật khẩu đi">
+                                           text="Quên mật khẩu? Lấy lại mật khẩu">
                                     <font>
-                                        <Font size="14.0" />
+                                        <Font size="14.0"/>
                                     </font>
                                 </Hyperlink>
                             </children>
                         </VBox>
 
 
-
                     </children>
                 </VBox>
 
                 <!-- Label hiển thị lỗi -->
-                <Label fx:id="messageLabel" prefHeight="18.0" prefWidth="0.0" style="-fx-alignment: center" textFill="RED" visible="false" />
+                <Label fx:id="messageLabel" prefHeight="18.0" prefWidth="0.0" style="-fx-alignment: center"
+                       textFill="RED" visible="false"/>
             </children>
         </VBox>
     </children>

@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane prefHeight="499.0" prefWidth="518.0" style="-fx-background-color: #f9f9f9;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.coursemanagement.Controllers.Client.LearningMaterial.AddMaterialController">
+
+    <children>
+        <VBox prefHeight="499.0" prefWidth="484.0" spacing="15" AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="34.0" AnchorPane.topAnchor="0">
+        <padding>
+            <Insets bottom="20.0" left="30.0" right="20.0" top="30.0" />
+        </padding>
+
+            <!-- Tiêu đề -->
+            <Label prefHeight="36.0" prefWidth="252.0" style="-fx-font-size: 25px; -fx-font-weight: bold;" text="Thêm Bài Giảng Mới" textFill="#19c9e4">
+            <VBox.margin>
+               <Insets bottom="20.0" left="130.0" />
+            </VBox.margin>
+            <font>
+               <Font size="18.0" />
+            </font></Label>
+
+            <!-- Khóa học -->
+            <HBox spacing="10">
+                <Label prefHeight="34.0" prefWidth="93.0" text="Khóa học:" />
+            <Label fx:id="courseNameLabel" prefHeight="34.0" prefWidth="352.0" text="Tên khóa học" textFill="#b41d1d">
+               <font>
+                  <Font name="System Bold" size="17.0" />
+               </font>
+            </Label>
+            </HBox>
+
+            <!-- Tiêu đề bài giảng -->
+            <HBox spacing="10">
+                <Label prefHeight="26.0" prefWidth="86.0" text="Tiêu đề:" />
+                <TextField fx:id="titleField" prefWidth="350" promptText="Nhập tiêu đề bài giảng" />
+            </HBox>
+
+            <!-- Mô tả -->
+            <HBox alignment="TOP_LEFT" spacing="10">
+                <Label prefHeight="28.0" prefWidth="86.0" text="Mô tả:" />
+                <TextArea fx:id="descriptionField" prefHeight="80" prefWidth="350" promptText="Nhập mô tả ngắn" wrapText="true" />
+            </HBox>
+
+            <!-- Chọn video -->
+            <HBox spacing="10">
+                <Label prefHeight="26.0" prefWidth="80.0" text="Link Video:" />
+                <TextField fx:id="videoFileNameField" prefHeight="26.0" prefWidth="346.0" />
+            </HBox>
+
+            <!-- Chọn tài liệu -->
+            <HBox spacing="10">
+                <Label prefHeight="26.0" prefWidth="79.0" text="Tài liệu:" />
+                <TextField fx:id="documentFileNameField" editable="false" prefHeight="26.0" prefWidth="272.0" />
+                <Button onAction="#handleChooseDocument" text="Chọn file" />
+            </HBox>
+
+            <!-- Nút -->
+            <HBox alignment="CENTER_RIGHT" spacing="15">
+                <Button fx:id="cancelButton" onAction="#handleCancel" style="-fx-background-color: #FE2929;" text="Hủy" textFill="WHITE">
+               <font>
+                  <Font name="System Bold" size="12.0" />
+               </font></Button>
+                <Button fx:id="saveButton" onAction="#handleSave" style="-fx-background-color: #1C8FF1;" text="Lưu bài giảng" textFill="WHITE">
+               <HBox.margin>
+                  <Insets right="120.0" />
+               </HBox.margin>
+               <font>
+                  <Font name="System Bold" size="13.0" />
+               </font></Button>
+            <VBox.margin>
+               <Insets top="50.0" />
+            </VBox.margin>
+            </HBox>
+
+        </VBox>
+    </children>
+</AnchorPane>

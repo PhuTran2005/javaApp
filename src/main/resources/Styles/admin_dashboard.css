@@ -3,6 +3,7 @@
 }
 
 .line-color{
+    -fx-cursor: hand;
     -fx-background-color: #F3ABB5;
 }
 .container{

@@ -37,7 +37,8 @@ public class LogRepository {
     // Get logs with pagination
     public List<Log> getLogs(int page, int pageSize) {
         List<Log> logs = new ArrayList<>();
-        String sql = "SELECT log_id, user_id, action, action_time FROM Logs " +
+        String sql = " select * from Logs l\n" +
+                "\tjoin Users u on u.user_id = l.user_id " +
                 "ORDER BY action_time DESC " +
                 "OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
 
@@ -51,14 +52,14 @@ public class LogRepository {
                 while (rs.next()) {
                     Log log = new Log();
                     log.setLogId(rs.getInt("log_id"));
-
+                    log.setEmail(rs.getString("email"));
+                    log.setRole(rs.getInt("role_id") == 2 ? "Instructor" : "Student");
                     int userId = rs.getInt("user_id");
                     if (rs.wasNull()) {
                         log.setUserId(null);
                     } else {
                         log.setUserId(userId);
                     }
-
                     log.setAction(rs.getString("action"));
                     log.setActionTime(rs.getTimestamp("action_time").toLocalDateTime());
                     logs.add(log);
@@ -94,8 +95,9 @@ public class LogRepository {
     // Search logs with pagination
     public List<Log> searchLogs(String searchTerm, int page, int pageSize) {
         List<Log> logs = new ArrayList<>();
-        String sql = "SELECT log_id, user_id, action, action_time FROM Logs " +
-                "WHERE action LIKE ? OR CAST(user_id AS NVARCHAR) LIKE ? " +
+        String sql = " select * from Logs l\n" +
+                "\tjoin Users u on u.user_id = l.user_id " +
+                "WHERE action LIKE ? OR CAST(u.email AS NVARCHAR) LIKE ? " +
                 "ORDER BY action_time DESC " +
                 "OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
 
@@ -112,14 +114,14 @@ public class LogRepository {
                 while (rs.next()) {
                     Log log = new Log();
                     log.setLogId(rs.getInt("log_id"));
-
+                    log.setEmail(rs.getString("email"));
+                    log.setRole(rs.getInt("role_id") == 2 ? "Instructor" : "Student");
                     int userId = rs.getInt("user_id");
                     if (rs.wasNull()) {
                         log.setUserId(null);
                     } else {
                         log.setUserId(userId);
                     }
-
                     log.setAction(rs.getString("action"));
                     log.setActionTime(rs.getTimestamp("action_time").toLocalDateTime());
                     logs.add(log);
@@ -135,8 +137,9 @@ public class LogRepository {
 
     // Get search results count for pagination
     public int getSearchResultsCount(String searchTerm) {
-        String sql = "SELECT COUNT(*) FROM Logs " +
-                "WHERE action LIKE ? OR CAST(user_id AS NVARCHAR) LIKE ?";
+        String sql = "SELECT COUNT(*) from Logs l\n" +
+                "\tjoin Users u on u.user_id = l.user_id " +
+                "WHERE action LIKE ? OR CAST(u.email AS NVARCHAR) LIKE ?";
 
         try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {

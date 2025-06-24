@@ -58,18 +58,23 @@ public class AccountsController {
         setupTableColumns();
         setupSearchEvents();
         setupTabSwitching();
-
+        studentRoleBtn.getStyleClass().add("action-button");
         loadUsersByRole("student");
     }
 
     private void setupTabSwitching() {
         studentRoleBtn.setOnAction(event -> {
             currentRole = "STUDENT";
+            instructorRoleBtn.getStyleClass().remove("action-button");
+            studentRoleBtn.getStyleClass().add("action-button");
+
             loadUsersByRole(currentRole);
         });
 
         instructorRoleBtn.setOnAction(event -> {
             currentRole = "INSTRUCTOR";
+            instructorRoleBtn.getStyleClass().add("action-button");
+            studentRoleBtn.getStyleClass().remove("action-button");
             loadUsersByRole(currentRole);
         });
     }

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<fx:root type="javafx.scene.layout.StackPane" alignment="CENTER" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
+    <children>
+        <VBox fx:id="loadingContainer" alignment="CENTER" spacing="25.0" prefHeight="200.0" prefWidth="300.0" maxHeight="200.0" maxWidth="300.0" style="-fx-background-color: white; -fx-background-radius: 15; -fx-padding: 30; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 20, 0.3, 0, 5);">
+            <children>
+                <VBox fx:id="contentContainer" alignment="CENTER" spacing="20.0">
+                    <children>
+                        <HBox fx:id="spinnerContainer" alignment="CENTER" spacing="6.0" />
+                        <Label fx:id="loadingText" style="-fx-text-fill: #2d3748; -fx-font-size: 16px; -fx-font-weight: bold;" text="Đang tải..." />
+                        <ProgressBar fx:id="progressBar" prefWidth="200.0" progress="-1.0" />
+                    </children>
+                </VBox>
+            </children>
+        </VBox>
+    </children>
+</fx:root>

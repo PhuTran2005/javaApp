@@ -49,10 +49,6 @@ public class PaymentController implements Initializable {
 
 
     // Lấy studentId từ session
-    private final String accountNumber = "1518893947588";
-    private final String bankCode       = "MBBank";
-    private final int amount            = 10000;
-    private final String memo           = "nap";
     private final Alerts alerts = new Alerts();
     private final UserService userService = new UserService();
     private User myProfile;
